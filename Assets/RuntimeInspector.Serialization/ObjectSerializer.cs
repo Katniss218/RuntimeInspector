@@ -50,10 +50,10 @@ namespace RuntimeInspector.Serialization
                 return new JObject();
             }
             Guid guid = Guid.NewGuid();
-            ObjectRegistry.Add( guid, value );
+            ObjectRegistry.Register( guid, value );
             return new JObject()
             {
-                { $"{REF}", WriteGuid( guid) } // TODO - actually do the lookup in the registry.
+                { $"{REF}", WriteGuid( guid) }
             };
         }
 
@@ -62,7 +62,7 @@ namespace RuntimeInspector.Serialization
             if( ((JObject)json).TryGetValue( $"{REF}", out JToken val ) )
             {
                 Guid guid = ReadGuid( val );
-                return ObjectRegistry.guidToObj[guid]; // TODO - actually do the lookup in the registry.
+                return ObjectRegistry.Get(guid);
             }
             return null;
         }

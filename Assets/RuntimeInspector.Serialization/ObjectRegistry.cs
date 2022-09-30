@@ -11,8 +11,8 @@ namespace RuntimeInspector.Serialization
         // stores guid-object pairs of objects being serialized/deserialized as 2 dictionaries to facilitate preserving references.
         // has to be cleared before serialization / deserialization can proceed.
 
-        public static Dictionary<Guid, object> guidToObj = new Dictionary<Guid, object>();
-        public static Dictionary<object, Guid> objToGuid = new Dictionary<object, Guid>();
+        static Dictionary<Guid, object> guidToObj = new Dictionary<Guid, object>();
+        static Dictionary<object, Guid> objToGuid = new Dictionary<object, Guid>();
 
         public static void Clear()
         {
@@ -20,10 +20,20 @@ namespace RuntimeInspector.Serialization
             objToGuid.Clear();
         }
 
-        public static void Add( Guid guid, object obj )
+        public static void Register( Guid guid, object obj )
         {
             guidToObj.Add( guid, obj );
             objToGuid.Add( obj, guid );
+        }
+
+        public static object Get( Guid guid )
+        {
+            return guidToObj[guid];
+        }
+
+        public static Guid Get( object obj )
+        {
+            return objToGuid[obj];
         }
     }
 }
