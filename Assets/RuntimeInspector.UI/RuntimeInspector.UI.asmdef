@@ -1,3 +1,16 @@
 {
-	"name": "RuntimeInspector.UI"
+    "name": "RuntimeInspector.UI",
+    "rootNamespace": "",
+    "references": [
+        "GUID:62b8f4310c17a184fb38619b59bc4ec5"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
 }

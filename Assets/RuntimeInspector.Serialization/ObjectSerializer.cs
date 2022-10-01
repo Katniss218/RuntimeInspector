@@ -1,4 +1,5 @@
 using Newtonsoft.Json.Linq;
+using RuntimeInspector.Core.AssetManagement;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -7,21 +8,20 @@ using UnityEngine;
 
 namespace RuntimeInspector.Serialization
 {
-    public class ObjectSerializer
+    public static partial class ObjectSerializer
     {
+        /// <summary>
+        /// The special token name for a System.Type.
+        /// </summary>
         public const string TYPE = "$type";
+        /// <summary>
+        /// The special token name for a reference.
+        /// </summary>
         public const string REF = "$ref";
-
-
-        public static JToken WriteBool( bool value )
-        {
-            return new JValue( value );
-        }
-
-        public static bool ReadBool( JToken json )
-        {
-            return (bool)json;
-        }
+        /// <summary>
+        /// The special token name for an asset reference.
+        /// </summary>
+        public const string ASSETREF = "$assetref";
 
         public static JToken WriteGuid( Guid value )
         {
@@ -32,42 +32,6 @@ namespace RuntimeInspector.Serialization
         {
             return Guid.ParseExact( (string)json, "D" );
         }
-
-        public static JToken WriteType( Type value )
-        {
-            return new JValue( value.AssemblyQualifiedName );
-        }
-
-        public static Type ReadType( JToken json )
-        {
-            return Type.GetType( (string)json );
-        }
-
-        public static JToken WriteObjectReference( object value )
-        {
-            if( value == null )
-            {
-                return new JObject();
-            }
-            Guid guid = Guid.NewGuid();
-            ObjectRegistry.Register( guid, value );
-            return new JObject()
-            {
-                { $"{REF}", WriteGuid( guid) }
-            };
-        }
-
-        public static object ReadObjectReference( JToken json )
-        {
-            if( ((JObject)json).TryGetValue( $"{REF}", out JToken val ) )
-            {
-                Guid guid = ReadGuid( val );
-                return ObjectRegistry.Get(guid);
-            }
-            return null;
-        }
-
-        // write and read reference
 
         public static JToken WriteDelegate( object delegateObj )
         {
@@ -117,6 +81,74 @@ namespace RuntimeInspector.Serialization
 
             return delegateObj;
             // returns the delegate object that is ready to be assigned to the field
+        }
+
+        public static JToken WriteType( Type value )
+        {
+            return new JValue( value.AssemblyQualifiedName );
+        }
+
+        public static Type ReadType( JToken json )
+        {
+            return Type.GetType( (string)json );
+        }
+
+        public static JToken WriteObjectReference( object value )
+        {
+            if( value == null )
+            {
+                return new JObject();
+            }
+            Guid guid = Guid.NewGuid();
+            ObjectRegistry.Register( guid, value );
+            return new JObject()
+            {
+                { $"{REF}", WriteGuid( guid) }
+            };
+        }
+
+        public static object ReadObjectReference( JToken json )
+        {
+            if( ((JObject)json).TryGetValue( $"{REF}", out JToken val ) )
+            {
+                Guid guid = ReadGuid( val );
+                return ObjectRegistry.Get( guid );
+            }
+            return null;
+        }
+
+        public static JToken WriteAssetReference<T>( T asset )
+        {
+            string assetID = AssetManager.GetAssetID( asset );
+
+            return new JObject()
+            {
+                { $"{ASSETREF}", assetID }
+            };
+        }
+
+        public static T ReadAssetReference<T>( JToken json )
+        {
+            return AssetManager.GetAsset<T>( (string)json[$"{ASSETREF}"] );
+        }
+
+        /// <summary>
+        /// Writes a any non-component class that implements ICustomSerializable to JSON.
+        /// </summary>
+        public static JToken WriteCustom<T>( T value ) where T : ICustomSerializer, new()
+        {
+            return value.WriteJson();
+        }
+
+        /// <summary>
+        /// Reads a any non-component class that implements ICustomSerializable from JSON.
+        /// </summary>
+        public static T ReadCustom<T>( JToken json ) where T : ICustomSerializer, new()
+        {
+            // TODO - subclasses should construct the actual subclass.
+            T value = new T();
+            value.PopulateJson( json );
+            return value;
         }
     }
 }
