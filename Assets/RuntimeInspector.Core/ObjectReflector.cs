@@ -11,46 +11,55 @@ namespace RuntimeInspector.Core
     {
         // we need an object to bind the edited object(s) to.
 
-        private object obj;
+        private object instance;
         private Type objType;
 
+        public IMemberBinding[] AssignableMembers;
 
-        private Dictionary<string, FieldInfo> objFields = new Dictionary<string, FieldInfo>();
-        private Dictionary<string, MethodInfo> objMethods = new Dictionary<string, MethodInfo>();
-        private Dictionary<string, PropertyInfo> objProperties = new Dictionary<string, PropertyInfo>();
-        private Dictionary<string, EventInfo> objEvents = new Dictionary<string, EventInfo>();
-
-        public void BindTo( object obj )
+        public void BindTo( object instance )
         {
-            this.obj = obj;
-            this.objType = obj.GetType();
+            this.instance = instance;
+            this.objType = instance.GetType();
 
             FieldInfo[] fields = objType.GetFields( BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic );
-            MethodInfo[] methods = objType.GetMethods( BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic );
             PropertyInfo[] properties = objType.GetProperties( BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic );
-            EventInfo[] events = objType.GetEvents( BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic );
+
+            //MethodInfo[] methods = objType.GetMethods( BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic );
+            //EventInfo[] events = objType.GetEvents( BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic );
+
+            List<IMemberBinding> members = new List<IMemberBinding>( fields.Length + properties.Length );
 
             foreach( var field in fields )
             {
-                objFields.Add( field.Name, field );
+                members.Add( new FieldBinding( field, instance ) );
+            }
+            foreach( var property in properties )
+            {
+                members.Add( new PropertyBinding( property, instance ) );
             }
 
+            AssignableMembers = members.ToArray();
+            /*
             foreach( var method in methods )
             {
                 objMethods.Add( method.Name, method );
             }
 
-            foreach( var property in properties )
-            {
-                objProperties.Add( property.Name, property );
-            }
-
             foreach( var @event in events )
             {
                 objEvents.Add( @event.Name, @event );
-            }
+            }*/
         }
 
+        public void Unbind()
+        {
+            instance = null;
+            objType = null;
+            AssignableMembers = null;
+        }
+
+        public bool IsBound => instance != null;
+        /*
         //      FIELDS
 
         public object GetField( string name )
@@ -112,7 +121,6 @@ namespace RuntimeInspector.Core
         public object CallMethod( string name, params object[] parameters )
         {
             return objMethods[name].Invoke( obj, parameters );
-        }
-
+        }*/
     }
 }
