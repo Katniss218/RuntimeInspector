@@ -9,6 +9,9 @@ using UnityEngine;
 
 public class TestAttach : MonoBehaviour
 {
+    [SerializeField] private Material regMat;
+    [SerializeField] private GameObject test;
+
     public class Test
     {
         public Func<int, int, bool> TestField;
@@ -36,20 +39,21 @@ public class TestAttach : MonoBehaviour
         obj.TestField = (Func<int, int, bool>)ObjectSerializer.ReadDelegate( val );*/
 
 
-        GameObject go = new GameObject( "test go" );
-
-        go.transform.position = new Vector3( 5, 3, 2 );
-
         Mesh mesh = new Mesh();
-        AssetManager.Meshes.Register( "Mesh|test_mesh", mesh );
+        AssetRegistry<Mesh>.Register( "Mesh|test_mesh", mesh );
+        AssetRegistry<Material>.Register( "Material|default", regMat );
 
-        MeshFilter mf = go.AddComponent<MeshFilter>();
+        MeshFilter mf = test.GetComponent<MeshFilter>();
         mf.mesh = mesh;
-        MeshRenderer mr = go.AddComponent<MeshRenderer>();
 
-        JToken val = ComponentSerializer.WriteMeshFilter( mf );
+        MeshRenderer mr = test.GetComponent<MeshRenderer>();
+        mr.sharedMaterial = regMat;
+
+        JObject val = ComponentSerializer.WriteGameObject( test );
 
         string json = JsonConvert.SerializeObject( val );
+
+        GameObject newObj = ComponentSerializer.ReadGameObject( val );
     }
 
     void Update()

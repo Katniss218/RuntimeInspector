@@ -1,6 +1,8 @@
 using RuntimeInspector.Core.AssetManagement.Providers;
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace RuntimeInspector.Core.AssetManagement
@@ -10,13 +12,31 @@ namespace RuntimeInspector.Core.AssetManagement
     /// </summary>
     public class AssetRegistry<T>
     {
-        private IAssetProvider<T>[] providers;
+        private static IAssetProvider<T>[] providers;
 
-        private IDictionary<string, T> registry = new Dictionary<string, T>();
-        private IDictionary<T, string> reverseRegistry = new Dictionary<T, string>();
+        private static IDictionary<string, T> registry = new Dictionary<string, T>();
+        private static IDictionary<T, string> reverseRegistry = new Dictionary<T, string>();
 
-        private bool isLazyLoaded = false;
+        private static bool isLazyLoaded = false;
 
+        static AssetRegistry()
+        {
+            Type providerType = typeof( IAssetProvider<T> );
+
+            List<Type> prov = AppDomain.CurrentDomain.GetAssemblies()
+                .SelectMany( a => a.GetTypes() )
+                .Where( t => t != providerType )// not the generic provider interface itself
+                .Where( t => providerType.IsAssignableFrom( t ) )
+                .ToList();
+
+            providers = new IAssetProvider<T>[prov.Count];
+            for( int i = 0; i < providers.Length; i++ )
+            {
+                providers[i] = (IAssetProvider<T>)Activator.CreateInstance( prov[i] );
+            }
+        }
+
+        /*
         /// <summary>
         /// Creates a registry with no asset providers. Use this if you want to only register assets manually.
         /// </summary>
@@ -43,8 +63,8 @@ namespace RuntimeInspector.Core.AssetManagement
         {
             this.providers = assetProviders;
         }
-
-        private void TryLazyLoad()
+        */
+        private static void TryLazyLoad()
         {
             // Already loaded and wasn't cleared - return.
             if( isLazyLoaded )
@@ -67,7 +87,7 @@ namespace RuntimeInspector.Core.AssetManagement
             isLazyLoaded = true;
         }
 
-        private void TryLazyLoadOne( string assetID )
+        private static void TryLazyLoadOne( string assetID )
         {
             // Ask every provider for their asset.
             foreach( var provider in providers )
@@ -80,7 +100,7 @@ namespace RuntimeInspector.Core.AssetManagement
             }
         }
 
-        private void TryLazyLoadOne( T obj )
+        private static void TryLazyLoadOne( T obj )
         {
             // Ask every provider for their asset.
             foreach( var provider in providers )
@@ -96,21 +116,21 @@ namespace RuntimeInspector.Core.AssetManagement
         /// <summary>
         /// Clears the registry.
         /// </summary>
-        public void ClearRegistry()
+        public static void ClearRegistry()
         {
-            this.registry.Clear();
-            this.reverseRegistry.Clear();
+            registry.Clear();
+            reverseRegistry.Clear();
             isLazyLoaded = false;
         }
 
         /// <summary>
         /// Registers an asset with the specified assetID manually.
         /// </summary>
-        public void Register( string assetID, T obj )
+        public static void Register( string assetID, T obj )
         {
             if( registry.ContainsKey( assetID ) )
             {
-                throw new System.Exception( $"A '{typeof( T ).FullName}' asset with assetID '{assetID}' is already registered." );
+                throw new InvalidOperationException( $"A '{typeof( T ).FullName}' asset with assetID '{assetID}' is already registered." );
             }
 
             registry.Add( assetID, obj );
@@ -120,7 +140,7 @@ namespace RuntimeInspector.Core.AssetManagement
         /// <summary>
         /// Checks whether an asset with the specified assetID exists.
         /// </summary>
-        public bool Exists( string assetID )
+        public static bool Exists( string assetID )
         {
             if( registry.Count == 0 )
             {
@@ -140,7 +160,7 @@ namespace RuntimeInspector.Core.AssetManagement
         /// <summary>
         /// Returns an asset with the specified assetID. Throws an exception if none are found.
         /// </summary>
-        public T Get( string assetID )
+        public static T GetAsset( string assetID )
         {
             if( registry.Count == 0 )
             {
@@ -159,10 +179,10 @@ namespace RuntimeInspector.Core.AssetManagement
                 return val;
             }
 
-            throw new System.Exception( $"A '{typeof( T ).FullName}' asset with assetID '{assetID}' is not registered." );
+            throw new InvalidOperationException( $"A '{typeof( T ).FullName}' asset with assetID '{assetID}' is not registered." );
         }
 
-        public IEnumerable<(string assetID, T obj)> GetAll()
+        public static IEnumerable<(string assetID, T obj)> GetAll()
         {
             if( registry.Count == 0 )
             {
@@ -179,7 +199,7 @@ namespace RuntimeInspector.Core.AssetManagement
             return all;
         }
 
-        public string GetAssetID( T obj )
+        public static string GetAssetID( T obj )
         {
             if( registry.Count == 0 )
             {
@@ -198,7 +218,7 @@ namespace RuntimeInspector.Core.AssetManagement
                 return assetID;
             }
 
-            throw new System.Exception( $"A '{typeof( T ).FullName}' asset is not registered. Can't find an assetID." );
+            throw new InvalidOperationException( $"A '{typeof( T ).FullName}' asset is not registered. Can't find an assetID." );
         }
     }
 }

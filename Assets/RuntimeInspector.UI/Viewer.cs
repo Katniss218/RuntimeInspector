@@ -12,7 +12,11 @@ namespace RuntimeInspector.UI
     {
         ObjectReflector reflector = new ObjectReflector();
 
-        public Canvas Canvas { get; set; }
+        [field: SerializeField]
+        public RectTransform ViewerPanel { get; set; }
+
+        [field: SerializeField]
+        public Component DrawnObj { get; set; }
 
         // you'll have the viewer class. that viewer class will set you up when you tell it to.
 
@@ -39,22 +43,21 @@ namespace RuntimeInspector.UI
 
             foreach( var member in reflector.AssignableMembers )
             {
-                IDrawer drawer = DrawerManager.GetDrawerOfType( member.Type );
-                drawer.Draw( member );
+                try
+                {
+                    IDrawer drawer = DrawerManager.GetDrawerOfType( member.Type );
+                    RectTransform rt = drawer.Draw( ViewerPanel, member );
+                }
+                catch
+                {
+                    // temporary.
+                }
             }
         }
 
-        public class Test
-        {
-            public int integer = 5;
-            public string str = "abcd";
-        }
-
-        Test test = new Test();
-
         void Start()
         {
-            SetObject( test );
+            SetObject( DrawnObj );
             Show();
         }
 

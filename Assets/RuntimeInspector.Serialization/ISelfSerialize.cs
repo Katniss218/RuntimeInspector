@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace RuntimeInspector.Serialization
 {
-    public interface ICustomSerializer
+    public interface ISelfSerialize
     {
         public JToken WriteJson();
-        public void PopulateJson( JToken json );
+        public void ReadJson( JToken json );
     }
 }

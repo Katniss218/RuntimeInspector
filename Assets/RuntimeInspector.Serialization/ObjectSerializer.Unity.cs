@@ -9,7 +9,7 @@ using UnityEngine;
 namespace RuntimeInspector.Serialization
 {
     /// <summary>
-    /// Populates gameobjects with data from JSON.
+    /// A class for serializing unity-specific data types.
     /// </summary>
     public static partial class ObjectSerializer
     {

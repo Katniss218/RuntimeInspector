@@ -10,28 +10,30 @@ namespace RuntimeInspector.UI
 {
     public interface IDrawer
     {
-        RectTransform Draw( IMemberBinding binding );
+        RectTransform Draw( RectTransform parent, IMemberBinding binding );
     }
 
     public abstract class TypedDrawer<T> : IDrawer
     {
-        public RectTransform Draw( IMemberBinding binding )
+        protected static Type UnderlyingType = typeof( T );
+
+        public RectTransform Draw( RectTransform parent, IMemberBinding binding )
         {
-            RectTransform uiObj = Draw( (T)binding.GetValue() );
+            RectTransform uiObj = Draw( parent, binding.DisplayName, (T)binding.GetValue() );
 
             return uiObj;
         }
 
-        public abstract RectTransform Draw( T value );
+        public abstract RectTransform Draw( RectTransform parent, string name, T value );
     }
 
     public class GenericDrawer : IDrawer
     {
-        public RectTransform Draw( IMemberBinding binding )
+        public RectTransform Draw( RectTransform parent, IMemberBinding binding )
         {
-            //throw new NotImplementedException();
-            Debug.Log( $"Generic Drawer - {binding}" );
-            return null;
+            (RectTransform root, TMPro.TextMeshProUGUI labelText, TMPro.TextMeshProUGUI valueText) = DrawerUtils.MakeInputField( binding.DisplayName, binding.Type.FullName, parent, $"{binding.GetValue()}" );
+
+            return root;
         }
     }
 }
