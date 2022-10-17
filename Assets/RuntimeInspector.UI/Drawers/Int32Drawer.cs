@@ -10,11 +10,16 @@ namespace RuntimeInspector.UI.Drawers
 {
     public class Int32Drawer : TypedDrawer<int>
     {
-        public override RectTransform Draw( RectTransform parent, string name, int value )
+        public override RectTransform Draw( RectTransform parent, IMemberBinding<int> binding )
         {
-            (RectTransform root, TMPro.TextMeshProUGUI labelText, TMPro.TextMeshProUGUI valueText) = DrawerUtils.MakeInputField( name, UnderlyingType.FullName, parent, $"{value}" );
+            (RectTransform root, _, _) = DrawerUtils.MakeInputField( parent, binding );
 
             return root;
+        }
+
+        public override int InputToValue( string input )
+        {
+            return int.Parse( input );
         }
     }
 }

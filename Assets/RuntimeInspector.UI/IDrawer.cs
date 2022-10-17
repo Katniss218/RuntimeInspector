@@ -11,6 +11,11 @@ namespace RuntimeInspector.UI
     public interface IDrawer
     {
         RectTransform Draw( RectTransform parent, IMemberBinding binding );
+
+        /// <summary>
+        /// Inverse of draw. Converts user input to a value.
+        /// </summary>
+        object InputToValueGeneral( string input ); // doesn't necessarily have to be a string.
     }
 
     public abstract class TypedDrawer<T> : IDrawer
@@ -19,21 +24,36 @@ namespace RuntimeInspector.UI
 
         public RectTransform Draw( RectTransform parent, IMemberBinding binding )
         {
-            RectTransform uiObj = Draw( parent, binding.DisplayName, (T)binding.GetValue() );
+            RectTransform uiObj = Draw( parent, (IMemberBinding<T>)binding );
 
             return uiObj;
         }
 
-        public abstract RectTransform Draw( RectTransform parent, string name, T value );
+        public object InputToValueGeneral( string input )
+        {
+            return InputToValue( input );
+        }
+
+        public abstract RectTransform Draw( RectTransform parent, IMemberBinding<T> binding );
+
+        /// <summary>
+        /// Converts user input (input field) into the value that will be assigned.
+        /// </summary>
+        public abstract T InputToValue( string input );
     }
 
     public class GenericDrawer : IDrawer
     {
         public RectTransform Draw( RectTransform parent, IMemberBinding binding )
         {
-            (RectTransform root, TMPro.TextMeshProUGUI labelText, TMPro.TextMeshProUGUI valueText) = DrawerUtils.MakeInputField( binding.DisplayName, binding.Type.FullName, parent, $"{binding.GetValue()}" );
+            (RectTransform root, _, _) = DrawerUtils.MakeInputField( parent, binding );
 
             return root;
+        }
+
+        public object InputToValueGeneral( string input )
+        {
+            throw new InvalidOperationException( "Can't use generic drawer to convert string into object" );
         }
     }
 }

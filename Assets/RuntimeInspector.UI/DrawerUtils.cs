@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RuntimeInspector.Core;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,22 +11,26 @@ namespace RuntimeInspector.UI
 {
     public static class DrawerUtils
     {
-        const float FONT_SIZE = 12.0f;
-        const float FIELD_HEIGHT = 24.0f;
+        public const float FONT_SIZE = 12.0f;
+        public const float FIELD_HEIGHT = 24.0f;
 
         static readonly Color INPUT_FIELD_COLOR = new Color( 0.5f, 0.5f, 0.5f );
+        static readonly Color INPUT_FIELD_COLOR_READONLY = new Color( 0.4f, 0.4f, 0.4f );
         static readonly Color LABEL_TEXT_COLOR = new Color( 1.0f, 1.0f, 1.0f );
         static readonly Color VALUE_TEXT_COLOR = new Color( 1.0f, 1.0f, 1.0f );
 
-        public static (RectTransform root, TMPro.TextMeshProUGUI label, TMPro.TextMeshProUGUI value) MakeInputField( string name, string typeName, RectTransform parent, string value )
+        public static (RectTransform root, TMPro.TextMeshProUGUI label, TMPro.TextMeshProUGUI value) MakeInputField( RectTransform parent, IMemberBinding binding )
         {
-            GameObject root = new GameObject( $"{name} ({typeName})" );
+            GameObject root = new GameObject( $"{binding.DisplayName} ({binding.Type.FullName})" );
             root.layer = 5;
             RectTransform rootTransform = root.AddComponent<RectTransform>();
 
             rootTransform.SetParent( parent );
+            rootTransform.anchorMin = new Vector2( 0.0f, 0.5f );
+            rootTransform.anchorMax = new Vector2( 1.0f, 0.5f );
+            rootTransform.pivot = new Vector2( 0.5f, 0.5f );
+            rootTransform.anchoredPosition = new Vector2( 0.0f, 0.0f );
             rootTransform.sizeDelta = new Vector2( 0.0f, FIELD_HEIGHT );
-
 
             GameObject labelGO = new GameObject( $"_label" );
             labelGO.layer = 5;
@@ -96,24 +101,42 @@ namespace RuntimeInspector.UI
             valueText.color = VALUE_TEXT_COLOR;
 
 
-            labelText.text = name;
+            labelText.text = binding.DisplayName;
 
-            valueText.text = value;
+            if( binding.CanRead )
+            {
+                valueText.text = binding.GetValue().ToString();
+            }
+            else
+            {
+                valueText.text = "<Can't read>";
+            }
 
-            InputSubmitter submitter = valueGO.AddComponent<InputSubmitter>();
-            //submitter
+            if( binding.CanWrite )
+            {
+                TMPro.TMP_InputField valueInput = valueGO.AddComponent<TMPro.TMP_InputField>();
 
-            TMPro.TMP_InputField valueInput = valueGO.AddComponent<TMPro.TMP_InputField>();
+                valueInput.textViewport = valueTextAreaTransform;
+                valueInput.textComponent = valueText;
+                valueInput.fontAsset = valueText.font;
+                valueInput.pointSize = FONT_SIZE;
 
-            valueInput.textViewport = valueTextAreaTransform;
-            valueInput.textComponent = valueText;
-            valueInput.fontAsset = valueText.font;
-            valueInput.pointSize = FONT_SIZE;
+                if( binding.CanRead )
+                {
+                    valueInput.text = binding.GetValue().ToString();
+                }
 
-            valueInput.text = value;
+                valueInput.enabled = false;
+                valueInput.enabled = true; // regenerate the caret.
 
-            valueInput.enabled = false;
-            valueInput.enabled = true; // regenerate the caret.
+                InputMonitor submitter = parent.GetComponent<InputMonitor>();
+                valueInput.onSubmit.AddListener( submitter.UpdateValue );
+                submitter.InputField = valueInput;
+            }
+            else
+            {
+                image.color = INPUT_FIELD_COLOR_READONLY;
+            }
 
             return (rootTransform, labelText, valueText);
         }

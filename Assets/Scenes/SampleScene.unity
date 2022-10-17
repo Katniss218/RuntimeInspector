@@ -490,7 +490,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef7403bb7f68b4442aed3a1e18d611ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  regMat: {fileID: 10302, guid: 0000000000000000f000000000000000, type: 0}
+  regMat: {fileID: 10302, guid: 0000000000000000f000000000000000, type: 3}
   test: {fileID: 1143109825}
 --- !u!4 &958064732
 Transform:
@@ -536,6 +536,8 @@ MonoBehaviour:
   <IntValue>k__BackingField: 50
   <StringValue>k__BackingField: Hello World
   <AdditionalValue>k__BackingField: 218
+  _readOnly: read_only
+  _writeOnly: write_only
 --- !u!1 &963194225
 GameObject:
   m_ObjectHideFlags: 0
@@ -704,6 +706,8 @@ MonoBehaviour:
   <IntValue>k__BackingField: 50
   <StringValue>k__BackingField: Hello World!
   <AdditionalValue>k__BackingField: 218
+  _readOnly: 
+  _writeOnly: 
 --- !u!4 &1143109829
 Transform:
   m_ObjectHideFlags: 0

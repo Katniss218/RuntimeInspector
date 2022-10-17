@@ -1,4 +1,5 @@
 using RuntimeInspector.Core;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -25,6 +26,8 @@ namespace RuntimeInspector.UI
 
         // need to show hierarchy as well.
 
+        private List<InputMonitor> monitors = new List<InputMonitor>();
+
         public void SetObject( object obj )
         {
             reflector.BindTo( obj );
@@ -41,17 +44,21 @@ namespace RuntimeInspector.UI
                 return;
             }
 
-            foreach( var member in reflector.AssignableMembers )
+            foreach( var binding in reflector.AssignableMembers )
             {
-                try
-                {
-                    IDrawer drawer = DrawerManager.GetDrawerOfType( member.Type );
-                    RectTransform rt = drawer.Draw( ViewerPanel, member );
-                }
-                catch
-                {
-                    // temporary.
-                }
+
+                GameObject nested = new GameObject( "_binding" );
+                nested.layer = 5;
+                RectTransform nestedTransform = nested.AddComponent<RectTransform>();
+
+                nestedTransform.SetParent( ViewerPanel );
+                nestedTransform.sizeDelta = new Vector2( 0.0f, DrawerUtils.FIELD_HEIGHT );
+
+
+                InputMonitor submitter = nested.AddComponent<InputMonitor>();
+                submitter.Binding = binding;
+
+                monitors.Add( submitter );
             }
         }
 
@@ -61,9 +68,41 @@ namespace RuntimeInspector.UI
             Show();
         }
 
+        int timer = 0;
+
         void Update()
         {
-            // continuously redraw the values if updated.
+            timer++;
+            if( timer > 50 )
+            {
+                timer = 0;
+                foreach( var monitor in monitors )
+                {
+                    // don't update members that we're trying to input values to.
+                    if( monitor.InputField != null && monitor.InputField.isFocused )
+                    {
+                        continue;
+                    }
+
+                    for( int i = 0; i < monitor.transform.childCount; i++ )
+                    {
+                        Destroy( monitor.transform.GetChild( i ).gameObject );
+                    }
+
+                    IDrawer drawer = DrawerManager.GetDrawerOfType( monitor.Binding.Type );
+
+                    try
+                    {
+                        RectTransform rt = drawer.Draw( monitor.GetComponent<RectTransform>(), monitor.Binding );
+                        // continuously redraw the values if updated, but not those that are currently being edited. I think that should be responsibility of each individual UI element.
+                    }
+                    catch( Exception ex )
+                    {
+                        Debug.LogWarning( $"EXCEPTION while trying to get value of: {ex}" );
+                        // temporary.
+                    }
+                }
+            }
         }
     }
 }

@@ -8,6 +8,14 @@ public class DerivedClass : BaseClass
     [field: SerializeField]
     public float AdditionalValue { get; set; }
 
+    [SerializeField]
+    private string _readOnly;
+    public string ReadOnly { get { return _readOnly; } }
+
+    [SerializeField]
+    private string _writeOnly;
+    public string WriteOnly { set { _writeOnly = value; } }
+
     public override JToken WriteJson()
     {
         JToken json = base.WriteJson();

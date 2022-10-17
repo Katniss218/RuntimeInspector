@@ -21,8 +21,8 @@ namespace RuntimeInspector.Core
             this.instance = instance;
             this.objType = instance.GetType();
 
-            FieldInfo[] fields = objType.GetFields( BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic );
-            PropertyInfo[] properties = objType.GetProperties( BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic );
+            FieldInfo[] fields = objType.GetFields( BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy );
+            PropertyInfo[] properties = objType.GetProperties( BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy );
 
             //MethodInfo[] methods = objType.GetMethods( BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic );
             //EventInfo[] events = objType.GetEvents( BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic );
@@ -31,11 +31,11 @@ namespace RuntimeInspector.Core
 
             foreach( var field in fields )
             {
-                members.Add( new FieldBinding( field, instance ) );
+                members.Add( FieldBinding.GetBinding( field, instance ) );
             }
             foreach( var property in properties )
             {
-                members.Add( new PropertyBinding( property, instance ) );
+                members.Add( PropertyBinding.GetBinding( property, instance ) );
             }
 
             AssignableMembers = members.ToArray();
