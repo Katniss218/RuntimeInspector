@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace RuntimeInspector.UI
 {
-    public class InputMonitor : MonoBehaviour
+    public class InspectorInputField : MonoBehaviour
     {
         public IMemberBinding Binding { get; set; }
 

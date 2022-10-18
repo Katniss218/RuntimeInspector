@@ -38,22 +38,31 @@ public class TestAttach : MonoBehaviour
 
         obj.TestField = (Func<int, int, bool>)ObjectSerializer.ReadDelegate( val );*/
 
-
         Mesh mesh = new Mesh();
         AssetRegistry<Mesh>.Register( "Mesh|test_mesh", mesh );
         AssetRegistry<Material>.Register( "Material|default", regMat );
 
-        MeshFilter mf = test.GetComponent<MeshFilter>();
+        MeshFilter mf = test.GetComponentInChildren<MeshFilter>();
         mf.mesh = mesh;
 
-        MeshRenderer mr = test.GetComponent<MeshRenderer>();
+        MeshRenderer mr = test.GetComponentInChildren<MeshRenderer>();
         mr.sharedMaterial = regMat;
+
+        // Serialize
+        ObjectSerializer.StartSerialization();
 
         JObject val = ComponentSerializer.WriteGameObject( test );
 
+        ObjectSerializer.EndSerialization();
+
         string json = JsonConvert.SerializeObject( val );
 
-        GameObject newObj = ComponentSerializer.ReadGameObject( val );
+        // Deserialize
+        ObjectSerializer.StartSerialization();
+
+        //GameObject newObj = ComponentSerializer.ReadGameObject( val );
+
+        ObjectSerializer.EndSerialization();
     }
 
     void Update()

@@ -16,20 +16,35 @@ namespace RuntimeInspector.Serialization
     /// </remarks>
     public static partial class ObjectSerializer
     {
-        private static ObjectRegistry objRegistry = new ObjectRegistry();
-
         /// <summary>
         /// The special token name for a System.Type.
         /// </summary>
         public const string TYPE = "$type";
         /// <summary>
-        /// The special token name for a reference.
+        /// The special token name for a reference (part of Reference).
         /// </summary>
         public const string REF = "$ref";
         /// <summary>
         /// The special token name for an asset reference.
         /// </summary>
         public const string ASSETREF = "$assetref";
+
+        /// <summary>
+        /// The special token name for a reference ID (part of Object).
+        /// </summary>
+        public const string ID = "$id";
+
+        public const string VALUE = "value";
+
+        public static void StartSerialization()
+        {
+            ObjectRegistry.Clear();
+        }
+
+        public static void EndSerialization()
+        {
+            ObjectRegistry.Clear();
+        }
 
         /// <summary>
         /// Writes a Globally-Unique Identifier (GUID/UUID)
@@ -153,37 +168,38 @@ namespace RuntimeInspector.Serialization
 
         public static JToken WriteObjectReference( object value )
         {
-            // missing '$ref'  =>  null.
+            // A missing '$ref' node equals null.
 
             if( value == null )
             {
                 return new JObject();
             }
 
-            Guid guid = Guid.NewGuid();
-            objRegistry.TryRegister( guid, value );
-            // Add the object to the registry if it's not already added.
-            // This might lead to memory leaks if the registry is not cleared, old destroyed objects will linger as null/invalid references in the registry, and use up entries.
+            // If the object wasn't already serialized - generate a Guid for it, and add to the registry so we don't generate a different guid later.
+            if( !ObjectRegistry.TryGet( value, out Guid guid ) )
+            {
+                guid = Guid.NewGuid();
+                ObjectRegistry.Register( guid, value );
+            }
+
             return new JObject()
             {
                 { $"{REF}", WriteGuid( guid) }
             };
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <remarks>
-        /// REQUIRES THE OBJECT TO BE DESERIALIZED.
-        /// </remarks>
         public static object ReadObjectReference( JToken json )
         {
-            // missing '$ref'  =>  null.
+            // A missing '$ref' node equals null.
 
-            if( ((JObject)json).TryGetValue( $"{REF}", out JToken val ) )
+            if( ((JObject)json).TryGetValue( $"{REF}", out JToken refJson ) )
             {
-                Guid guid = ReadGuid( val );
-                return objRegistry.Get( guid );
+                Guid guid = ReadGuid( refJson );
+                if( ObjectRegistry.TryGet( guid, out object value ) )
+                {
+                    return value;
+                }
+                // TODO - load the object.
             }
             return null;
         }
@@ -202,45 +218,28 @@ namespace RuntimeInspector.Serialization
         {
             return AssetRegistry<T>.GetAsset( (string)json[$"{ASSETREF}"] );
         }
-
+        /*
         /// <summary>
-        /// Writes an empty value for any object, preserves the type of the instance.
+        /// Writes an ISelfSerialize object, preserves the inheritance tree of the instance.
         /// </summary>
-        internal static JObject WriteTypedObject( object value )
+        internal static JObject WriteObject( ISelfSerialize value )
         {
             return new JObject()
             {
-                { $"{TYPE}", WriteType(value.GetType()) }
+                { $"{TYPE}", WriteType(value.GetType()) },
+                { "{VALUE}", value.WriteJson() }
             };
         }
-
+        #error TODO - this should work with the ObjectRegistry.
         /// <summary>
-        /// Reads an empty value for any object, preserves the type of the instance.
+        /// Reads an ISelfSerialize object, preserves the inheritance tree of the instance.
         /// </summary>
-        internal static object ReadTypedObject( JObject json )
+        internal static ISelfSerialize ReadObject( JObject json )
         {
             Type type = ReadType( json[$"{TYPE}"] );
-            object value = Activator.CreateInstance( type );
+            ISelfSerialize value = (ISelfSerialize)Activator.CreateInstance( type );
+            value.ReadJson( json[$"{VALUE}"] );
             return value;
-        }
-
-        /// <summary>
-        /// Writes a any non-component class that implements ICustomSerializable to JSON.
-        /// </summary>
-        public static JToken WriteCustom<T>( T value ) where T : ISelfSerialize, new()
-        {
-            return value.WriteJson();
-        }
-
-        /// <summary>
-        /// Reads a any non-component class that implements ICustomSerializable from JSON.
-        /// </summary>
-        public static T ReadCustom<T>( JToken json ) where T : ISelfSerialize, new()
-        {
-            // TODO - subclasses should construct the actual subclass.
-            T value = new T();
-            value.ReadJson( json );
-            return value;
-        }
+        }*/
     }
 }

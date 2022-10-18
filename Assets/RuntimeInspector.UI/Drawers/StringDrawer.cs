@@ -17,9 +17,9 @@ namespace RuntimeInspector.UI.Drawers
             return root;
         }
 
-        public override string InputToValue( string input )
+        public override string InputToValue( object input )
         {
-            return input;
+            return (string)input;
         }
     }
 }

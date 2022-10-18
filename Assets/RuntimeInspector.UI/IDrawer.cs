@@ -15,7 +15,7 @@ namespace RuntimeInspector.UI
         /// <summary>
         /// Inverse of draw. Converts user input to a value.
         /// </summary>
-        object InputToValueGeneral( string input ); // doesn't necessarily have to be a string.
+        object InputToValueGeneral( object input ); // doesn't necessarily have to be a string.
     }
 
     public abstract class TypedDrawer<T> : IDrawer
@@ -29,7 +29,7 @@ namespace RuntimeInspector.UI
             return uiObj;
         }
 
-        public object InputToValueGeneral( string input )
+        public object InputToValueGeneral( object input )
         {
             return InputToValue( input );
         }
@@ -39,7 +39,7 @@ namespace RuntimeInspector.UI
         /// <summary>
         /// Converts user input (input field) into the value that will be assigned.
         /// </summary>
-        public abstract T InputToValue( string input );
+        public abstract T InputToValue( object input );
     }
 
     public class GenericDrawer : IDrawer
@@ -51,7 +51,7 @@ namespace RuntimeInspector.UI
             return root;
         }
 
-        public object InputToValueGeneral( string input )
+        public object InputToValueGeneral( object input )
         {
             throw new InvalidOperationException( "Can't use generic drawer to convert string into object" );
         }

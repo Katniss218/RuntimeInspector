@@ -129,7 +129,7 @@ namespace RuntimeInspector.UI
                 valueInput.enabled = false;
                 valueInput.enabled = true; // regenerate the caret.
 
-                InputMonitor submitter = parent.GetComponent<InputMonitor>();
+                InspectorInputField submitter = parent.GetComponent<InspectorInputField>();
                 valueInput.onSubmit.AddListener( submitter.UpdateValue );
                 submitter.InputField = valueInput;
             }

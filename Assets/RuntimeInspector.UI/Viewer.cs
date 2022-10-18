@@ -26,7 +26,7 @@ namespace RuntimeInspector.UI
 
         // need to show hierarchy as well.
 
-        private List<InputMonitor> monitors = new List<InputMonitor>();
+        private List<InspectorInputField> monitors = new List<InspectorInputField>();
 
         public void SetObject( object obj )
         {
@@ -55,7 +55,7 @@ namespace RuntimeInspector.UI
                 nestedTransform.sizeDelta = new Vector2( 0.0f, DrawerUtils.FIELD_HEIGHT );
 
 
-                InputMonitor submitter = nested.AddComponent<InputMonitor>();
+                InspectorInputField submitter = nested.AddComponent<InspectorInputField>();
                 submitter.Binding = binding;
 
                 monitors.Add( submitter );
@@ -102,6 +102,7 @@ namespace RuntimeInspector.UI
                         // temporary.
                     }
                 }
+#warning TODO - this should be moved to a generic drawer, make that drawer recursively display all fields. But only after we figure out how to stop it from displaying Unity fields.
             }
         }
     }
