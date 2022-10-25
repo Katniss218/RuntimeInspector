@@ -6,7 +6,7 @@ using UnityEngine;
 public class DerivedClass : BaseClass
 {
     [field: SerializeField]
-    public float AdditionalValue { get; set; }
+    public BaseClass AdditionalValue { get; set; }
 
     [SerializeField]
     private string _readOnly;
@@ -19,7 +19,7 @@ public class DerivedClass : BaseClass
     public override JToken WriteJson()
     {
         JToken json = base.WriteJson();
-        json["AdditionalValue"] = this.AdditionalValue;
+      //  json["AdditionalValue"] = this.AdditionalValue;
 
         return json;
     }
@@ -27,6 +27,6 @@ public class DerivedClass : BaseClass
     public override void ReadJson( JToken json )
     {
         base.ReadJson( json );
-        this.AdditionalValue = (float)json["AdditionalValue"];
+      //  this.AdditionalValue = (float)json["AdditionalValue"];
     }
 }

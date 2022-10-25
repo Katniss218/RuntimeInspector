@@ -8,16 +8,17 @@ namespace RuntimeInspector.UI
 {
     public static class DrawerManager
     {
-        private static Dictionary<Type, IDrawer> cachedDrawers = new Dictionary<Type, IDrawer>();
+        private static Dictionary<Type, Drawer> cachedDrawers = new Dictionary<Type, Drawer>();
 
-        public static IDrawer GetDrawerOfType( Type type )
+        public static Drawer GetDrawerOfType( Type type )
         {
-            if( cachedDrawers.TryGetValue( type, out IDrawer cd ) )
+            if( cachedDrawers.TryGetValue( type, out Drawer cd ) )
             {
                 return cd;
             }
 
-            Type drawerIType = typeof( IDrawer );
+            Type baseDrawerType = typeof( Drawer );
+
             Type drawerType = typeof( TypedDrawer<> );
 
             Type targetType = type; // the type we want to get the drawer for.
@@ -27,8 +28,8 @@ namespace RuntimeInspector.UI
 
             IEnumerable<Type> drawers = AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany( a => a.GetTypes() )
-                .Where( t => t != drawerIType && t != drawerType )// not the generic drawer itself or the interface itself
-                .Where( t => drawerIType.IsAssignableFrom( t ) );
+                .Where( t => !t.IsAbstract && t != drawerType && t != baseDrawerType )// not the generic drawer itself or the interface itself
+                .Where( t => baseDrawerType.IsAssignableFrom( t ) );
 
             // specific drawer.
             Type drawer = drawers.FirstOrDefault( t => t.BaseType.GenericTypeArguments.SequenceEqual( new[] { targetType } ) );
@@ -60,18 +61,21 @@ namespace RuntimeInspector.UI
                 }
             }
 
-            IDrawer foundDrawer = null;
+            Drawer foundDrawer = null;
+
+#warning TODO - temporarily don't add to dict because we're testing whether I can hold the drawers nested in each other as a representation of the structure of the drawn object.
+            // this is for persistence and so I don't have to redraw the entire thing??
 
             if( drawer == null )
             {
                 foundDrawer = new GenericDrawer();
-                cachedDrawers.Add( type, foundDrawer );
+            //    cachedDrawers.Add( type, foundDrawer );
 
                 return foundDrawer;
             }
 
-            foundDrawer = (IDrawer)Activator.CreateInstance( drawer );
-            cachedDrawers.Add( type, foundDrawer );
+            foundDrawer = (Drawer)Activator.CreateInstance( drawer );
+        //    cachedDrawers.Add( type, foundDrawer );
 
             return foundDrawer;
         }

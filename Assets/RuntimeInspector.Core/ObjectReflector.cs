@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace RuntimeInspector.Core
-{
+{/*
     public class ObjectReflector
     {
         // we need an object to bind the edited object(s) to.
@@ -14,31 +14,15 @@ namespace RuntimeInspector.Core
         private object instance;
         private Type objType;
 
-        public IMemberBinding[] AssignableMembers;
+        public IMemberBinding ReflectedBinding { get; private set; }
 
         public void BindTo( object instance )
         {
+            Type currentType = instance.GetType();
+
             this.instance = instance;
-            this.objType = instance.GetType();
+            this.objType = currentType;
 
-            FieldInfo[] fields = objType.GetFields( BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy );
-            PropertyInfo[] properties = objType.GetProperties( BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy );
-
-            //MethodInfo[] methods = objType.GetMethods( BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic );
-            //EventInfo[] events = objType.GetEvents( BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic );
-
-            List<IMemberBinding> members = new List<IMemberBinding>( fields.Length + properties.Length );
-
-            foreach( var field in fields )
-            {
-                members.Add( FieldBinding.GetBinding( field, instance ) );
-            }
-            foreach( var property in properties )
-            {
-                members.Add( PropertyBinding.GetBinding( property, instance ) );
-            }
-
-            AssignableMembers = members.ToArray();
             /*
             foreach( var method in methods )
             {
@@ -48,58 +32,45 @@ namespace RuntimeInspector.Core
             foreach( var @event in events )
             {
                 objEvents.Add( @event.Name, @event );
-            }*/
+            }*
+        }
+
+        private IMemberBinding GetBindingInfo( object instance )
+        {
+            IMemberBinding reflectedBinding = new List<TypeInfo>();
+
+            while( true )
+            {
+               
+                FieldBinding[] fieldBindings = fields.Select( f => FieldBinding.GetBinding( f, instance ) ).ToArray();
+                PropertyBinding[] propertyBindings = properties.Select( p => PropertyBinding.GetBinding( p, instance ) ).ToArray();
+
+                ReflectedInfo.Add( new TypeInfo()
+                {
+                    DeclaringType = currentType,
+                    Fields = fieldBindings,
+                    Properties = propertyBindings
+                } );
+
+                // break out of the loop when the root type is found.
+                currentType = currentType.BaseType;
+                if( currentType == null )
+                {
+                    break;
+                }
+            }
         }
 
         public void Unbind()
         {
             instance = null;
             objType = null;
-            AssignableMembers = null;
+            ReflectedInfo = null;
         }
 
         public bool IsBound => instance != null;
+
         /*
-        //      FIELDS
-
-        public object GetField( string name )
-        {
-            return objFields[name].GetValue( obj );
-        }
-
-        public void SetField( string name, object value )
-        {
-            objFields[name].SetValue( obj, value );
-        }
-
-        public void SetField( string name, object instance, string methodName )
-        {
-            Type delegateType = objFields[name].GetValue( obj ).GetType(); // TODO - cacheable.
-            MethodInfo targetMethod = instance.GetType().GetMethod( methodName );
-            Delegate del = Delegate.CreateDelegate( delegateType, instance, targetMethod );
-            objFields[name].SetValue( obj, del );
-        }
-
-        //      PROPERTIES
-
-        public object GetProperty( string name )
-        {
-            return objProperties[name].GetValue( obj );
-        }
-
-        public void SetProperty( string name, object value )
-        {
-            objProperties[name].SetValue( obj, value );
-        }
-
-        public void SetProperty( string name, object instance, string methodName )
-        {
-            Type delegateType = objProperties[name].GetValue( obj ).GetType(); // TODO - cacheable.
-            MethodInfo targetMethod = instance.GetType().GetMethod( methodName );
-            Delegate del = Delegate.CreateDelegate( delegateType, instance, targetMethod );
-            objProperties[name].SetValue( obj, del );
-        }
-
         //      CALLABLES
 
         public object CallField( string name, params object[] parameters )
@@ -121,6 +92,6 @@ namespace RuntimeInspector.Core
         public object CallMethod( string name, params object[] parameters )
         {
             return objMethods[name].Invoke( obj, parameters );
-        }*/
-    }
+        }*
+    }*/
 }

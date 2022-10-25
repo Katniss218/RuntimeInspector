@@ -1,4 +1,5 @@
 ﻿using RuntimeInspector.Core;
+using RuntimeInspector.UI.GUIUtils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,33 +9,26 @@ using UnityEngine;
 
 namespace RuntimeInspector.UI
 {
-    public interface IDrawer
+    public abstract class Drawer
     {
-        RectTransform Draw( RectTransform parent, IMemberBinding binding );
+        public List<Drawer> ChildDrawers { get; set; }
+
+        public abstract RectTransform Draw( RectTransform parent, MemberBinding binding, InspectorStyle style );
 
         /// <summary>
         /// Inverse of draw. Converts user input to a value.
         /// </summary>
-        object InputToValueGeneral( object input ); // doesn't necessarily have to be a string.
+        public abstract object InputToValueGeneral( object input ); // doesn't necessarily have to be a string.
     }
 
-    public abstract class TypedDrawer<T> : IDrawer
+    public abstract class TypedDrawer<T> : Drawer
     {
         protected static Type UnderlyingType = typeof( T );
 
-        public RectTransform Draw( RectTransform parent, IMemberBinding binding )
-        {
-            RectTransform uiObj = Draw( parent, (IMemberBinding<T>)binding );
-
-            return uiObj;
-        }
-
-        public object InputToValueGeneral( object input )
+        public override object InputToValueGeneral( object input )
         {
             return InputToValue( input );
         }
-
-        public abstract RectTransform Draw( RectTransform parent, IMemberBinding<T> binding );
 
         /// <summary>
         /// Converts user input (input field) into the value that will be assigned.
@@ -42,16 +36,64 @@ namespace RuntimeInspector.UI
         public abstract T InputToValue( object input );
     }
 
-    public class GenericDrawer : IDrawer
+    public class GenericDrawer : Drawer
     {
-        public RectTransform Draw( RectTransform parent, IMemberBinding binding )
+        public override RectTransform Draw( RectTransform parent, MemberBinding binding, InspectorStyle style )
         {
-            (RectTransform root, _, _) = DrawerUtils.MakeInputField( parent, binding );
+            for( int i = 0; i < parent.childCount; i++ )
+            {
+                UnityEngine.Object.Destroy( parent.GetChild( i ).gameObject );
+            }
 
-            return root;
+            RectTransform list = InspectorVerticalList.Create( parent, style );
+
+            // Set up the UI elements that will be shown/updated.
+            var members = binding.Binding.GetInstanceMembers();
+            foreach( var memberBinding in members )
+            {
+                // Don't list complete inheritance tree of certain types.
+                // - Component and MonoBehaviour have a bunch of internal Unity garbage.
+                if( memberBinding.Metadata.DeclaringType == typeof( Component ) || memberBinding.Metadata.DeclaringType == typeof( MonoBehaviour ) )
+                {
+                    continue;
+                }
+
+                GameObject root = new GameObject( "_binding" );
+                root.layer = 5;
+                RectTransform rootTransform = root.AddComponent<RectTransform>();
+
+                rootTransform.SetParent( list );
+                rootTransform.sizeDelta = new Vector2( 0.0f, style.FieldHeight );
+
+                InspectorValueSubmitter submitter = root.AddComponent<InspectorValueSubmitter>();
+
+                if( !memberBinding.Metadata.CanRead )
+                {
+                    // draw as reference field.
+                    continue;
+                }
+                try
+                {
+                    Type type = memberBinding.Binding.GetInstanceType();
+                    Drawer drawer = DrawerManager.GetDrawerOfType( type );
+                    if( drawer is GenericDrawer )
+                    {
+#error TODO - without this there is an infinite stack look somewhere.
+                        continue;
+                    }
+                    RectTransform rt = drawer.Draw( rootTransform, memberBinding, style );
+                }
+                catch( Exception ex )
+                {
+                    Debug.LogWarning( $"EXCEPTION while trying to get value of: {ex}" );
+                    // temporary.
+                }
+            }
+
+            return list;
         }
 
-        public object InputToValueGeneral( object input )
+        public override object InputToValueGeneral( object input )
         {
             throw new InvalidOperationException( "Can't use generic drawer to convert string into object" );
         }

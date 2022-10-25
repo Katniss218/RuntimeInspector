@@ -7,21 +7,16 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace RuntimeInspector.UI
+namespace RuntimeInspector.UI.GUIUtils
 {
-    public static class DrawerUtils
+    /// <summary>
+    /// Helper class to create GUI input fields.
+    /// </summary>
+    public static class InspectorInputField
     {
-        public const float FONT_SIZE = 12.0f;
-        public const float FIELD_HEIGHT = 24.0f;
-
-        static readonly Color INPUT_FIELD_COLOR = new Color( 0.5f, 0.5f, 0.5f );
-        static readonly Color INPUT_FIELD_COLOR_READONLY = new Color( 0.4f, 0.4f, 0.4f );
-        static readonly Color LABEL_TEXT_COLOR = new Color( 1.0f, 1.0f, 1.0f );
-        static readonly Color VALUE_TEXT_COLOR = new Color( 1.0f, 1.0f, 1.0f );
-
-        public static (RectTransform root, TMPro.TextMeshProUGUI label, TMPro.TextMeshProUGUI value) MakeInputField( RectTransform parent, IMemberBinding binding )
+        public static (RectTransform root, TMPro.TextMeshProUGUI label, TMPro.TextMeshProUGUI value) Create( RectTransform parent, MemberBinding binding, InspectorStyle style )
         {
-            GameObject root = new GameObject( $"{binding.DisplayName} ({binding.Type.FullName})" );
+            GameObject root = new GameObject( $"{binding.Metadata.Name} ({binding.Binding.GetInstanceType().FullName})" );
             root.layer = 5;
             RectTransform rootTransform = root.AddComponent<RectTransform>();
 
@@ -30,7 +25,7 @@ namespace RuntimeInspector.UI
             rootTransform.anchorMax = new Vector2( 1.0f, 0.5f );
             rootTransform.pivot = new Vector2( 0.5f, 0.5f );
             rootTransform.anchoredPosition = new Vector2( 0.0f, 0.0f );
-            rootTransform.sizeDelta = new Vector2( 0.0f, FIELD_HEIGHT );
+            rootTransform.sizeDelta = new Vector2( 0.0f, style.FieldHeight );
 
             GameObject labelGO = new GameObject( $"_label" );
             labelGO.layer = 5;
@@ -42,13 +37,13 @@ namespace RuntimeInspector.UI
             labelTransform.anchorMax = new Vector2( 0.0f, 0.5f );
             labelTransform.pivot = new Vector2( 0.0f, 0.5f );
             labelTransform.anchoredPosition = new Vector2( 0.0f, 0.0f );
-            labelTransform.sizeDelta = new Vector2( 200.0f, FIELD_HEIGHT );
+            labelTransform.sizeDelta = new Vector2( 200.0f, style.FieldHeight );
 
             TMPro.TextMeshProUGUI labelText = labelGO.AddComponent<TMPro.TextMeshProUGUI>();
-            labelText.fontSize = FONT_SIZE;
+            labelText.fontSize = style.FontSize;
             labelText.alignment = TMPro.TextAlignmentOptions.Left;
             labelText.overflowMode = TMPro.TextOverflowModes.Overflow;
-            labelText.color = LABEL_TEXT_COLOR;
+            labelText.color = style.LabelTextColor;
 
 
             GameObject valueGO = new GameObject( $"_value" );
@@ -61,10 +56,10 @@ namespace RuntimeInspector.UI
             valueTransform.anchorMax = new Vector2( 1.0f, 0.5f );
             valueTransform.pivot = new Vector2( 1.0f, 0.5f );
             valueTransform.anchoredPosition = new Vector2( 0.0f, 0.0f );
-            valueTransform.sizeDelta = new Vector2( 200.0f, FIELD_HEIGHT );
+            valueTransform.sizeDelta = new Vector2( 200.0f, style.FieldHeight );
 
             Image image = valueGO.AddComponent<Image>();
-            image.color = INPUT_FIELD_COLOR;
+            image.color = style.InputFieldColor;
 
 
             GameObject valueTextAreaGO = new GameObject( "_textarea" );
@@ -95,47 +90,48 @@ namespace RuntimeInspector.UI
             valueTextTransform.sizeDelta = new Vector2( 0.0f, 0.0f );
 
             TMPro.TextMeshProUGUI valueText = valueTextGO.AddComponent<TMPro.TextMeshProUGUI>();
-            valueText.fontSize = FONT_SIZE;
+            valueText.fontSize = style.FontSize;
             valueText.alignment = TMPro.TextAlignmentOptions.Right;
             valueText.overflowMode = TMPro.TextOverflowModes.Overflow;
-            valueText.color = VALUE_TEXT_COLOR;
+            valueText.color = style.ValueTextColor;
 
 
-            labelText.text = binding.DisplayName;
+            labelText.text = binding.Metadata.Name;
 
-            if( binding.CanRead )
+            if( binding.Metadata.CanRead )
             {
-                valueText.text = binding.GetValue().ToString();
+                valueText.text = binding.Binding.GetValue().ToString();
             }
             else
             {
                 valueText.text = "<Can't read>";
             }
 
-            if( binding.CanWrite )
+            if( binding.Metadata.CanWrite )
             {
                 TMPro.TMP_InputField valueInput = valueGO.AddComponent<TMPro.TMP_InputField>();
 
                 valueInput.textViewport = valueTextAreaTransform;
                 valueInput.textComponent = valueText;
                 valueInput.fontAsset = valueText.font;
-                valueInput.pointSize = FONT_SIZE;
+                valueInput.pointSize = style.FontSize;
 
-                if( binding.CanRead )
+                if( binding.Metadata.CanRead )
                 {
-                    valueInput.text = binding.GetValue().ToString();
+                    valueInput.text = binding.Binding.GetValue().ToString();
                 }
 
                 valueInput.enabled = false;
                 valueInput.enabled = true; // regenerate the caret.
 
-                InspectorInputField submitter = parent.GetComponent<InspectorInputField>();
-                valueInput.onSubmit.AddListener( submitter.UpdateValue );
+                InspectorValueSubmitter submitter = parent.GetComponent<InspectorValueSubmitter>();
                 submitter.InputField = valueInput;
+                submitter.Binding = binding;
+                valueInput.onSubmit.AddListener( submitter.UpdateValue );
             }
             else
             {
-                image.color = INPUT_FIELD_COLOR_READONLY;
+                image.color = style.InputFieldColorReadonly;
             }
 
             return (rootTransform, labelText, valueText);

@@ -152,8 +152,7 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 405957726}
+  m_Children: []
   m_Father: {fileID: 427692018}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -200,69 +199,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 67322053}
   m_CullTransparentMesh: 1
---- !u!1 &405957725
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 405957726}
-  - component: {fileID: 405957727}
-  m_Layer: 5
-  m_Name: Field List
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &405957726
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 405957725}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 67322054}
-  m_RootOrder: -1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: -20, y: -20.000008}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &405957727
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 405957725}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 59f8146938fff824cb5fd77236b75775, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Padding:
-    m_Left: 0
-    m_Right: 0
-    m_Top: 0
-    m_Bottom: 0
-  m_ChildAlignment: 0
-  m_Spacing: 2
-  m_ChildForceExpandWidth: 1
-  m_ChildForceExpandHeight: 0
-  m_ChildControlWidth: 1
-  m_ChildControlHeight: 0
-  m_ChildScaleWidth: 0
-  m_ChildScaleHeight: 0
-  m_ReverseArrangement: 0
 --- !u!1 &427692014
 GameObject:
   m_ObjectHideFlags: 0
@@ -512,7 +448,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 0}
+  - {fileID: 10302, guid: 0000000000000000f000000000000000, type: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -541,7 +477,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 830931206}
-  m_Mesh: {fileID: 0}
+  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!1 &958064730
 GameObject:
   m_ObjectHideFlags: 0
@@ -554,6 +490,7 @@ GameObject:
   - component: {fileID: 958064731}
   - component: {fileID: 958064733}
   - component: {fileID: 958064734}
+  - component: {fileID: 958064735}
   m_Layer: 0
   m_Name: _MAIN_
   m_TagString: Untagged
@@ -568,7 +505,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 958064730}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ef7403bb7f68b4442aed3a1e18d611ca, type: 3}
   m_Name: 
@@ -597,12 +534,12 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 958064730}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4c513faf80d9cb145b325868872d1993, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <ViewerPanel>k__BackingField: {fileID: 405957726}
+  <ViewerPanel>k__BackingField: {fileID: 67322054}
   <DrawnObj>k__BackingField: {fileID: 958064734}
 --- !u!114 &958064734
 MonoBehaviour:
@@ -620,9 +557,25 @@ MonoBehaviour:
   <StringValue>k__BackingField: Hello World
   <Filter>k__BackingField: {fileID: 0}
   <Renderer>k__BackingField: {fileID: 0}
-  <AdditionalValue>k__BackingField: 218
+  <AdditionalValue>k__BackingField: {fileID: 958064735}
   _readOnly: read_only
   _writeOnly: write_only
+--- !u!114 &958064735
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 958064730}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e8d2e67099d57374a9a488eed5a46ed5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <IntValue>k__BackingField: 0
+  <StringValue>k__BackingField: 
+  <Filter>k__BackingField: {fileID: 0}
+  <Renderer>k__BackingField: {fileID: 0}
 --- !u!1 &963194225
 GameObject:
   m_ObjectHideFlags: 0
@@ -740,7 +693,7 @@ MonoBehaviour:
   <StringValue>k__BackingField: Hello World!
   <Filter>k__BackingField: {fileID: 830931209}
   <Renderer>k__BackingField: {fileID: 830931208}
-  <AdditionalValue>k__BackingField: 218
+  <AdditionalValue>k__BackingField: {fileID: 0}
   _readOnly: 
   _writeOnly: 
 --- !u!4 &1143109829

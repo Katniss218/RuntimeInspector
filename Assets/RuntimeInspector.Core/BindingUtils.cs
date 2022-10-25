@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RuntimeInspector.Core.Bindings;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -7,16 +8,56 @@ using System.Threading.Tasks;
 
 namespace RuntimeInspector.Core
 {
+    /// <summary>
+    /// Public methods to create bindings to objects.
+    /// </summary>
     public static class BindingUtils
     {
-        public static string GetDisplayName( FieldInfo field )
+        internal static List<MemberBinding> GetMembersOf( object instance )
         {
-            return field.Name;
+            List<MemberBinding> bindings = new List<MemberBinding>();
+
+            Type instanceType = instance.GetType();
+
+            FieldInfo[] fields = instanceType.GetFields( BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy );
+            PropertyInfo[] properties = instanceType.GetProperties( BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy );
+
+            foreach( var field in fields )
+            {
+                IObjectBinding binding = FieldBinding.Create( field, instance );
+                MemberMetadata metadata = MemberMetadata.FromField( field );
+
+                bindings.Add( new MemberBinding()
+                {
+                    Metadata = metadata,
+                    Binding = binding
+                } );
+            }
+
+            foreach( var property in properties )
+            {
+                IObjectBinding binding = PropertyBinding.Create( property, instance );
+                MemberMetadata metadata = MemberMetadata.FromProperty( property );
+
+                bindings.Add( new MemberBinding()
+                {
+                    Metadata = metadata,
+                    Binding = binding
+                } );
+            }
+
+            return bindings;
         }
 
-        public static string GetDisplayName( PropertyInfo property )
+        /// Returns a binding to an arbitrary object.
+        public static MemberBinding GetBinding( Func<object> objGetter, Action<object> objSetter )
         {
-            return property.Name;
+            // just create the binding for this object. Getting members is implementation-specific.
+            return new MemberBinding()
+            {
+                Metadata = new MemberMetadata(),
+                Binding = new ArbitraryBinding( objGetter, objSetter )
+            };
         }
     }
 }
