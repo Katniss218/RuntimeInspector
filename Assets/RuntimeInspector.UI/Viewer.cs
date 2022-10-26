@@ -25,7 +25,7 @@ namespace RuntimeInspector.UI
                 return;
             }
 
-            Drawer drawer = DrawerManager.GetDrawerOfType( DrawnObj.GetType() );
+            Drawer drawer = DrawerProvider.GetDrawerOfType( DrawnObj.GetType() );
 
             MemberBinding binding = BindingUtils.GetBinding( () => DrawnObj, ( o ) => DrawnObj = (Component)o );
 
@@ -37,17 +37,5 @@ namespace RuntimeInspector.UI
             Show( InspectorStyle.Default );
         }
 
-        int timer = 0;
-
-        void Update()
-        {
-            timer++;
-            if( timer > 50 )
-            {
-                timer = 0;
-
-                Show( InspectorStyle.Default );
-            }
-        }
     }
 }

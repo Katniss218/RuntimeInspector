@@ -9,8 +9,8 @@ using UnityEngine;
 
 namespace RuntimeInspector.UI.Drawers
 {
-    [DrawerOf( typeof( string ) )]
-    public class StringDrawer : Drawer
+    [DrawerOf( typeof( float ) )]
+    public class SingleDrawer : Drawer
     {
         public override RectTransform Draw( RectTransform parent, MemberBinding binding, InspectorStyle style )
         {

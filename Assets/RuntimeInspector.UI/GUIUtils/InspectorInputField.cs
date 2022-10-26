@@ -14,7 +14,7 @@ namespace RuntimeInspector.UI.GUIUtils
     /// </summary>
     public static class InspectorInputField
     {
-        public static (RectTransform root, TMPro.TextMeshProUGUI label, TMPro.TextMeshProUGUI value) Create( RectTransform parent, MemberBinding binding, InspectorStyle style )
+        public static RectTransform Create( RectTransform parent, MemberBinding binding, InspectorStyle style )
         {
             GameObject root = new GameObject( $"{binding.Metadata.Name} ({binding.Binding.GetInstanceType().FullName})" );
             root.layer = 5;
@@ -123,10 +123,13 @@ namespace RuntimeInspector.UI.GUIUtils
 
                 valueInput.enabled = false;
                 valueInput.enabled = true; // regenerate the caret.
-
-                InspectorValueSubmitter submitter = parent.GetComponent<InspectorValueSubmitter>();
+                
+                InspectorValue submitter = root.AddComponent<InspectorValue>();
                 submitter.InputField = valueInput;
                 submitter.Binding = binding;
+                submitter.Parent = parent;
+                submitter.Style = style;
+                submitter.Root = rootTransform;
                 valueInput.onSubmit.AddListener( submitter.UpdateValue );
             }
             else
@@ -134,7 +137,7 @@ namespace RuntimeInspector.UI.GUIUtils
                 image.color = style.InputFieldColorReadonly;
             }
 
-            return (rootTransform, labelText, valueText);
+            return rootTransform;
         }
     }
 }

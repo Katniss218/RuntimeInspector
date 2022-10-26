@@ -24,6 +24,7 @@ namespace RuntimeInspector.UI.GUIUtils
             rectTransform.sizeDelta = new Vector2( 0.0f, 200.0f );
 
             VerticalLayoutGroup layoutGroup = gameObject.AddComponent<VerticalLayoutGroup>();
+            layoutGroup.padding = new RectOffset( style.IndentWidth, 0, style.IndentMargin, style.IndentMargin );
             layoutGroup.childControlWidth = true;
             layoutGroup.childControlHeight = false; 
             layoutGroup.childScaleWidth = false;

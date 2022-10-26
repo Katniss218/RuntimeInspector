@@ -26,6 +26,11 @@ namespace RuntimeInspector.Core
         public Type DeclaringType { get; set; }
 
         /// <summary>
+        /// The type of the member, for an 'int' field, the type will be 'typeof( int )'.
+        /// </summary>
+        public Type ReflectedType { get; set; }
+
+        /// <summary>
         /// The kind of the member. See <see cref="MemberKind"></see> for more information.
         /// </summary>
         public MemberKind Kind { get; set; }
@@ -48,6 +53,7 @@ namespace RuntimeInspector.Core
             return new MemberMetadata()
             {
                 Name = field.Name,
+                ReflectedType = field.FieldType,
                 DeclaringType = field.DeclaringType,
                 Kind = MemberKind.Field,
                 CanRead = true,
@@ -63,6 +69,7 @@ namespace RuntimeInspector.Core
             return new MemberMetadata()
             {
                 Name = property.Name,
+                ReflectedType = property.PropertyType,
                 DeclaringType = property.DeclaringType,
                 Kind = MemberKind.Property,
                 CanRead = property.CanRead,

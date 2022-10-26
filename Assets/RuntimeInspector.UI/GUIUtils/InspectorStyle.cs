@@ -14,6 +14,9 @@ namespace RuntimeInspector.UI.GUIUtils
         public float FieldHeight { get; set; } = 24.0f;
         public float FieldSpacing { get; set; } = 2.0f;
 
+        public int IndentWidth { get; set; } = 16;
+        public int IndentMargin { get; set; } = 8;
+
         public Color InputFieldColor { get; set; } = new Color( 0.5f, 0.5f, 0.5f );
         public Color InputFieldColorReadonly { get; set; } = new Color( 0.4f, 0.4f, 0.4f );
         public Color LabelTextColor { get; set; } = new Color( 1.0f, 1.0f, 1.0f );

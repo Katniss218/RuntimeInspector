@@ -9,18 +9,14 @@ using UnityEngine;
 
 namespace RuntimeInspector.UI.Drawers
 {
-    public class Int32Drawer : TypedDrawer<int>
+    [DrawerOf( typeof( int ) )]
+    public class Int32Drawer : Drawer
     {
         public override RectTransform Draw( RectTransform parent, MemberBinding binding, InspectorStyle style )
         {
-            (RectTransform root, _, _) = InspectorInputField.Create( parent, binding, style );
+            RectTransform root = InspectorInputField.Create( parent, binding, style );
 
             return root;
-        }
-
-        public override int InputToValue( object input )
-        {
-            return int.Parse( (string)input );
         }
     }
 }

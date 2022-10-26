@@ -134,6 +134,8 @@ GameObject:
   - component: {fileID: 67322054}
   - component: {fileID: 67322056}
   - component: {fileID: 67322055}
+  - component: {fileID: 67322057}
+  - component: {fileID: 67322058}
   m_Layer: 5
   m_Name: Viewer Panel
   m_TagString: Untagged
@@ -199,6 +201,46 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 67322053}
   m_CullTransparentMesh: 1
+--- !u!114 &67322057
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 67322053}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59f8146938fff824cb5fd77236b75775, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Padding:
+    m_Left: 12
+    m_Right: 12
+    m_Top: 0
+    m_Bottom: 0
+  m_ChildAlignment: 0
+  m_Spacing: 0
+  m_ChildForceExpandWidth: 1
+  m_ChildForceExpandHeight: 0
+  m_ChildControlWidth: 1
+  m_ChildControlHeight: 0
+  m_ChildScaleWidth: 0
+  m_ChildScaleHeight: 0
+  m_ReverseArrangement: 0
+--- !u!114 &67322058
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 67322053}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3245ec927659c4140ac4f8d17403cc18, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_HorizontalFit: 0
+  m_VerticalFit: 2
 --- !u!1 &427692014
 GameObject:
   m_ObjectHideFlags: 0
@@ -555,8 +597,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <IntValue>k__BackingField: 50
   <StringValue>k__BackingField: Hello World
-  <Filter>k__BackingField: {fileID: 0}
-  <Renderer>k__BackingField: {fileID: 0}
   <AdditionalValue>k__BackingField: {fileID: 958064735}
   _readOnly: read_only
   _writeOnly: write_only
@@ -574,8 +614,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <IntValue>k__BackingField: 0
   <StringValue>k__BackingField: 
-  <Filter>k__BackingField: {fileID: 0}
-  <Renderer>k__BackingField: {fileID: 0}
 --- !u!1 &963194225
 GameObject:
   m_ObjectHideFlags: 0
@@ -691,8 +729,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <IntValue>k__BackingField: 50
   <StringValue>k__BackingField: Hello World!
-  <Filter>k__BackingField: {fileID: 830931209}
-  <Renderer>k__BackingField: {fileID: 830931208}
   <AdditionalValue>k__BackingField: {fileID: 0}
   _readOnly: 
   _writeOnly: 
@@ -704,7 +740,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1143109825}
   m_LocalRotation: {x: 0, y: 0.021727657, z: 0, w: 0.99976397}
-  m_LocalPosition: {x: 572.516, y: 178.6886, z: 508.0495}
+  m_LocalPosition: {x: -2.71, y: -1.22, z: 4.09}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
