@@ -16,7 +16,9 @@ namespace RuntimeInspector.UI
         public RectTransform ViewerPanel { get; set; }
 
         [field: SerializeField]
-        public Component DrawnObj { get; set; }
+        public Component DrawnObj { get; private set; }
+
+        MemberBinding? binding = null;
 
         public void Show( InspectorStyle style )
         {
@@ -25,17 +27,36 @@ namespace RuntimeInspector.UI
                 return;
             }
 
+            if( binding is null )
+            {
+                binding = BindingUtils.GetBinding( () => DrawnObj, ( o ) => DrawnObj = (Component)o );
+            }
+            if( !binding.Value.Binding.HasChangedValue(out _ ) )
+            {
+                return;
+            }
+
             Drawer drawer = DrawerProvider.GetDrawerOfType( DrawnObj.GetType() );
-
-            MemberBinding binding = BindingUtils.GetBinding( () => DrawnObj, ( o ) => DrawnObj = (Component)o );
-
-            drawer.Draw( ViewerPanel, binding, style );
+            drawer.Draw( ViewerPanel, binding.Value, style );
         }
 
         void Start()
         {
             Show( InspectorStyle.Default );
         }
+        
 
+        int timer = -10;
+
+        void Update()
+        {
+            timer++;
+            if( timer > 50 )
+            {
+                timer = 0;
+
+                Show( InspectorStyle.Default );
+            }
+        }
     }
 }

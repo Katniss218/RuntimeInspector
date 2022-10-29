@@ -24,7 +24,7 @@ namespace RuntimeInspector.UI
         public void UpdateValue( string value )
         {
             InputConverterProvider.AssignValue( Binding, value );
-        }
+        }/*
 
         int timer = -10;
 
@@ -52,6 +52,6 @@ namespace RuntimeInspector.UI
 
                 RectTransform redrawnRoot = drawer.Draw( parent, binding, style );
             }
-        }
+        }*/
     }
 }

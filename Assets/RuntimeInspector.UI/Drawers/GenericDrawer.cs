@@ -13,17 +13,17 @@ namespace RuntimeInspector.UI.Drawers
     {
         public override RectTransform Draw( RectTransform parent, MemberBinding binding, InspectorStyle style )
         {
-            for( int i = 0; i < parent.childCount; i++ )
+            /*for( int i = 0; i < parent.childCount; i++ )
             {
                 UnityEngine.Object.Destroy( parent.GetChild( i ).gameObject );
-            }
+            }*/
 
             RectTransform label = InspectorLabel.Create( parent, $"{binding.Metadata.Name} >", style );
 
             RectTransform list = InspectorVerticalList.Create( parent, style );
 
             // Set up the UI elements that will be shown/updated.
-            var members = binding.Binding.GetInstanceMembers();
+            var members = binding.Binding.InstanceMembers;
             foreach( var memberBinding in members )
             {
                 // Don't list complete inheritance tree of certain types.
@@ -36,6 +36,10 @@ namespace RuntimeInspector.UI.Drawers
                 if( !memberBinding.Metadata.CanRead )
                 {
                     // draw as reference field.
+                    continue;
+                }
+                if( !memberBinding.Binding.HasChangedValue( out _ ) )
+                {
                     continue;
                 }
                 try

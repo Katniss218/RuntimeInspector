@@ -11,6 +11,11 @@ namespace RuntimeInspector.Core
     /// </summary>
     public interface IObjectBinding
     {
+        /// <summary>
+        /// Returns the value cached from the last call to <see cref="GetValue"/>.
+        /// </summary>
+        object LastValue { get; }
+
         // <summary>
         /// Type of the bound instance (instance-dependent).
         /// </summary>
@@ -22,16 +27,43 @@ namespace RuntimeInspector.Core
         /// <remarks>
         /// Not every type has them defined. Primitives, such as 'int' don't.
         /// </remarks>
-        List<MemberBinding> GetInstanceMembers();
+        List<MemberBinding> InstanceMembers { get; }
 
         /// <summary>
-        /// Returns the actual value bound to this binding.
+        /// Returns the actual value bound to this binding. Caches the value as <see cref="LastValue"/> property until the next call to <see cref="GetValue"/>.
         /// </summary>
-        object GetValue(); // Used when displaying objects.
+        object GetValue();
+
 
         /// <summary>
         /// Sets the actual value bound to this binding.
         /// </summary>
-        void SetValue( object value ); // Used when submitting objects.
+        void SetValue( object value );
+    }
+
+    public static class IObjectBinding_Ex
+    {
+        public static bool HasChangedValue( object oldValue, object newValue )
+        {
+            if( newValue is null )
+            {
+                return oldValue is not null;
+            }
+            return !newValue.Equals( oldValue );
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <remarks>
+        /// Be wary of calling this for write-only properties.
+        /// </remarks>
+        public static bool HasChangedValue( this IObjectBinding binding, out object newValue )
+        {
+            object oldValue = binding.LastValue;
+            newValue = binding.GetValue();
+
+            return HasChangedValue( oldValue, newValue );
+        }
     }
 }
