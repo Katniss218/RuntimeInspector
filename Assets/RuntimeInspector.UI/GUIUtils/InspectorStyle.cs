@@ -14,6 +14,8 @@ namespace RuntimeInspector.UI.GUIUtils
         public float FieldHeight { get; set; } = 24.0f;
         public float FieldSpacing { get; set; } = 2.0f;
 
+        public float TypeIconSize { get; set; } = 16.0f;
+
         public int IndentWidth { get; set; } = 16;
         public int IndentMargin { get; set; } = 8;
 

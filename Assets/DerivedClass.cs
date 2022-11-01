@@ -7,6 +7,9 @@ public class DerivedClass : BaseClass
 {
     [field: SerializeField]
     public BaseClass AdditionalValue { get; set; }
+    
+    [field: SerializeField]
+    public float FloatValue { get; set; }
 
     [SerializeField]
     private string _readOnly;

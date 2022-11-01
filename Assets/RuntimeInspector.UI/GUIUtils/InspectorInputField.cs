@@ -14,43 +14,13 @@ namespace RuntimeInspector.UI.GUIUtils
     /// </summary>
     public static class InspectorInputField
     {
-        public static RectTransform Create( RectTransform parent, MemberBinding binding, InspectorStyle style )
+        public static (RectTransform, InspectorValue) Create( RectTransform parent, MemberBinding binding, InspectorStyle style )
         {
-            GameObject root = new GameObject( $"{binding.Metadata.Name} ({binding.Binding.GetInstanceType().FullName})" );
-            root.layer = 5;
-            RectTransform rootTransform = root.AddComponent<RectTransform>();
-
-            rootTransform.SetParent( parent );
-            rootTransform.anchorMin = new Vector2( 0.0f, 0.5f );
-            rootTransform.anchorMax = new Vector2( 1.0f, 0.5f );
-            rootTransform.pivot = new Vector2( 0.5f, 0.5f );
-            rootTransform.anchoredPosition = new Vector2( 0.0f, 0.0f );
-            rootTransform.sizeDelta = new Vector2( 0.0f, style.FieldHeight );
-
-            GameObject labelGO = new GameObject( $"_label" );
-            labelGO.layer = 5;
-            RectTransform labelTransform = labelGO.AddComponent<RectTransform>();
-
-            labelTransform.SetParent( rootTransform );
-
-            labelTransform.anchorMin = new Vector2( 0.0f, 0.5f );
-            labelTransform.anchorMax = new Vector2( 0.0f, 0.5f );
-            labelTransform.pivot = new Vector2( 0.0f, 0.5f );
-            labelTransform.anchoredPosition = new Vector2( 0.0f, 0.0f );
-            labelTransform.sizeDelta = new Vector2( 200.0f, style.FieldHeight );
-
-            TMPro.TextMeshProUGUI labelText = labelGO.AddComponent<TMPro.TextMeshProUGUI>();
-            labelText.fontSize = style.FontSize;
-            labelText.alignment = TMPro.TextAlignmentOptions.Left;
-            labelText.overflowMode = TMPro.TextOverflowModes.Overflow;
-            labelText.color = style.LabelTextColor;
-
-
             GameObject valueGO = new GameObject( $"_value" );
             valueGO.layer = 5;
             RectTransform valueTransform = valueGO.AddComponent<RectTransform>();
 
-            valueTransform.SetParent( rootTransform );
+            valueTransform.SetParent( parent );
 
             valueTransform.anchorMin = new Vector2( 1.0f, 0.5f );
             valueTransform.anchorMax = new Vector2( 1.0f, 0.5f );
@@ -95,9 +65,6 @@ namespace RuntimeInspector.UI.GUIUtils
             valueText.overflowMode = TMPro.TextOverflowModes.Overflow;
             valueText.color = style.ValueTextColor;
 
-
-            labelText.text = binding.Metadata.Name;
-
             if( binding.Metadata.CanRead )
             {
                 valueText.text = binding.Binding.GetValue().ToString();
@@ -124,20 +91,22 @@ namespace RuntimeInspector.UI.GUIUtils
                 valueInput.enabled = false;
                 valueInput.enabled = true; // regenerate the caret.
                 
-                InspectorValue submitter = root.AddComponent<InspectorValue>();
+                InspectorValue submitter = valueGO.AddComponent<InspectorValue>();
                 submitter.InputField = valueInput;
                 submitter.Binding = binding;
-                submitter.Parent = parent;
-                submitter.Style = style;
-                submitter.Root = rootTransform;
+                //submitter.Parent = parent;
+               // submitter.Style = style;
+               // submitter.Root = rootTransform;
                 valueInput.onSubmit.AddListener( submitter.UpdateValue );
+
+                return (valueTransform, submitter);
             }
             else
             {
                 image.color = style.InputFieldColorReadonly;
             }
 
-            return rootTransform;
+            return (valueTransform, null);
         }
     }
 }

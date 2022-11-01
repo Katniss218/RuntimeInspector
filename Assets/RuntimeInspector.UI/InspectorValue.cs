@@ -17,9 +17,9 @@ namespace RuntimeInspector.UI
 
         public TMPro.TMP_InputField InputField { get; set; } // kinda ugly and requires it to be an input field.
 
-        public RectTransform Parent { get; set; }
-        public RectTransform Root { get; set; }
-        public InspectorStyle Style { get; set; }
+        //public RectTransform Parent { get; set; }
+        //public RectTransform Root { get; set; }
+        //public InspectorStyle Style { get; set; }
 
         public void UpdateValue( string value )
         {
