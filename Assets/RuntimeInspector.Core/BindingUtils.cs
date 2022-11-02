@@ -15,35 +15,48 @@ namespace RuntimeInspector.Core
     {
         internal static List<MemberBinding> GetMembersOf( object instance )
         {
+#warning TODO - can be cached.
             List<MemberBinding> bindings = new List<MemberBinding>();
 
             Type instanceType = instance.GetType();
 
-            FieldInfo[] fields = instanceType.GetFields( BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy );
-            PropertyInfo[] properties = instanceType.GetProperties( BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy );
+            Type currentDeclaringType = instanceType;
 
-            foreach( var field in fields )
+            while( true )
             {
-                IObjectBinding binding = FieldBinding.Create( field, instance );
-                MemberMetadata metadata = MemberMetadata.FromField( field );
+                FieldInfo[] fields = currentDeclaringType.GetFields( BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly );
+                PropertyInfo[] properties = currentDeclaringType.GetProperties( BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly );
 
-                bindings.Add( new MemberBinding()
+                foreach( var field in fields )
                 {
-                    Metadata = metadata,
-                    Binding = binding
-                } );
-            }
+                    IObjectBinding binding = FieldBinding.Create( field, instance );
+                    MemberMetadata metadata = MemberMetadata.FromField( field );
 
-            foreach( var property in properties )
-            {
-                IObjectBinding binding = PropertyBinding.Create( property, instance );
-                MemberMetadata metadata = MemberMetadata.FromProperty( property );
+                    bindings.Add( new MemberBinding()
+                    {
+                        Metadata = metadata,
+                        Binding = binding
+                    } );
+                }
 
-                bindings.Add( new MemberBinding()
+                foreach( var property in properties )
                 {
-                    Metadata = metadata,
-                    Binding = binding
-                } );
+                    IObjectBinding binding = PropertyBinding.Create( property, instance );
+                    MemberMetadata metadata = MemberMetadata.FromProperty( property );
+
+                    bindings.Add( new MemberBinding()
+                    {
+                        Metadata = metadata,
+                        Binding = binding
+                    } );
+                }
+
+                if( currentDeclaringType.BaseType == null )
+                {
+                    break;
+                }
+
+                currentDeclaringType = currentDeclaringType.BaseType;
             }
 
             return bindings;

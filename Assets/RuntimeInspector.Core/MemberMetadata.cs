@@ -10,7 +10,7 @@ namespace RuntimeInspector.Core
     /// <summary>
     /// Holds instance-agnostic information about a member.
     /// <summary>
-    public class MemberMetadata
+    public struct MemberMetadata : IEquatable<MemberMetadata>
     {
         /// <summary>
         /// Reflected name of the member.
@@ -26,9 +26,12 @@ namespace RuntimeInspector.Core
         public Type DeclaringType { get; set; }
 
         /// <summary>
-        /// The type of the member, for an 'int' field, the type will be 'typeof( int )'.
+        /// The type of the member.
         /// </summary>
-        public Type ReflectedType { get; set; }
+        /// <remarks>
+        /// When reflecting an 'int' field, the <see cref="Type"/> will be equal to 'typeof( int )'.
+        /// </remarks>
+        public Type Type { get; set; }
 
         /// <summary>
         /// The kind of the member. See <see cref="MemberKind"></see> for more information.
@@ -45,6 +48,13 @@ namespace RuntimeInspector.Core
         /// </summary>
         public bool CanWrite { get; set; }
 
+        public bool Equals( MemberMetadata other )
+        {
+            return this.Name == other.Name
+                && this.Type == other.Type
+                && this.DeclaringType == other.DeclaringType;
+        }
+
         /// <summary>
         /// Creates a MemberMetadata from a reflected field.
         /// </summary>
@@ -53,7 +63,7 @@ namespace RuntimeInspector.Core
             return new MemberMetadata()
             {
                 Name = field.Name,
-                ReflectedType = field.FieldType,
+                Type = field.FieldType,
                 DeclaringType = field.DeclaringType,
                 Kind = MemberKind.Field,
                 CanRead = true,
@@ -69,7 +79,7 @@ namespace RuntimeInspector.Core
             return new MemberMetadata()
             {
                 Name = property.Name,
-                ReflectedType = property.PropertyType,
+                Type = property.PropertyType,
                 DeclaringType = property.DeclaringType,
                 Kind = MemberKind.Property,
                 CanRead = property.CanRead,

@@ -641,14 +641,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.6509434, g: 0.6509434, b: 0.6509434, a: 1}
+  m_Color: {r: 0.4, g: 0.4, b: 0.4, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
+  m_Sprite: {fileID: 0}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -750,7 +750,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1849822064}
   m_Direction: 0
   m_Value: 0
-  m_Size: 0.9999998
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -842,7 +842,6 @@ GameObject:
   - component: {fileID: 958064731}
   - component: {fileID: 958064733}
   - component: {fileID: 958064734}
-  - component: {fileID: 958064736}
   - component: {fileID: 958064735}
   m_Layer: 0
   m_Name: _MAIN_
@@ -907,10 +906,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <IntValue>k__BackingField: 50
-  <StringValue>k__BackingField: Hello World
-  <AdditionalValue>k__BackingField: {fileID: 958064736}
-  _readOnly: read_only
-  _writeOnly: write_only
+  <StringValue>k__BackingField: Basal
+  <FloatValue>k__BackingField: 3.1415925
+  <AdditionalValue>k__BackingField: {fileID: 958064735}
+  _readOnly: Read only
+  _writeOnly: test
 --- !u!114 &958064735
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -923,25 +923,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e8d2e67099d57374a9a488eed5a46ed5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <IntValue>k__BackingField: 0
-  <StringValue>k__BackingField: 
---- !u!114 &958064736
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 958064730}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8e7182e74412f664a8ff4fe8cc1b2321, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  <IntValue>k__BackingField: 0
-  <StringValue>k__BackingField: 
-  <AdditionalValue>k__BackingField: {fileID: 958064735}
-  _readOnly: 
-  _writeOnly: 
+  <IntValue>k__BackingField: 218
+  <StringValue>k__BackingField: Nested
 --- !u!1 &963194225
 GameObject:
   m_ObjectHideFlags: 0
@@ -1221,6 +1204,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <IntValue>k__BackingField: 50
   <StringValue>k__BackingField: Hello World!
+  <FloatValue>k__BackingField: 0
   <AdditionalValue>k__BackingField: {fileID: 0}
   _readOnly: 
   _writeOnly: 

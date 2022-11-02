@@ -6,6 +6,7 @@ using UnityEngine;
 
 public class BaseClass : MonoBehaviour, ISelfSerialize
 {
+#warning TODO - backing field of base class is not drawn?
     [field: SerializeField]
     public int IntValue { get; set; }
 

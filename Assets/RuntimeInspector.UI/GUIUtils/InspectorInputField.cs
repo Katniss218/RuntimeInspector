@@ -14,7 +14,9 @@ namespace RuntimeInspector.UI.GUIUtils
     /// </summary>
     public static class InspectorInputField
     {
-        public static (RectTransform, InspectorValue) Create( RectTransform parent, MemberBinding binding, InspectorStyle style )
+        public static readonly string READONLY_PLACEHOLDER = string.Empty;
+
+        public static (RectTransform, UIBinding) Create( RectTransform parent, MemberBinding binding, InspectorStyle style )
         {
             GameObject valueGO = new GameObject( $"_value" );
             valueGO.layer = 5;
@@ -57,7 +59,7 @@ namespace RuntimeInspector.UI.GUIUtils
             valueTextTransform.anchorMax = new Vector2( 1.0f, 1.0f );
             valueTextTransform.pivot = new Vector2( 0.5f, 0.5f );
             valueTextTransform.anchoredPosition = new Vector2( 0.0f, 0.0f );
-            valueTextTransform.sizeDelta = new Vector2( 0.0f, 0.0f );
+            valueTextTransform.sizeDelta = new Vector2( style.InputFieldMargin * -2.0f, style.InputFieldMargin * -2.0f );
 
             TMPro.TextMeshProUGUI valueText = valueTextGO.AddComponent<TMPro.TextMeshProUGUI>();
             valueText.fontSize = style.FontSize;
@@ -71,8 +73,11 @@ namespace RuntimeInspector.UI.GUIUtils
             }
             else
             {
-                valueText.text = "<Can't read>";
+                valueText.text = READONLY_PLACEHOLDER;
             }
+
+            UIBinding submitter = valueGO.AddComponent<UIBinding>();
+            submitter.Binding = binding;
 
             if( binding.Metadata.CanWrite )
             {
@@ -87,26 +92,27 @@ namespace RuntimeInspector.UI.GUIUtils
                 {
                     valueInput.text = binding.Binding.GetValue().ToString();
                 }
+                else
+                {
+                    valueInput.text = READONLY_PLACEHOLDER;
+                }
 
                 valueInput.enabled = false;
                 valueInput.enabled = true; // regenerate the caret.
                 
-                InspectorValue submitter = valueGO.AddComponent<InspectorValue>();
                 submitter.InputField = valueInput;
-                submitter.Binding = binding;
-                //submitter.Parent = parent;
-               // submitter.Style = style;
-               // submitter.Root = rootTransform;
-                valueInput.onSubmit.AddListener( submitter.UpdateValue );
-
-                return (valueTransform, submitter);
+                valueInput.onSubmit.AddListener( submitter.SetValue );
             }
-            else
+            if( !binding.Metadata.CanWrite && binding.Metadata.CanRead )
             {
                 image.color = style.InputFieldColorReadonly;
             }
+            if( binding.Metadata.CanWrite && !binding.Metadata.CanRead )
+            {
+                image.color = style.InputFieldColorWriteonly;
+            }
 
-            return (valueTransform, null);
+            return (valueTransform, submitter);
         }
     }
 }

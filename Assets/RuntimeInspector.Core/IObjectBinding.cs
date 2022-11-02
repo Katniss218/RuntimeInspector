@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -11,16 +12,6 @@ namespace RuntimeInspector.Core
     /// </summary>
     public interface IObjectBinding
     {
-        /// <summary>
-        /// Returns the value cached from the last call to <see cref="GetValue"/>.
-        /// </summary>
-        object LastValue { get; }
-
-        // <summary>
-        /// Type of the bound instance (instance-dependent).
-        /// </summary>
-        Type GetInstanceType();
-
         /// <summary>
         /// Members of the bound instance (instance-dependent).
         /// </summary>
@@ -34,6 +25,13 @@ namespace RuntimeInspector.Core
         /// </summary>
         object GetValue();
 
+        /// <summary>
+        /// Returns the object containing this binding, if applicable.
+        /// </summary>
+        /// <remarks>
+        /// For the <see cref="Array.Length"/> field, it will return the array.
+        /// </remarks>
+        object Parent { get; }
 
         /// <summary>
         /// Sets the actual value bound to this binding.
@@ -43,27 +41,19 @@ namespace RuntimeInspector.Core
 
     public static class IObjectBinding_Ex
     {
-        public static bool HasChangedValue( object oldValue, object newValue )
+        public static Type GetInstanceType( this IObjectBinding binding )
+        {
+            Type value = binding.GetValue().GetType();
+            return value;
+        }
+
+        public static bool IsDifferent( object oldValue, object newValue )
         {
             if( newValue is null )
             {
                 return oldValue is not null;
             }
             return !newValue.Equals( oldValue );
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <remarks>
-        /// Be wary of calling this for write-only properties.
-        /// </remarks>
-        public static bool HasChangedValue( this IObjectBinding binding, out object newValue )
-        {
-            object oldValue = binding.LastValue;
-            newValue = binding.GetValue();
-
-            return HasChangedValue( oldValue, newValue );
         }
     }
 }

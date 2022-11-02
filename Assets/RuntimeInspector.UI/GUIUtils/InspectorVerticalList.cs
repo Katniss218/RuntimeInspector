@@ -10,9 +10,22 @@ namespace RuntimeInspector.UI.GUIUtils
 {
     public static class InspectorVerticalList
     {
-        public static RectTransform Create( RectTransform parent, InspectorStyle style )
+        public static RectTransform Find( string identifier, RectTransform parent )
         {
-            GameObject gameObject = new GameObject( $"_list" );
+            for( int i = 0; i < parent.childCount; i++ )
+            {
+                Transform transform = parent.GetChild( i );
+                if( transform.gameObject.name == $"${identifier}" )
+                {
+                    return (RectTransform)transform;
+                }
+            }
+            return null;
+        }
+
+        public static RectTransform Create( string identifier, RectTransform parent, InspectorStyle style )
+        {
+            GameObject gameObject = new GameObject( $"${identifier}" );
             gameObject.layer = 5;
 
             RectTransform rectTransform = gameObject.AddComponent<RectTransform>();
@@ -25,6 +38,7 @@ namespace RuntimeInspector.UI.GUIUtils
 
             VerticalLayoutGroup layoutGroup = gameObject.AddComponent<VerticalLayoutGroup>();
             layoutGroup.padding = new RectOffset( style.IndentWidth, 0, style.IndentMargin, style.IndentMargin );
+            layoutGroup.spacing = style.Spacing;
             layoutGroup.childControlWidth = true;
             layoutGroup.childControlHeight = false; 
             layoutGroup.childScaleWidth = false;

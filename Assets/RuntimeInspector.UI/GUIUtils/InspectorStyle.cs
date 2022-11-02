@@ -15,12 +15,16 @@ namespace RuntimeInspector.UI.GUIUtils
         public float FieldSpacing { get; set; } = 2.0f;
 
         public float TypeIconSize { get; set; } = 16.0f;
+        public float TypeIconMargin { get; set; } = 8.0f;
 
         public int IndentWidth { get; set; } = 16;
         public int IndentMargin { get; set; } = 8;
+        public float InputFieldMargin { get; set; } = 2.0f;
+        public float Spacing { get; set; } = 4.0f;
 
-        public Color InputFieldColor { get; set; } = new Color( 0.5f, 0.5f, 0.5f );
-        public Color InputFieldColorReadonly { get; set; } = new Color( 0.4f, 0.4f, 0.4f );
+        public Color InputFieldColor { get; set; } = new Color( 0.3f, 0.3f, 0.3f );
+        public Color InputFieldColorReadonly { get; set; } = new Color( 0.36f, 0.3f, 0.3f );
+        public Color InputFieldColorWriteonly { get; set; } = new Color( 0.3f, 0.36f, 0.3f );
         public Color LabelTextColor { get; set; } = new Color( 1.0f, 1.0f, 1.0f );
         public Color ValueTextColor { get; set; } = new Color( 1.0f, 1.0f, 1.0f );
 

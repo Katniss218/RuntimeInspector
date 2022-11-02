@@ -17,7 +17,7 @@ namespace RuntimeInspector.UI
 
         private static readonly Type baseDrawerType = typeof( Drawer );
 
-        private static readonly Type genericDrawerType = typeof( GenericDrawer );
+        private static readonly Type genericDrawerType = typeof( ObjectDrawer );
 
         private static readonly Type drawerOfAttributeType = typeof( DrawerOfAttribute );
 
@@ -102,7 +102,7 @@ namespace RuntimeInspector.UI
 
             if( drawer == null )
             {
-                foundDrawer = new GenericDrawer();
+                foundDrawer = new ObjectDrawer();
                 return foundDrawer;
             }
 

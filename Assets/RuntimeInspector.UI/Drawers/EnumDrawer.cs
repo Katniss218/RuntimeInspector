@@ -13,11 +13,29 @@ namespace RuntimeInspector.UI.Drawers
     [DrawerOf( typeof( Enum ) )]
     public class EnumDrawer : Drawer
     {
-        public override RectTransform Draw( RectTransform parent, MemberBinding binding, InspectorStyle style )
+        public override (RectTransform, UIBinding) Draw( RectTransform parent, MemberBinding binding, InspectorStyle style )
         {
-            RectTransform root = InspectorFieldOrProperty.Create( parent, AssetRegistry<Sprite>.GetAsset( "RuntimeInspector/Sprites/icon_enum" ), binding, style );
+            (bool destroyOld, bool createNew, UIBinding uiBinding) = GetRedrawMode( binding );
 
-            return root;
+            int siblingIndex = -2;
+            if( destroyOld )
+            {
+                siblingIndex = uiBinding.Root.GetSiblingIndex();
+                GameObject.Destroy( uiBinding.Root.gameObject );
+            }
+            if( createNew )
+            {
+                (RectTransform, UIBinding) obj = InspectorFieldOrProperty.Create( parent, AssetRegistry<Sprite>.GetAsset( "RuntimeInspector/Sprites/icon_enum" ), binding, style );
+
+                if( siblingIndex != -2 )
+                {
+                    obj.Item1.SetSiblingIndex( siblingIndex );
+                }
+
+                return obj;
+            }
+
+            return (uiBinding.Root, uiBinding);
         }
     }
 }

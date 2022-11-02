@@ -47,7 +47,7 @@ namespace RuntimeInspector.UI.GUIUtils
             rectTransform.anchorMax = new Vector2( 0.5f, 1.0f );
             rectTransform.pivot = new Vector2( 0.0f, 0.5f );
             rectTransform.anchoredPosition = new Vector2( 0.0f, 0.0f );
-            rectTransform.sizeDelta = new Vector2( 0.0f, 0.0f );
+            rectTransform.sizeDelta = new Vector2( 0.0f, style.FieldHeight );
 
             GameObject iconGameObject = new GameObject( $"icon" );
             iconGameObject.layer = 5;
@@ -73,8 +73,8 @@ namespace RuntimeInspector.UI.GUIUtils
             textTransform.anchorMin = new Vector2( 0.0f, 0.0f );
             textTransform.anchorMax = new Vector2( 1.0f, 1.0f );
             textTransform.pivot = new Vector2( 0.5f, 0.5f );
-            textTransform.anchoredPosition = new Vector2( 8.0f, 0.0f );
-            textTransform.sizeDelta = new Vector2( -16.0f, 0.0f );
+            textTransform.anchoredPosition = new Vector2( (style.TypeIconSize + style.TypeIconMargin) / 2, 0.0f );
+            textTransform.sizeDelta = new Vector2( -(style.TypeIconSize + style.TypeIconMargin), 0.0f );
 
             TMPro.TextMeshProUGUI labelText = textGameObject.AddComponent<TMPro.TextMeshProUGUI>();
             labelText.fontSize = style.FontSize;

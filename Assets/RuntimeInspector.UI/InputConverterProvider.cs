@@ -52,7 +52,7 @@ namespace RuntimeInspector.UI
 
             Type inType = incoming.GetType();
 
-            Type outType = binding.Metadata.ReflectedType;
+            Type outType = binding.Metadata.Type;
 
             // When the types are the same, there is no need to convert.
             if( inType == outType )

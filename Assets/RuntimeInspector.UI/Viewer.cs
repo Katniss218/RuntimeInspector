@@ -1,4 +1,5 @@
 using RuntimeInspector.Core;
+using RuntimeInspector.UI.Drawers;
 using RuntimeInspector.UI.GUIUtils;
 using System;
 using System.Collections;
@@ -31,12 +32,10 @@ namespace RuntimeInspector.UI
             {
                 binding = BindingUtils.GetBinding( () => DrawnObj, ( o ) => DrawnObj = (Component)o );
             }
-            if( !binding.Value.Binding.HasChangedValue(out _ ) )
-            {
-                return;
-            }
 
-            Drawer drawer = DrawerProvider.GetDrawerOfType( DrawnObj.GetType() );
+            //Drawer.Redraw( ViewerPanel, binding.Value, style );
+
+            Drawer drawer = DrawerProvider.GetDrawerOfType( binding.Value.Binding.GetInstanceType() );
             drawer.Draw( ViewerPanel, binding.Value, style );
         }
 

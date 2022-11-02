@@ -16,53 +16,23 @@ namespace RuntimeInspector.Core.Bindings
     {
         Func<object> _getter;
         Action<object> _setter;
-        bool _isInitialized = false;
-        object _lastValue;
-        List<MemberBinding> _instanceBindings;
-
-        public object LastValue
-        {
-            get
-            {
-                return _lastValue;
-            }
-        }
+        object _parent;
 
         public List<MemberBinding> InstanceMembers
-        {
-            get
-            {
-                return _instanceBindings;
-            }
-        }
+            => BindingUtils.GetMembersOf( GetValue() );
 
-        internal ArbitraryBinding( Func<object> getter, Action<object> setter )
+        public object Parent { get => _parent; }
+
+        internal ArbitraryBinding( Func<object> getter, Action<object> setter, object parent = null )
         {
             this._getter = getter;
             this._setter = setter;
-        }
-
-        public Type GetInstanceType()
-            => GetValue().GetType();
-
-        private void Recalculate()
-        {
-            _lastValue = _getter();
-            _instanceBindings = BindingUtils.GetMembersOf( _lastValue );
-            _isInitialized = true;
+            this._parent = parent;
         }
 
         public object GetValue()
         {
-            object newValue = _getter();
-            object oldValue = _lastValue;
-
-            if( IObjectBinding_Ex.HasChangedValue( oldValue, newValue ) )
-            {
-                Recalculate();
-            }
-
-            return _lastValue;
+            return _getter();
         }
 
         public void SetValue( object value )
