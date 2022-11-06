@@ -8,9 +8,14 @@ namespace RuntimeInspector.UI.Converters
 {
     public class StringToSingleConverter : IConverter<string, float>
     {
-        public float Convert( string value )
+        public float ConvertForward( string value )
         {
             return float.Parse( value );
+        }
+
+        public string ConvertReverse( float value )
+        {
+            return value.ToString();
         }
     }
 }

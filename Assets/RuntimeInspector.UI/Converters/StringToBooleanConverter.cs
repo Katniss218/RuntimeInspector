@@ -8,9 +8,14 @@ namespace RuntimeInspector.UI.Converters
 {
     public class StringToBooleanConverter : IConverter<string, bool>
     {
-        public bool Convert( string value )
+        public bool ConvertForward( string value )
         {
             return bool.Parse( value );
+        }
+
+        public string ConvertReverse( bool value )
+        {
+            return value.ToString();
         }
     }
 }

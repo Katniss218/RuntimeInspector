@@ -19,8 +19,6 @@ namespace RuntimeInspector.UI
         [field: SerializeField]
         public Component DrawnObj { get; private set; }
 
-        MemberBinding? binding = null;
-
         public void Show( InspectorStyle style )
         {
             if( DrawnObj is null )
@@ -28,29 +26,29 @@ namespace RuntimeInspector.UI
                 return;
             }
 
-            if( binding is null )
-            {
-                binding = BindingUtils.GetBinding( () => DrawnObj, ( o ) => DrawnObj = (Component)o );
-            }
+            string b = DrawnObj.ToString();
 
-            //Drawer.Redraw( ViewerPanel, binding.Value, style );
+            ObjectGraphNode rootGraphNode = ObjectGraphNode.CreateGraph( () => DrawnObj, ( o ) => DrawnObj = (Component)o );
 
-            Drawer drawer = DrawerProvider.GetDrawerOfType( binding.Value.Binding.GetInstanceType() );
-            drawer.Draw( ViewerPanel, binding.Value, style );
+            Drawer drawer = DrawerProvider.GetDrawerOfType( rootGraphNode.GetInstanceType() );
+            drawer.Draw( ViewerPanel, rootGraphNode, style );
         }
 
         void Start()
         {
             Show( InspectorStyle.Default );
         }
-        
 
-        int timer = -10;
+
+        int timer = 0;
+
+        const int UPDATE_DELAY = 50;
 
         void Update()
         {
             timer++;
-            if( timer > 50 )
+
+            if( timer > UPDATE_DELAY )
             {
                 timer = 0;
 

@@ -10,8 +10,19 @@ namespace RuntimeInspector.UI.GUIUtils
 {
     public static class InspectorVerticalList
     {
+        public struct Params
+        {
+            public bool IncludeMargin { get; set; }
+        }
+
         public static RectTransform Find( string identifier, RectTransform parent )
         {
+#warning TODO - kinda ugly.
+            if( parent == null )
+            {
+                return null;
+            }
+
             for( int i = 0; i < parent.childCount; i++ )
             {
                 Transform transform = parent.GetChild( i );
@@ -23,7 +34,7 @@ namespace RuntimeInspector.UI.GUIUtils
             return null;
         }
 
-        public static RectTransform Create( string identifier, RectTransform parent, InspectorStyle style )
+        public static RectTransform Create( string identifier, RectTransform parent, InspectorStyle style, Params param )
         {
             GameObject gameObject = new GameObject( $"${identifier}" );
             gameObject.layer = 5;
@@ -37,7 +48,14 @@ namespace RuntimeInspector.UI.GUIUtils
             rectTransform.sizeDelta = new Vector2( 0.0f, 200.0f );
 
             VerticalLayoutGroup layoutGroup = gameObject.AddComponent<VerticalLayoutGroup>();
-            layoutGroup.padding = new RectOffset( style.IndentWidth, 0, style.IndentMargin, style.IndentMargin );
+            if( param.IncludeMargin )
+            {
+                layoutGroup.padding = new RectOffset( style.IndentWidth, 0, style.IndentMargin, style.IndentMargin );
+            }
+            else
+            {
+                layoutGroup.padding = new RectOffset( 0, 0, 0, 0 );
+            }
             layoutGroup.spacing = style.Spacing;
             layoutGroup.childControlWidth = true;
             layoutGroup.childControlHeight = false; 

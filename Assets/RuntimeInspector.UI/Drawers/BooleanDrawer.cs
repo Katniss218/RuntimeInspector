@@ -7,36 +7,37 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace RuntimeInspector.UI.Drawers
 {
     [DrawerOf( typeof( bool ) )]
     public class BooleanDrawer : Drawer
     {
-        public override (RectTransform, UIBinding) Draw( RectTransform parent, MemberBinding binding, InspectorStyle style )
+        public override (RectTransform, UIObjectGraphBinding) Draw( RectTransform parent, ObjectGraphNode binding, InspectorStyle style )
         {
-            (bool destroyOld, bool createNew, UIBinding uiBinding) = GetRedrawMode( binding );
-
-            int siblingIndex = -2;
-            if( destroyOld )
+            RedrawData redrawData = RedrawData.GetRedrawData( binding );
+            if( redrawData.Hidden ) // this for some reason prevents the null list and whatnot.
             {
-                siblingIndex = uiBinding.Root.GetSiblingIndex();
-                GameObject.Destroy( uiBinding.Root.gameObject );
+                return (null, null);
             }
-            if( createNew )
+            if( redrawData.Binding == null )
             {
-                (RectTransform, UIBinding) obj = InspectorFieldOrProperty.Create( parent, AssetRegistry<Sprite>.GetAsset( "RuntimeInspector/Sprites/icon_boolean" ), binding, style );
+                (_, redrawData.Binding) = UINode.Create( parent, binding, style );
+            }
 
-                if( siblingIndex != -2 )
-                {
-                    obj.Item1.SetSiblingIndex( siblingIndex );
-                }
+            if( redrawData.DestroyOld )
+            {
+                Object.Destroy( redrawData.Binding.Root.GetChild( 0 ).gameObject );
+            }
+            if( redrawData.CreateNew )
+            {
+                (RectTransform, UIObjectGraphBinding) obj = InspectorFieldOrProperty.Create( parent, AssetRegistry<Sprite>.GetAsset( "RuntimeInspector/Sprites/icon_boolean" ), binding, style );
 
                 return obj;
             }
 
-#warning TODO - the return value seems to not be used or useful.
-            return (uiBinding.Root, uiBinding);
+            return (redrawData.Binding?.Root, redrawData.Binding);
         }
     }
 }

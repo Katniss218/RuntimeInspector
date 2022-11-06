@@ -9,13 +9,18 @@ namespace RuntimeInspector.UI
     /// <summary>
     /// Converts between 2 types.
     /// </summary>
-    /// <typeparam name="TIn">The input type of the Convert method.</typeparam>
-    /// <typeparam name="TOut">The output type of the Convert method.</typeparam>
+    /// <typeparam name="TIn">The input type.</typeparam>
+    /// <typeparam name="TOut">The output type.</typeparam>
     public interface IConverter<TIn, TOut>
     {
         /// <summary>
-        /// Converts one type of value into another.
+        /// Converts the input value into the output value (forward conversion).
         /// </summary>
-        TOut Convert( TIn value );
+        TOut ConvertForward( TIn value );
+
+        /// <summary>
+        /// Converts the output value into the input value (reverse conversion).
+        /// </summary>
+        TIn ConvertReverse( TOut value );
     }
 }

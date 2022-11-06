@@ -14,19 +14,19 @@ namespace RuntimeInspector.UI.Drawers
     [DrawerOf( typeof( string ) )]
     public class StringDrawer : Drawer
     {
-        public override (RectTransform, UIBinding) Draw( RectTransform parent, MemberBinding binding, InspectorStyle style )
+        public override (RectTransform, UIObjectGraphBinding) Draw( RectTransform parent, ObjectGraphNode binding, InspectorStyle style )
         {
-            (bool destroyOld, bool createNew, UIBinding uiBinding) = GetRedrawMode( binding );
+            RedrawData redrawData = RedrawData.GetRedrawData( binding );
 
             int siblingIndex = -2;
-            if( destroyOld )
+            if( redrawData.DestroyOld )
             {
-                siblingIndex = uiBinding.Root.GetSiblingIndex();
-                Object.Destroy( uiBinding.Root.gameObject );
+                siblingIndex = redrawData.Binding.Root.GetSiblingIndex();
+                Object.Destroy( redrawData.Binding.Root.gameObject );
             }
-            if( createNew )
+            if( redrawData.CreateNew )
             {
-                (RectTransform, UIBinding) obj = InspectorFieldOrProperty.Create( parent, AssetRegistry<Sprite>.GetAsset( "RuntimeInspector/Sprites/icon_string16" ), binding, style );
+                (RectTransform, UIObjectGraphBinding) obj = InspectorFieldOrProperty.Create( parent, AssetRegistry<Sprite>.GetAsset( "RuntimeInspector/Sprites/icon_string16" ), binding, style );
 
                 if( siblingIndex != -2 )
                 {
@@ -36,7 +36,7 @@ namespace RuntimeInspector.UI.Drawers
                 return obj;
             }
 
-            return (uiBinding.Root, uiBinding);
+            return (redrawData.Binding?.Root, redrawData.Binding);
         }
     }
 }

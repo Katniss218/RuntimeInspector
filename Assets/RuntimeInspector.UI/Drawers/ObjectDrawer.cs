@@ -17,75 +17,64 @@ namespace RuntimeInspector.UI.Drawers
     /// </summary>
     public class ObjectDrawer : Drawer
     {
-        public override (RectTransform, UIBinding) Draw( RectTransform parent, MemberBinding binding, InspectorStyle style )
+        public override (RectTransform, UIObjectGraphBinding) Draw( RectTransform parent, ObjectGraphNode binding, InspectorStyle style )
         {
-            (bool destroyOld, bool createNew, UIBinding uiBinding) = GetRedrawMode( binding );
-
-            int siblingIndex = -2;
-            if( destroyOld )
+            RedrawData redrawData = RedrawData.GetRedrawData( binding );
+            if( redrawData.Hidden ) // this for some reason prevents the null list and whatnot.
             {
-                siblingIndex = uiBinding.Root.GetSiblingIndex();
-                Object.Destroy( uiBinding.Root.gameObject );
+                return (null, null);
+            }
+            if( redrawData.Binding == null )
+            {
+                (_, redrawData.Binding) = UINode.Create( parent, binding, style );
             }
 
-            RectTransform list;
-            if( createNew )
+            bool isNullOrWriteOnly = true;
+            if( binding.CanRead )
             {
-#warning TODO - move this and the new list to a separate helper method.
-                GameObject gameObject = new GameObject( "group" );
-                gameObject.layer = 5;
-
-                RectTransform rectTransform = gameObject.AddComponent<RectTransform>();
-                rectTransform.SetParent( parent );
-
-                if( siblingIndex != -2 )
+                // UnityObjects are not truly null, UnityObject overrides the `==` operator to make empty references equal to null.
+                object value = binding.GetValue();
+                isNullOrWriteOnly = value == null;
+                if( value is Object unityobject )
                 {
-                    rectTransform.SetSiblingIndex( siblingIndex );
+                    isNullOrWriteOnly = unityobject == null;
                 }
+            }
 
-                rectTransform.anchorMin = new Vector2( 0.0f, 1.0f );
-                rectTransform.anchorMax = new Vector2( 1.0f, 1.0f );
-                rectTransform.pivot = new Vector2( 0.0f, 0.5f );
-                rectTransform.anchoredPosition = new Vector2( 0.0f, 0.0f );
-                rectTransform.sizeDelta = new Vector2( 0.0f, 0.0f );
+            if( redrawData.DestroyOld )
+            {
+                Object.Destroy( redrawData.Binding.Root.GetChild( 0 ).gameObject );
+            }
 
-                VerticalLayoutGroup layoutGroup = gameObject.AddComponent<VerticalLayoutGroup>();
-                layoutGroup.padding = new RectOffset( 0, 0, 0, 0 );
-                layoutGroup.childControlWidth = true;
-                layoutGroup.childControlHeight = false;
-                layoutGroup.childScaleWidth = false;
-                layoutGroup.childScaleHeight = false;
-                layoutGroup.childForceExpandWidth = true;
-                layoutGroup.childForceExpandHeight = false;
+            RectTransform list = null;
+            if( redrawData.CreateNew )
+            {
+                RectTransform group = InspectorVerticalList.Create( "group", redrawData.Binding.Root, style, new InspectorVerticalList.Params() { IncludeMargin = false } );
 
-                ContentSizeFitter fitter = gameObject.AddComponent<ContentSizeFitter>();
+                RectTransform label = InspectorLabel.Create( group, AssetRegistry<Sprite>.GetAsset( "RuntimeInspector/Sprites/icon_object" ), $"{binding.Name} >", style );
 
-                fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
-                fitter.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
-
-                UIBinding insBi = gameObject.AddComponent<UIBinding>();
-                insBi.Root = rectTransform;
-                insBi.Binding = binding;
-
-                RectTransform label = InspectorLabel.Create( rectTransform, AssetRegistry<Sprite>.GetAsset( "RuntimeInspector/Sprites/icon_object" ), $"{binding.Metadata.Name} >", style );
-
-                list = InspectorVerticalList.Create( "list", rectTransform, style );
+                if( !isNullOrWriteOnly )
+                {
+                    list = InspectorVerticalList.Create( "list", group, style, new InspectorVerticalList.Params() { IncludeMargin = true } );
+                }
             }
             else
             {
-                list = InspectorVerticalList.Find( "list", uiBinding.Root );
+                if( !isNullOrWriteOnly )
+                {
+                    list = InspectorVerticalList.Find( "list", redrawData.Binding?.Root );
+                }
             }
 
             // Set up the UI elements that will be shown/updated.
-#warning TODO - read-only objects.
-            if( binding.Binding.GetValue() != null )
+            if( !isNullOrWriteOnly )
             {
-                foreach( var memberBinding in binding.Binding.InstanceMembers )
+                foreach( var memberBinding in binding.Children )
                 {
                     // Don't list complete inheritance tree of certain types.
                     // - Component and MonoBehaviour have a bunch of internal Unity garbage.
 
-                    Type declaringType = memberBinding.Metadata.DeclaringType;
+                    Type declaringType = memberBinding.DeclaringType;
                     if(
                         declaringType == typeof( Object )
                      || declaringType == typeof( Component )
@@ -95,12 +84,12 @@ namespace RuntimeInspector.UI.Drawers
                         continue;
                     }
 
-#warning TODO - the property of type object is not drawn?
-                    Drawer drawer = DrawerProvider.GetDrawerOfType( memberBinding.GetDrawnType() );
+                    Drawer drawer = DrawerProvider.GetDrawerOfType( memberBinding.GetInstanceType() );
                     drawer.Draw( list, memberBinding, style );
                 }
             }
-            return (list, null);
+#warning TODO - 'list' is not the root.
+            return (redrawData.Binding.Root, redrawData.Binding);
         }
     }
 }

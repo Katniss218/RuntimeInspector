@@ -11,24 +11,34 @@ namespace RuntimeInspector.UI
 {
     public static class InputConverterProvider
     {
-        private static Dictionary<(Type, Type), object> availableConverters = new Dictionary<(Type, Type), object>();
+        private static Dictionary<(Type, Type), object> _cachedConverters = null;
 
-        private static readonly Type baseConverterType = typeof( IConverter<,> );
+        private static readonly Type BASE_CONVERTER_TYPE = typeof( IConverter<,> );
 
-        private const int INPUT_PARAM_INDEX = 0;
-        private const int OUTPUT_PARAM_INDEX = 1;
+        public const int INPUT_PARAM_INDEX = 0;
+        public const int OUTPUT_PARAM_INDEX = 1;
 
-        public static void ReloadConverters()
-        { 
-            availableConverters = new Dictionary<(Type, Type), object>();
+        public const string CONVERT_FORWARD_METHOD_NAME = "ConvertForward";
+        public const string CONVERT_REVERSE_METHOD_NAME = "ConvertReverse";
 
+        private static List<Type> GetAllTypesImplementingGenericInterface( Type genericInterfaceType )
+        {
             List<Type> converters = AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany( a => a.GetTypes() )
                 .Where(
                     dt => !dt.IsAbstract
-                 && dt != baseConverterType
-                 && dt.GetInterfaces().Any( i => i.IsGenericType && i.GetGenericTypeDefinition() == baseConverterType ) )
+                 && dt != genericInterfaceType
+                 && dt.GetInterfaces().Any( i => i.IsGenericType && i.GetGenericTypeDefinition() == genericInterfaceType ) )
                 .ToList();
+
+            return converters;
+        }
+
+        public static void ReloadConverters()
+        {
+            _cachedConverters = new Dictionary<(Type, Type), object>();
+
+            List<Type> converters = GetAllTypesImplementingGenericInterface( BASE_CONVERTER_TYPE );
 
             foreach( var converterType in converters )
             {
@@ -39,40 +49,60 @@ namespace RuntimeInspector.UI
 
                 object converter = Activator.CreateInstance( converterType );
 
-                availableConverters.Add( (inType, outType), converter );
+                _cachedConverters.Add( (inType, outType), converter );
             }
         }
 
-        public static void AssignValue( MemberBinding binding, object incoming )
+        public static bool TryConvertForward( Type outType, object incoming, out object converted )
         {
-            if( !availableConverters.Any() )
+            if( _cachedConverters == null )
             {
                 ReloadConverters();
             }
 
             Type inType = incoming.GetType();
 
-            Type outType = binding.Metadata.Type;
-
             // When the types are the same, there is no need to convert.
-            if( inType == outType )
+            if( outType.IsAssignableFrom( inType ) )
             {
-                binding.Binding.SetValue( incoming );
-                return;
+                converted = incoming;
+                return true;
             }
 
             // TODO - Take into account base types if available??? Do we want that?
 
-            availableConverters.TryGetValue( (inType, outType), out object converter );
+            _cachedConverters.TryGetValue( (inType, outType), out object converter );
             if( converter == null )
             {
                 Debug.LogError( $"Converter for types '{inType}' -> '{outType}' not found." );
-                return;
+
+                converted = null;
+                return false;
             }
 
-            object outVal = converter.GetType().GetMethod( "Convert" ).Invoke( converter, new[] { incoming } );
+            try
+            {
+                converted = converter.GetType().GetMethod( CONVERT_FORWARD_METHOD_NAME ).Invoke( converter, new[] { incoming } );
+            }
+            catch
+            {
+                converted = null;
+                return false;
+            }
 
-            binding.Binding.SetValue( outVal );
+            return true;
+        }
+
+        public static bool TryConvertForward<T>( object incoming, out T converted )
+        {
+            if( TryConvertForward( typeof( T ), incoming, out object convertedInternal ) )
+            {
+                converted = (T)convertedInternal;
+                return true;
+            }
+
+            converted = default;
+            return false;
         }
     }
 }

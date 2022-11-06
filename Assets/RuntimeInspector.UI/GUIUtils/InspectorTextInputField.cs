@@ -12,11 +12,11 @@ namespace RuntimeInspector.UI.GUIUtils
     /// <summary>
     /// Helper class to create GUI input fields.
     /// </summary>
-    public static class InspectorInputField
+    public static class InspectorTextInputField
     {
         public static readonly string READONLY_PLACEHOLDER = string.Empty;
 
-        public static (RectTransform, UIBinding) Create( RectTransform parent, MemberBinding binding, InspectorStyle style )
+        public static (RectTransform, UIObjectGraphBinding) Create( RectTransform parent, ObjectGraphNode binding, InspectorStyle style )
         {
             GameObject valueGO = new GameObject( $"_value" );
             valueGO.layer = 5;
@@ -67,19 +67,19 @@ namespace RuntimeInspector.UI.GUIUtils
             valueText.overflowMode = TMPro.TextOverflowModes.Overflow;
             valueText.color = style.ValueTextColor;
 
-            if( binding.Metadata.CanRead )
+            if( binding.CanRead )
             {
-                valueText.text = binding.Binding.GetValue().ToString();
+                valueText.text = binding.GetValue().ToString();
             }
             else
             {
                 valueText.text = READONLY_PLACEHOLDER;
             }
 
-            UIBinding submitter = valueGO.AddComponent<UIBinding>();
-            submitter.Binding = binding;
+            UIObjectGraphBinding submitter = valueGO.AddComponent<UIObjectGraphBinding>();
+            submitter.Node = binding;
 
-            if( binding.Metadata.CanWrite )
+            if( binding.CanWrite )
             {
                 TMPro.TMP_InputField valueInput = valueGO.AddComponent<TMPro.TMP_InputField>();
 
@@ -87,10 +87,11 @@ namespace RuntimeInspector.UI.GUIUtils
                 valueInput.textComponent = valueText;
                 valueInput.fontAsset = valueText.font;
                 valueInput.pointSize = style.FontSize;
+                valueInput.restoreOriginalTextOnEscape = true;
 
-                if( binding.Metadata.CanRead )
+                if( binding.CanRead )
                 {
-                    valueInput.text = binding.Binding.GetValue().ToString();
+                    valueInput.text = binding.GetValue().ToString();
                 }
                 else
                 {
@@ -101,13 +102,13 @@ namespace RuntimeInspector.UI.GUIUtils
                 valueInput.enabled = true; // regenerate the caret.
                 
                 submitter.InputField = valueInput;
-                valueInput.onSubmit.AddListener( submitter.SetValue );
+                valueInput.onSubmit.AddListener( submitter.SetValueText );
             }
-            if( !binding.Metadata.CanWrite && binding.Metadata.CanRead )
+            if( !binding.CanWrite && binding.CanRead )
             {
                 image.color = style.InputFieldColorReadonly;
             }
-            if( binding.Metadata.CanWrite && !binding.Metadata.CanRead )
+            if( binding.CanWrite && !binding.CanRead )
             {
                 image.color = style.InputFieldColorWriteonly;
             }

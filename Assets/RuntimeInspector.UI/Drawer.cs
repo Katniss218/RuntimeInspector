@@ -1,4 +1,5 @@
 ﻿using RuntimeInspector.Core;
+using RuntimeInspector.UI.Attributes;
 using RuntimeInspector.UI.Drawers;
 using RuntimeInspector.UI.GUIUtils;
 using System;
@@ -8,36 +9,76 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
-using Object = UnityEngine.Object;
 
 namespace RuntimeInspector.UI
 {
-    public abstract class Drawer
+    public struct RedrawData
     {
-        public abstract (RectTransform, UIBinding) Draw( RectTransform parent, MemberBinding binding, InspectorStyle style );
-  
-        public static (bool destroyOld, bool createNew, UIBinding uiBinding) GetRedrawMode( MemberBinding binding )
+        public bool DestroyOld { get; set; }
+        public bool CreateNew { get; set; }
+        public UIObjectGraphBinding Binding { get; set; }
+
+        public bool Hidden { get; set; }
+
+        public RedrawData( bool destroyOld, bool createNew, UIObjectGraphBinding binding, bool hidden )
         {
+            this.DestroyOld = destroyOld;
+            this.CreateNew = createNew;
+            this.Binding = binding;
+            this.Hidden = hidden;
+        }
+
+        public static RedrawData GetRedrawData( ObjectGraphNode node )
+        {
+            if( node.GetAttributes<HideAttribute>().FirstOrDefault() != null )
+            {
+                return new RedrawData( false, false, null, true );
+            }
+
             bool destroyOld = false;
             bool createNew = false;
 
-            UIBinding drawnBinding = UIBinding.Find( binding );
+            UIObjectGraphBinding drawnBinding = UIObjectGraphBinding.Find( node );
 
-            if( drawnBinding != null && drawnBinding.IsStale )
+            // we should redraw if the value changed, or if the value isn't drawn at all.
+            // we should remove the previous value if it changed, and is drawn.
+
+            bool isDisplayedValueStale = false;
+            if( drawnBinding != null )
             {
-                if( drawnBinding.Root == null )
+                if( node.CanRead )
                 {
-                    Debug.LogWarning( $"UIBinding.Root for Binding '{binding.Metadata.Name}' was null." );
+                    object displayedValue = drawnBinding.CurrentValue;
+                    object newValue = node.GetValue();
+                    isDisplayedValueStale = !displayedValue?.Equals( newValue ) ?? newValue == null;
+                }
+                else
+                {
+                    isDisplayedValueStale = false;
                 }
 
-                destroyOld = true;
+                if( isDisplayedValueStale )
+                {
+                    if( drawnBinding.Root == null )
+                    {
+                        Debug.LogWarning( $"UIBinding.Root for Binding '{node.Name}' was null." );
+                    }
+
+                    destroyOld = true;
+                }
             }
-            if( drawnBinding == null || drawnBinding.IsStale )
+
+            if( drawnBinding == null || isDisplayedValueStale )
             {
                 createNew = true;
             }
 
-            return (destroyOld, createNew, drawnBinding);
+            return new RedrawData( destroyOld, createNew, drawnBinding, false );
         }
+    }
+
+    public abstract class Drawer
+    {
+        public abstract (RectTransform root, UIObjectGraphBinding) Draw( RectTransform parent, ObjectGraphNode binding, InspectorStyle style );
     }
 }

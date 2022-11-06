@@ -23,6 +23,7 @@ namespace RuntimeInspector.UI.GUIUtils
             rectTransform.pivot = new Vector2( 0.0f, 0.5f );
             rectTransform.anchoredPosition = new Vector2( 0.0f, 0.0f );
             rectTransform.sizeDelta = new Vector2( 200.0f, style.FieldHeight );
+#warning TODO - separate method for standalone labels? (they should have size of 0, 0)
 
             TMPro.TextMeshProUGUI labelText = gameObject.AddComponent<TMPro.TextMeshProUGUI>();
             labelText.fontSize = style.FontSize;

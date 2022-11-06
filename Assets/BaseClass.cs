@@ -1,40 +1,47 @@
 using Newtonsoft.Json.Linq;
+using RuntimeInspector.UI.Attributes;
 using RuntimeInspector.Serialization;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BaseClass : MonoBehaviour, ISelfSerialize
+namespace A
 {
-#warning TODO - backing field of base class is not drawn?
-    [field: SerializeField]
-    public int IntValue { get; set; }
-
-    [field: SerializeField]
-    public string StringValue { get; set; }
-
-    //[field: SerializeField]
-    //public MeshFilter Filter { get; set; }
-
-    //[field: SerializeField]
-    //public MeshRenderer Renderer { get; set; }
-
-    public virtual JToken WriteJson()
+    public class BaseClass : MonoBehaviour, ISelfSerialize
     {
-        return new JObject()
+        [field: SerializeField]
+        [field: Hide]
+        public int IntValue { get; set; }
+
+        [field: SerializeField]
+        [field: Hide]
+        public string StringValue { get; set; }
+
+        [field: SerializeField]
+        [field: Hide]
+        public MeshFilter Filter { get; set; }
+
+        [field: SerializeField]
+        [field: Hide]
+        public MeshRenderer Renderer { get; set; }
+
+        public virtual JToken WriteJson()
         {
-            { "IntValue", this.IntValue },
-            { "StringValue", this.StringValue },
-          // { "Filter", ObjectSerializer.WriteObjectReference(Filter) },
-          // { "Renderer", ObjectSerializer.WriteObjectReference(Renderer) }
-        };
-    }
+            return new JObject()
+            {
+                { "IntValue", this.IntValue },
+                { "StringValue", this.StringValue },
+                { "Filter", ObjectSerializer.WriteObjectReference(Filter) },
+                { "Renderer", ObjectSerializer.WriteObjectReference(Renderer) }
+            };
+        }
 
-    public virtual void ReadJson( JToken json )
-    {
-        this.IntValue = (int)json["IntValue"];
-        this.StringValue = (string)json["StringValue"];
-       // this.Filter = (MeshFilter)ObjectSerializer.ReadObjectReference( json["Filter"] );
-       // this.Renderer = (MeshRenderer)ObjectSerializer.ReadObjectReference( json["Renderer"] );
+        public virtual void ReadJson( JToken json )
+        {
+            this.IntValue = (int)json["IntValue"];
+            this.StringValue = (string)json["StringValue"];
+            this.Filter = (MeshFilter)ObjectSerializer.ReadObjectReference( json["Filter"] );
+            this.Renderer = (MeshRenderer)ObjectSerializer.ReadObjectReference( json["Renderer"] );
+        }
     }
 }

@@ -14,9 +14,9 @@ namespace RuntimeInspector.UI.GUIUtils
     /// </summary>
     public static class InspectorFieldOrProperty
     {
-        public static (RectTransform, UIBinding) Create( RectTransform parent, Sprite typeIcon, MemberBinding binding, InspectorStyle style )
+        public static (RectTransform, UIObjectGraphBinding) Create( RectTransform parent, Sprite typeIcon, ObjectGraphNode binding, InspectorStyle style )
         {
-            GameObject root = new GameObject( $"{binding.Metadata.Name} ({binding.GetDrawnType().FullName})" );
+            GameObject root = new GameObject( $"{binding.Name} ({binding.GetInstanceType().FullName})" );
             root.layer = 5;
 
             RectTransform rootTransform = root.AddComponent<RectTransform>();
@@ -27,10 +27,10 @@ namespace RuntimeInspector.UI.GUIUtils
             rootTransform.anchoredPosition = new Vector2( 0.0f, 0.0f );
             rootTransform.sizeDelta = new Vector2( 0.0f, style.FieldHeight );
 
-            RectTransform label = InspectorLabel.Create( rootTransform, typeIcon, binding.Metadata.Name, style );
+            RectTransform label = InspectorLabel.Create( rootTransform, typeIcon, binding.Name, style );
 
 
-            (RectTransform value, UIBinding submitter) = InspectorInputField.Create( rootTransform, binding, style );
+            RectTransform value = InspectorTextInputField.Create( rootTransform, binding, style );
             if( submitter != null ) // read-only I guess. Every binding should get a submitter no matter what.
             {
                 submitter.Root = rootTransform;

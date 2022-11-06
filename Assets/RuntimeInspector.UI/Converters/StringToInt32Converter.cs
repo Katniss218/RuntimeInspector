@@ -8,9 +8,14 @@ namespace RuntimeInspector.UI.Converters
 {
     public class StringToInt32Converter : IConverter<string, int>
     {
-        public int Convert( string value )
+        public int ConvertForward( string value )
         {
             return int.Parse( value );
+        }
+
+        public string ConvertReverse( int value )
+        {
+            return value.ToString();
         }
     }
 }
