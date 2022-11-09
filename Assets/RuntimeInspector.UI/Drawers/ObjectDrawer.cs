@@ -17,18 +17,8 @@ namespace RuntimeInspector.UI.Drawers
     /// </summary>
     public class ObjectDrawer : Drawer
     {
-        public override (RectTransform, UIObjectGraphBinding) Draw( RectTransform parent, ObjectGraphNode binding, InspectorStyle style )
+        protected override (RectTransform, UIObjectGraphBinding) DrawInternal( RedrawData redrawData, ObjectGraphNode binding, InspectorStyle style )
         {
-            RedrawData redrawData = RedrawData.GetRedrawData( binding );
-            if( redrawData.Hidden ) // this for some reason prevents the null list and whatnot.
-            {
-                return (null, null);
-            }
-            if( redrawData.Binding == null )
-            {
-                (_, redrawData.Binding) = UINode.Create( parent, binding, style );
-            }
-
             bool isNullOrWriteOnly = true;
             if( binding.CanRead )
             {
@@ -41,15 +31,10 @@ namespace RuntimeInspector.UI.Drawers
                 }
             }
 
-            if( redrawData.DestroyOld )
-            {
-                Object.Destroy( redrawData.Binding.Root.GetChild( 0 ).gameObject );
-            }
-
             RectTransform list = null;
             if( redrawData.CreateNew )
             {
-                RectTransform group = InspectorVerticalList.Create( "group", redrawData.Binding.Root, style, new InspectorVerticalList.Params() { IncludeMargin = false } );
+                RectTransform group = InspectorVerticalList.Create( "group", redrawData.GraphUI.Root, style, new InspectorVerticalList.Params() { IncludeMargin = false } );
 
                 RectTransform label = InspectorLabel.Create( group, AssetRegistry<Sprite>.GetAsset( "RuntimeInspector/Sprites/icon_object" ), $"{binding.Name} >", style );
 
@@ -62,9 +47,11 @@ namespace RuntimeInspector.UI.Drawers
             {
                 if( !isNullOrWriteOnly )
                 {
-                    list = InspectorVerticalList.Find( "list", redrawData.Binding?.Root );
+                    list = InspectorVerticalList.Find( "list", redrawData.GraphUI?.Root );
                 }
             }
+
+            // regardless whether the node was created or not, we should ping the child objects.
 
             // Set up the UI elements that will be shown/updated.
             if( !isNullOrWriteOnly )
@@ -89,7 +76,7 @@ namespace RuntimeInspector.UI.Drawers
                 }
             }
 #warning TODO - 'list' is not the root.
-            return (redrawData.Binding.Root, redrawData.Binding);
+            return (redrawData.GraphUI.Root, redrawData.GraphUI);
         }
     }
 }

@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
+using Object = UnityEngine.Object;
 
 namespace RuntimeInspector.UI
 {
@@ -16,7 +17,7 @@ namespace RuntimeInspector.UI
     {
         public bool DestroyOld { get; set; }
         public bool CreateNew { get; set; }
-        public UIObjectGraphBinding Binding { get; set; }
+        public UIObjectGraphBinding GraphUI { get; set; }
 
         public bool Hidden { get; set; }
 
@@ -24,7 +25,7 @@ namespace RuntimeInspector.UI
         {
             this.DestroyOld = destroyOld;
             this.CreateNew = createNew;
-            this.Binding = binding;
+            this.GraphUI = binding;
             this.Hidden = hidden;
         }
 
@@ -79,6 +80,35 @@ namespace RuntimeInspector.UI
 
     public abstract class Drawer
     {
-        public abstract (RectTransform root, UIObjectGraphBinding) Draw( RectTransform parent, ObjectGraphNode binding, InspectorStyle style );
+        /// <summary>
+        /// Draws a graph node using the drawer.
+        /// </summary>
+        /// <param name="parent">The root of the graph node will be drawn as a child of this object.</param>
+        /// <param name="binding">The graph node to draw.</param>
+        public UIObjectGraphBinding Draw( RectTransform parent, ObjectGraphNode binding, InspectorStyle style )
+        {
+            RedrawData redrawData = RedrawData.GetRedrawData( binding );
+            if( redrawData.Hidden ) // this for some reason prevents the null list and whatnot.
+            {
+                return null;
+            }
+            if( redrawData.GraphUI == null )
+            {
+                (_, redrawData.GraphUI) = UINode.Create( parent, binding, style );
+            }
+
+            if( redrawData.DestroyOld )
+            {
+                Object.Destroy( redrawData.GraphUI.Root.GetChild( 0 ).gameObject );
+            }
+
+            (_, UIObjectGraphBinding b) = DrawInternal( redrawData, binding, style );
+            return b;
+        }
+
+        /// <summary>
+        /// Override this method in a derived drawer to implement the drawing functionality.
+        /// </summary>
+        protected abstract (RectTransform root, UIObjectGraphBinding) DrawInternal( RedrawData redrawData, ObjectGraphNode binding, InspectorStyle style );
     }
 }

@@ -14,30 +14,16 @@ namespace RuntimeInspector.UI.Drawers
     [DrawerOf( typeof( float ) )]
     public class SingleDrawer : Drawer
     {
-        public override (RectTransform, UIObjectGraphBinding) Draw( RectTransform parent, ObjectGraphNode binding, InspectorStyle style )
+        protected override (RectTransform, UIObjectGraphBinding) DrawInternal( RedrawData redrawData, ObjectGraphNode binding, InspectorStyle style )
         {
-            RedrawData redrawData = RedrawData.GetRedrawData( binding );
-            if( redrawData.Hidden ) // this for some reason prevents the null list and whatnot.
-            {
-                return (null, null);
-            }
-            if( redrawData.Binding == null )
-            {
-                (_, redrawData.Binding) = UINode.Create( parent, binding, style );
-            }
-
-            if( redrawData.DestroyOld )
-            {
-                Object.Destroy( redrawData.Binding.Root.GetChild( 0 ).gameObject );
-            }
             if( redrawData.CreateNew )
             {
-                (RectTransform, UIObjectGraphBinding) obj = InspectorFieldOrProperty.Create( redrawData.Binding.Root, AssetRegistry<Sprite>.GetAsset( "RuntimeInspector/Sprites/icon_binary32" ), binding, style );
+                (RectTransform, UIObjectGraphBinding) obj = InspectorFieldOrProperty.Create( redrawData.GraphUI.Root, AssetRegistry<Sprite>.GetAsset( "RuntimeInspector/Sprites/icon_binary32" ), binding, style );
 
                 return obj;
             }
 
-            return (redrawData.Binding?.Root, redrawData.Binding);
+            return (redrawData.GraphUI?.Root, redrawData.GraphUI);
         }
     }
 }
