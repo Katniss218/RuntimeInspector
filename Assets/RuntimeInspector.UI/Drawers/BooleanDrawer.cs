@@ -32,7 +32,7 @@ namespace RuntimeInspector.UI.Drawers
             }
             if( redrawData.CreateNew )
             {
-                (RectTransform, UIObjectGraphBinding) obj = InspectorFieldOrProperty.Create( parent, AssetRegistry<Sprite>.GetAsset( "RuntimeInspector/Sprites/icon_boolean" ), binding, style );
+                (RectTransform, UIObjectGraphBinding) obj = InspectorFieldOrProperty.Create( redrawData.Binding.Root, AssetRegistry<Sprite>.GetAsset( "RuntimeInspector/Sprites/icon_boolean" ), binding, style );
 
                 return obj;
             }

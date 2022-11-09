@@ -16,7 +16,7 @@ namespace RuntimeInspector.UI.GUIUtils
     {
         public static readonly string READONLY_PLACEHOLDER = string.Empty;
 
-        public static (RectTransform, UIObjectGraphBinding) Create( RectTransform parent, ObjectGraphNode binding, InspectorStyle style )
+        public static RectTransform Create( RectTransform parent, UIObjectGraphBinding uiBinding, ObjectGraphNode binding, InspectorStyle style )
         {
             GameObject valueGO = new GameObject( $"_value" );
             valueGO.layer = 5;
@@ -76,8 +76,10 @@ namespace RuntimeInspector.UI.GUIUtils
                 valueText.text = READONLY_PLACEHOLDER;
             }
 
-            UIObjectGraphBinding submitter = valueGO.AddComponent<UIObjectGraphBinding>();
-            submitter.Node = binding;
+            /*
+            UIObjectGraphBinding uiBinding = valueGO.AddComponent<UIObjectGraphBinding>();
+            uiBinding.Node = binding;
+            */
 
             if( binding.CanWrite )
             {
@@ -100,9 +102,9 @@ namespace RuntimeInspector.UI.GUIUtils
 
                 valueInput.enabled = false;
                 valueInput.enabled = true; // regenerate the caret.
-                
-                submitter.InputField = valueInput;
-                valueInput.onSubmit.AddListener( submitter.SetValueText );
+
+                uiBinding.InputField = valueInput;
+                valueInput.onSubmit.AddListener( uiBinding.SetValueText );
             }
             if( !binding.CanWrite && binding.CanRead )
             {
@@ -113,7 +115,7 @@ namespace RuntimeInspector.UI.GUIUtils
                 image.color = style.InputFieldColorWriteonly;
             }
 
-            return (valueTransform, submitter);
+            return valueTransform;
         }
     }
 }

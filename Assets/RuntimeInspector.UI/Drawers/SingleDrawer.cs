@@ -17,21 +17,22 @@ namespace RuntimeInspector.UI.Drawers
         public override (RectTransform, UIObjectGraphBinding) Draw( RectTransform parent, ObjectGraphNode binding, InspectorStyle style )
         {
             RedrawData redrawData = RedrawData.GetRedrawData( binding );
+            if( redrawData.Hidden ) // this for some reason prevents the null list and whatnot.
+            {
+                return (null, null);
+            }
+            if( redrawData.Binding == null )
+            {
+                (_, redrawData.Binding) = UINode.Create( parent, binding, style );
+            }
 
-            int siblingIndex = -2;
             if( redrawData.DestroyOld )
             {
-                siblingIndex = redrawData.Binding.Root.GetSiblingIndex();
-                Object.Destroy( redrawData.Binding.Root.gameObject );
+                Object.Destroy( redrawData.Binding.Root.GetChild( 0 ).gameObject );
             }
             if( redrawData.CreateNew )
             {
-                (RectTransform, UIObjectGraphBinding) obj = InspectorFieldOrProperty.Create( parent, AssetRegistry<Sprite>.GetAsset( "RuntimeInspector/Sprites/icon_binary32" ), binding, style );
-
-                if( siblingIndex != -2 )
-                {
-                    obj.Item1.SetSiblingIndex( siblingIndex );
-                }
+                (RectTransform, UIObjectGraphBinding) obj = InspectorFieldOrProperty.Create( redrawData.Binding.Root, AssetRegistry<Sprite>.GetAsset( "RuntimeInspector/Sprites/icon_binary32" ), binding, style );
 
                 return obj;
             }
