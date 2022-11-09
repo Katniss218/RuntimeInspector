@@ -17,7 +17,7 @@ namespace RuntimeInspector.UI.Drawers
     /// </summary>
     public class ObjectDrawer : Drawer
     {
-        protected override (RectTransform, UIObjectGraphBinding) DrawInternal( RedrawData redrawData, ObjectGraphNode binding, InspectorStyle style )
+        protected override void DrawInternal( RedrawData redrawData, ObjectGraphNode binding, InspectorStyle style )
         {
             bool isNullOrWriteOnly = true;
             if( binding.CanRead )
@@ -75,8 +75,6 @@ namespace RuntimeInspector.UI.Drawers
                     drawer.Draw( list, memberBinding, style );
                 }
             }
-#warning TODO - 'list' is not the root.
-            return (redrawData.GraphUI.Root, redrawData.GraphUI);
         }
     }
 }

@@ -76,11 +76,6 @@ namespace RuntimeInspector.UI.GUIUtils
                 valueText.text = READONLY_PLACEHOLDER;
             }
 
-            /*
-            UIObjectGraphBinding uiBinding = valueGO.AddComponent<UIObjectGraphBinding>();
-            uiBinding.Node = binding;
-            */
-
             if( binding.CanWrite )
             {
                 TMPro.TMP_InputField valueInput = valueGO.AddComponent<TMPro.TMP_InputField>();
@@ -100,8 +95,7 @@ namespace RuntimeInspector.UI.GUIUtils
                     valueInput.text = READONLY_PLACEHOLDER;
                 }
 
-                valueInput.enabled = false;
-                valueInput.enabled = true; // regenerate the caret.
+                valueInput.RegenerateCaret();
 
                 uiBinding.InputField = valueInput;
                 valueInput.onSubmit.AddListener( uiBinding.SetValueText );

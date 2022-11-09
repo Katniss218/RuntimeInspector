@@ -25,7 +25,7 @@ namespace RuntimeInspector.UI.GUIUtils
             rootTransform.sizeDelta = new Vector2( 0.0f, style.FieldHeight );
 
             UIObjectGraphBinding submitter = gameObject.AddComponent<UIObjectGraphBinding>();
-            submitter.Node = binding;
+            //submitter.UpdateGraphNode( binding ); // ------- noNOPE this is still needed here because it looks for that.
             submitter.Root = rootTransform;
 
 #warning TODO - replace with custom layout element class that takes preferred width from the content size fitter.

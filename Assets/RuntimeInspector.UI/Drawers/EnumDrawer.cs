@@ -14,16 +14,12 @@ namespace RuntimeInspector.UI.Drawers
     [DrawerOf( typeof( Enum ) )]
     public class EnumDrawer : Drawer
     {
-        protected override (RectTransform, UIObjectGraphBinding) DrawInternal( RedrawData redrawData, ObjectGraphNode binding, InspectorStyle style )
+        protected override void DrawInternal( RedrawData redrawData, ObjectGraphNode binding, InspectorStyle style )
         {
             if( redrawData.CreateNew )
             {
-                (RectTransform, UIObjectGraphBinding) obj = InspectorFieldOrProperty.Create( redrawData.GraphUI.Root, AssetRegistry<Sprite>.GetAsset( "RuntimeInspector/Sprites/icon_enum" ), binding, style );
-
-                return obj;
+                InspectorFieldOrProperty.Create( redrawData.GraphUI.Root, AssetRegistry<Sprite>.GetAsset( "RuntimeInspector/Sprites/icon_enum" ), binding, style );
             }
-
-            return (redrawData.GraphUI?.Root, redrawData.GraphUI);
         }
     }
 }

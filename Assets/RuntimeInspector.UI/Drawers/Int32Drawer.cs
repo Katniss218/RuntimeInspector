@@ -14,16 +14,12 @@ namespace RuntimeInspector.UI.Drawers
     [DrawerOf( typeof( int ) )]
     public class Int32Drawer : Drawer
     {
-        protected override (RectTransform, UIObjectGraphBinding) DrawInternal( RedrawData redrawData, ObjectGraphNode binding, InspectorStyle style )
+        protected override void DrawInternal( RedrawData redrawData, ObjectGraphNode binding, InspectorStyle style )
         {
             if( redrawData.CreateNew )
             {
-                (RectTransform, UIObjectGraphBinding) obj = InspectorFieldOrProperty.Create( redrawData.GraphUI.Root, AssetRegistry<Sprite>.GetAsset( "RuntimeInspector/Sprites/icon_int32" ), binding, style );
-
-                return obj;
+                InspectorFieldOrProperty.Create( redrawData.GraphUI.Root, AssetRegistry<Sprite>.GetAsset( "RuntimeInspector/Sprites/icon_int32" ), binding, style );
             }
-
-            return (redrawData.GraphUI?.Root, redrawData.GraphUI);
         }
     }
 }

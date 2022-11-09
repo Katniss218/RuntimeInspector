@@ -29,18 +29,22 @@ namespace RuntimeInspector.UI
             return null;
         }
 
-        [SerializeField]
-        private ObjectGraphNode _node;
+        [field: SerializeField]
         public ObjectGraphNode Node
         {
-            get => _node;
-            set
+            get;
+            private set;
+        }
+
+        /// <summary>
+        /// Sets the UI graph binding to point at the new graph node.
+        /// </summary>
+        public void UpdateGraphNode( ObjectGraphNode node )
+        {
+            Node = node;
+            if( Node.CanRead )
             {
-                _node = value;
-                if( _node.CanRead )
-                {
-                    CurrentValue = _node.GetValue();
-                }
+                CurrentValue = Node.GetValue();
             }
         }
 
@@ -88,7 +92,7 @@ namespace RuntimeInspector.UI
             {
                 Node.SetValue( converted );
 
-                if( !_node.CanRead )
+                if( !Node.CanRead )
                 {
                     InputField.text = InspectorTextInputField.READONLY_PLACEHOLDER;
                 }

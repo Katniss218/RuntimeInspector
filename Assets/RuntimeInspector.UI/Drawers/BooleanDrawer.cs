@@ -14,16 +14,12 @@ namespace RuntimeInspector.UI.Drawers
     [DrawerOf( typeof( bool ) )]
     public class BooleanDrawer : Drawer
     {
-        protected override (RectTransform, UIObjectGraphBinding) DrawInternal( RedrawData redrawData, ObjectGraphNode binding, InspectorStyle style )
+        protected override void DrawInternal( RedrawData redrawData, ObjectGraphNode binding, InspectorStyle style )
         {
             if( redrawData.CreateNew )
             {
-                (RectTransform, UIObjectGraphBinding) obj = InspectorFieldOrProperty.Create( redrawData.GraphUI.Root, AssetRegistry<Sprite>.GetAsset( "RuntimeInspector/Sprites/icon_boolean" ), binding, style );
-
-                return obj;
+                InspectorFieldOrProperty.Create( redrawData.GraphUI.Root, AssetRegistry<Sprite>.GetAsset( "RuntimeInspector/Sprites/icon_boolean" ), binding, style );
             }
-
-            return (redrawData.GraphUI?.Root, redrawData.GraphUI);
         }
     }
 }
