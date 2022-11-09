@@ -11,7 +11,7 @@ namespace RuntimeInspector.UI.GUIUtils
 {
     public static class UINode
     {
-        public static (RectTransform, UIObjectGraphBinding) Create( RectTransform parent, ObjectGraphNode binding, InspectorStyle style )
+        public static (RectTransform, ObjectGraphNodeUI) Create( RectTransform parent, ObjectGraphNode binding, InspectorStyle style )
         {
             GameObject gameObject = new GameObject( $"{binding.Name} ({binding.GetInstanceType().FullName})" );
             gameObject.layer = 5;
@@ -20,11 +20,11 @@ namespace RuntimeInspector.UI.GUIUtils
             rootTransform.SetParent( parent );
             rootTransform.anchorMin = new Vector2( 0.0f, 0.5f );
             rootTransform.anchorMax = new Vector2( 1.0f, 0.5f );
-            rootTransform.pivot = new Vector2( 0.5f, 0.5f );
+            rootTransform.pivot = new Vector2( 0.5f, 1.0f );
             rootTransform.anchoredPosition = new Vector2( 0.0f, 0.0f );
             rootTransform.sizeDelta = new Vector2( 0.0f, style.FieldHeight );
 
-            UIObjectGraphBinding submitter = gameObject.AddComponent<UIObjectGraphBinding>();
+            ObjectGraphNodeUI submitter = gameObject.AddComponent<ObjectGraphNodeUI>();
             //submitter.UpdateGraphNode( binding ); // ------- noNOPE this is still needed here because it looks for that.
             submitter.Root = rootTransform;
 

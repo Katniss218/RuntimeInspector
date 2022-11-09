@@ -8,16 +8,17 @@ using UnityEngine;
 namespace RuntimeInspector.UI
 {
     /// <summary>
-    /// Used to match a binding to a specific UI element.
+    /// Binds a specific UI element to a graph node.
     /// </summary>
-    public class UIObjectGraphBinding : MonoBehaviour
+    public class ObjectGraphNodeUI : MonoBehaviour
     {
-        static List<UIObjectGraphBinding> uiBindings = new List<UIObjectGraphBinding>();
+#warning TODO - these should really be per viewer.
+        static List<ObjectGraphNodeUI> uiBindings = new List<ObjectGraphNodeUI>();
 
         /// <summary>
         /// Finds a UIBinding for a graphnode based on hierarchy and name.
         /// </summary>
-        public static UIObjectGraphBinding Find( ObjectGraphNode node )
+        public static ObjectGraphNodeUI Find( ObjectGraphNode node )
         {
             foreach( var uiBinding in uiBindings )
             {

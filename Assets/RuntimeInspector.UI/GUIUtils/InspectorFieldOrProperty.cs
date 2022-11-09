@@ -29,7 +29,7 @@ namespace RuntimeInspector.UI.GUIUtils
 
             RectTransform label = InspectorLabel.Create( rootTransform, typeIcon, binding.Name, style );
 
-            UIObjectGraphBinding uiBinding = parent.GetComponent<UIObjectGraphBinding>();
+            ObjectGraphNodeUI uiBinding = parent.GetComponent<ObjectGraphNodeUI>();
 
             RectTransform value = InspectorTextInputField.Create( rootTransform, uiBinding, binding, style );
 

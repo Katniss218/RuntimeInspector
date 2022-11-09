@@ -19,11 +19,11 @@ namespace RuntimeInspector.UI
         {
             public bool DestroyOld { get; set; }
             public bool CreateNew { get; set; }
-            public UIObjectGraphBinding GraphUI { get; set; }
+            public ObjectGraphNodeUI GraphUI { get; set; }
 
             public bool Hidden { get; set; }
 
-            public RedrawDataInternal( bool destroyOld, bool createNew, UIObjectGraphBinding binding, bool hidden )
+            public RedrawDataInternal( bool destroyOld, bool createNew, ObjectGraphNodeUI binding, bool hidden )
             {
                 this.DestroyOld = destroyOld;
                 this.CreateNew = createNew;
@@ -44,7 +44,7 @@ namespace RuntimeInspector.UI
                 bool destroyOld = false;
                 bool createNew = false;
 
-                UIObjectGraphBinding drawnBinding = UIObjectGraphBinding.Find( node );
+                ObjectGraphNodeUI drawnBinding = ObjectGraphNodeUI.Find( node );
 
                 // we should redraw if the value changed, or if the value isn't drawn at all.
                 // we should remove the previous value if it changed, and is drawn.
@@ -56,7 +56,7 @@ namespace RuntimeInspector.UI
                     {
                         object displayedValue = drawnBinding.CurrentValue;
                         object newValue = node.GetValue();
-                        isDisplayedValueStale = !displayedValue?.Equals( newValue ) ?? newValue == null;
+                        isDisplayedValueStale = !displayedValue?.Equals( newValue ) ?? newValue != null;
                     }
                     else
                     {
@@ -96,7 +96,7 @@ namespace RuntimeInspector.UI
             /// <summary>
             /// The UI component representing the value of this graph node.
             /// </summary>
-            public UIObjectGraphBinding GraphUI { get; set; }
+            public ObjectGraphNodeUI ObjectGraphNodeUI { get; set; }
         }
 
         /// <summary>
@@ -104,7 +104,7 @@ namespace RuntimeInspector.UI
         /// </summary>
         /// <param name="parent">The root of the graph node will be drawn as a child of this object.</param>
         /// <param name="binding">The graph node to draw.</param>
-        public UIObjectGraphBinding Draw( RectTransform parent, ObjectGraphNode binding, InspectorStyle style )
+        public ObjectGraphNodeUI Draw( RectTransform parent, ObjectGraphNode binding, InspectorStyle style )
         {
             RedrawDataInternal redrawData = RedrawDataInternal.GetRedrawData( binding );
             if( redrawData.Hidden ) // this for some reason prevents the null list and whatnot. (week later --idk what that means anymore kek)
@@ -130,7 +130,7 @@ namespace RuntimeInspector.UI
             RedrawData redrawDataActual = new RedrawData()
             {
                 CreateNew = redrawData.CreateNew,
-                GraphUI = redrawData.GraphUI
+                ObjectGraphNodeUI = redrawData.GraphUI
             };
 
             DrawInternal( redrawDataActual, binding, style );

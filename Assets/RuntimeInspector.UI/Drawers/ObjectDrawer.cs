@@ -34,7 +34,7 @@ namespace RuntimeInspector.UI.Drawers
             RectTransform list = null;
             if( redrawData.CreateNew )
             {
-                RectTransform group = InspectorVerticalList.Create( "group", redrawData.GraphUI.Root, style, new InspectorVerticalList.Params() { IncludeMargin = false } );
+                RectTransform group = InspectorVerticalList.Create( "group", redrawData.ObjectGraphNodeUI.Root, style, new InspectorVerticalList.Params() { IncludeMargin = false } );
 
                 RectTransform label = InspectorLabel.Create( group, AssetRegistry<Sprite>.GetAsset( "RuntimeInspector/Sprites/icon_object" ), $"{binding.Name} >", style );
 
@@ -47,7 +47,7 @@ namespace RuntimeInspector.UI.Drawers
             {
                 if( !isNullOrWriteOnly )
                 {
-                    list = InspectorVerticalList.Find( "list", redrawData.GraphUI?.Root );
+                    list = InspectorVerticalList.Find( "list", redrawData.ObjectGraphNodeUI?.Root );
                 }
             }
 

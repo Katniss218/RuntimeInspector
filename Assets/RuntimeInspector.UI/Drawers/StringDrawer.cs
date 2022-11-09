@@ -18,7 +18,7 @@ namespace RuntimeInspector.UI.Drawers
         {
             if( redrawData.CreateNew )
             {
-                InspectorFieldOrProperty.Create( redrawData.GraphUI.Root, AssetRegistry<Sprite>.GetAsset( "RuntimeInspector/Sprites/icon_string16" ), binding, style );
+                InspectorFieldOrProperty.Create( redrawData.ObjectGraphNodeUI.Root, AssetRegistry<Sprite>.GetAsset( "RuntimeInspector/Sprites/icon_string16" ), binding, style );
             }
         }
     }

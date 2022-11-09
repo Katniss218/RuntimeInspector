@@ -16,7 +16,7 @@ namespace RuntimeInspector.UI.GUIUtils
     {
         public static readonly string READONLY_PLACEHOLDER = string.Empty;
 
-        public static RectTransform Create( RectTransform parent, UIObjectGraphBinding uiBinding, ObjectGraphNode binding, InspectorStyle style )
+        public static RectTransform Create( RectTransform parent, ObjectGraphNodeUI uiBinding, ObjectGraphNode binding, InspectorStyle style )
         {
             GameObject valueGO = new GameObject( $"_value" );
             valueGO.layer = 5;

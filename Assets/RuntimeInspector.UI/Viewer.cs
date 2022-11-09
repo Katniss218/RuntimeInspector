@@ -5,6 +5,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace RuntimeInspector.UI
 {
@@ -26,12 +27,12 @@ namespace RuntimeInspector.UI
                 return;
             }
 
-            string b = DrawnObj.ToString();
-
             ObjectGraphNode rootGraphNode = ObjectGraphNode.CreateGraph( () => DrawnObj, ( o ) => DrawnObj = (Component)o );
 
             Drawer drawer = DrawerProvider.GetDrawerOfType( rootGraphNode.GetInstanceType() );
             drawer.Draw( ViewerPanel, rootGraphNode, style );
+
+            LayoutRebuilder.MarkLayoutForRebuild( ViewerPanel ); // Force layout to update to reflect the now potentially changed visuals.     TODO - kinda flicker'y.
         }
 
         void Start()
@@ -39,9 +40,7 @@ namespace RuntimeInspector.UI
             Show( InspectorStyle.Default );
         }
 
-
         int timer = 0;
-
         const int UPDATE_DELAY = 50;
 
         void Update()
