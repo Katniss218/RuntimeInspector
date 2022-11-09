@@ -24,7 +24,6 @@ namespace RuntimeInspector.Core
         {
             this._property = property;
             this._backingObject = parent.GetValue();
-#warning TODO - stop getting fields of null objects. Parent.GetValue() [Parent was BaseClass.MeshFilter] returned null.
 
             this.Attributes = this._property.GetCustomAttributes().ToArray();
         }

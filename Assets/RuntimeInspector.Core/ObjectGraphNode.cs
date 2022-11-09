@@ -34,6 +34,11 @@ namespace RuntimeInspector.Core
 
         protected Attribute[] Attributes { get; set; }
 
+        /// <summary>
+        /// Gets all of the attributes of the specified type belonging to this graph node.
+        /// </summary>
+        /// <typeparam name="T">The type of attribute to search for.</typeparam>
+        /// <param name="includeDerived">If true it will include attributes derived from the target attribute, if false it will look for an EXACT match.</param>
         public List<T> GetAttributes<T>( bool includeDerived = true ) where T : Attribute
         {
             List<T> matchedAttribs = new List<T>();
@@ -206,7 +211,7 @@ namespace RuntimeInspector.Core
                 foreach( var property in properties )
                 {
                     // Don't include indexers.
-#warning TODO - fix later by including them in the graph, since graph should be complete. But they should be treated differently.
+#warning TODO - fix later by including indexers in the graph, since graph should be complete. But the indexers should be later filtered out when drawn - if( child.IsIndexer ) - or something.
                     if( property.GetIndexParameters().Length != 0 )
                     {
                         continue;

@@ -31,6 +31,9 @@ namespace RuntimeInspector.UI
                 this.Hidden = hidden;
             }
 
+            /// <summary>
+            /// Calculates what should be done with a given binding. Whether to draw it all over, just update, or do nothing.
+            /// </summary>
             public static RedrawDataInternal GetRedrawData( ObjectGraphNode node )
             {
                 if( node.GetAttributes<HideAttribute>().FirstOrDefault() != null )
@@ -82,7 +85,17 @@ namespace RuntimeInspector.UI
 
         protected struct RedrawData
         {
+            /// <summary>
+            /// Whether or not the node should be drawn.
+            /// </summary>
+            /// <remarks>
+            /// This can be set to false, in such case, make sure to call Draw on the child nodes.
+            /// </remarks>
             public bool CreateNew { get; set; }
+
+            /// <summary>
+            /// The UI component representing the value of this graph node.
+            /// </summary>
             public UIObjectGraphBinding GraphUI { get; set; }
         }
 
@@ -94,7 +107,7 @@ namespace RuntimeInspector.UI
         public UIObjectGraphBinding Draw( RectTransform parent, ObjectGraphNode binding, InspectorStyle style )
         {
             RedrawDataInternal redrawData = RedrawDataInternal.GetRedrawData( binding );
-            if( redrawData.Hidden ) // this for some reason prevents the null list and whatnot.
+            if( redrawData.Hidden ) // this for some reason prevents the null list and whatnot. (week later --idk what that means anymore kek)
             {
                 return null;
             }
