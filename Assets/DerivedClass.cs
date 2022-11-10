@@ -15,6 +15,9 @@ namespace A
         [field: SerializeField]
         [field: Hide]
         public BaseClass AdditionalValue { get; set; }
+        
+        [field: Hide]
+        public BaseClass AdditionalValueButNull { get; set; }
 
         [SerializeField]
         private string _readOnly;

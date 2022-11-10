@@ -53,14 +53,12 @@ namespace RuntimeInspector.UI
             }
         }
 
-        public static bool TryConvertForward( Type outType, object incoming, out object converted )
+        public static bool TryConvertForward( Type outType, Type inType, object incoming, out object converted )
         {
             if( _cachedConverters == null )
             {
                 ReloadConverters();
             }
-
-            Type inType = incoming.GetType();
 
             // When the types are the same, there is no need to convert.
             if( outType.IsAssignableFrom( inType ) )
@@ -91,18 +89,6 @@ namespace RuntimeInspector.UI
             }
 
             return true;
-        }
-
-        public static bool TryConvertForward<T>( object incoming, out T converted )
-        {
-            if( TryConvertForward( typeof( T ), incoming, out object convertedInternal ) )
-            {
-                converted = (T)convertedInternal;
-                return true;
-            }
-
-            converted = default;
-            return false;
         }
     }
 }

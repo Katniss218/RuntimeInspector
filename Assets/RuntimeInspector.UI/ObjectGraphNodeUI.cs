@@ -4,13 +4,14 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace RuntimeInspector.UI
 {
     /// <summary>
     /// Binds a specific UI element to a graph node.
     /// </summary>
-    public class ObjectGraphNodeUI : MonoBehaviour
+    public class ObjectGraphNodeUI : MonoBehaviour, IPointerClickHandler //IPointerDownHandler, IPointerUpHandler
     {
 #warning TODO - these should really be per viewer.
         static List<ObjectGraphNodeUI> uiBindings = new List<ObjectGraphNodeUI>();
@@ -49,15 +50,6 @@ namespace RuntimeInspector.UI
             }
         }
 
-#warning kinda ugly and requires it to be a string input field.
-        // What we need:
-        // - string input fields.
-        // - object (reference and value type) input fields.
-
-        // - null drawn as value - empty, no fields
-        // - null drawn as reference - reference input field with nothing assigned.
-
-
         [field: SerializeField]
         public TMPro.TMP_InputField InputField { get; set; }
 
@@ -70,8 +62,13 @@ namespace RuntimeInspector.UI
         [field: SerializeField]
         public RectTransform Root { get; set; }
 
+        /// <summary>
+        /// The value of the currently viewed graph node.
+        /// </summary>
         [field: SerializeField]
         public object CurrentValue { get; private set; }
+
+        public GraphNodeUIDrag Drag { get; set; }
 
         public bool IsEditing()
         {
@@ -84,12 +81,12 @@ namespace RuntimeInspector.UI
 
         public void SetValueText( string userProvidedValue )
         {
-            SetValue( userProvidedValue );
+            SetValue( typeof(string), userProvidedValue );
         }
 
-        public void SetValue( object userProvidedValue )
+        public void SetValue( Type inType, object userProvidedValue )
         {
-            if( InputConverterProvider.TryConvertForward( Node.Type, userProvidedValue, out object converted ) )
+            if( InputConverterProvider.TryConvertForward( Node.Type, inType, userProvidedValue, out object converted ) )
             {
                 Node.SetValue( converted );
 
@@ -100,7 +97,7 @@ namespace RuntimeInspector.UI
             }
             else
             {
-
+                Debug.LogWarning( $"Couldn't convert value '{userProvidedValue}'" );
             }
         }
 
@@ -112,6 +109,57 @@ namespace RuntimeInspector.UI
         void OnDestroy()
         {
             uiBindings.Remove( this );
+            if( Drag  != null )
+            {
+                Destroy( Drag.gameObject );
+            }
         }
+
+        private void HandleStartDrag()
+        {
+            if( GraphNodeUIDrag.CurrentlyDragged != null )
+            {
+                return;
+            }
+            GraphNodeUIDrag.StartDragging( this );
+            // guard against already dragging something.
+            // create the drag object, populate it to reflect this object.
+        }
+
+        private void HandleEndDrag()
+        {
+            if( GraphNodeUIDrag.CurrentlyDragged == null )
+            {
+                return;
+            }
+            GraphNodeUIDrag.EndDragging( this );
+            // check if drag object exists.
+            // - if it does - assign its value (if possible), destroy it.
+        }
+
+        public void OnPointerClick( PointerEventData e )
+        {
+            Debug.Log( "pointer click " + this.gameObject.name );
+            if( GraphNodeUIDrag.CurrentlyDragged == null )
+            {
+                HandleStartDrag();
+            }
+            else
+            {
+                HandleEndDrag();
+            }
+        }
+        /*
+        public void OnPointerDown( PointerEventData e )
+        {
+            Debug.Log( "pointer down " + this.gameObject.name );
+            HandleStartDrag();
+        }
+
+        public void OnPointerUp( PointerEventData e )
+        {
+            Debug.Log( "pointer up " + this.gameObject.name );
+            HandleEndDrag();
+        }*/
     }
 }
