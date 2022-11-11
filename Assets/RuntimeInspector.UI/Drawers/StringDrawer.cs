@@ -14,7 +14,7 @@ namespace RuntimeInspector.UI.Drawers
     [DrawerOf( typeof( string ) )]
     public class StringDrawer : Drawer
     {
-        protected override void DrawInternal( RedrawData redrawData, ObjectGraphNode binding, InspectorStyle style )
+        protected override void DrawInternal( RedrawDataInternal redrawData, ObjectGraphNode binding, InspectorStyle style )
         {
             if( redrawData.CreateNew )
             {

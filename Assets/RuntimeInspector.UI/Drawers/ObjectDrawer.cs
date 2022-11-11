@@ -17,44 +17,50 @@ namespace RuntimeInspector.UI.Drawers
     /// </summary>
     public class ObjectDrawer : Drawer
     {
-        protected override void DrawInternal( RedrawData redrawData, ObjectGraphNode binding, InspectorStyle style )
+        protected override void DrawInternal( RedrawDataInternal redrawData, ObjectGraphNode binding, InspectorStyle style )
         {
-            bool isNullOrWriteOnly = true;
+            bool isNull = false;
             if( binding.CanRead )
             {
                 // UnityObjects are not truly null, UnityObject overrides the `==` operator to make empty references equal to null.
                 object value = binding.GetValue();
-                isNullOrWriteOnly = value == null;
                 if( value is Object unityobject )
                 {
-                    isNullOrWriteOnly = unityobject == null;
+                    isNull = unityobject == null;
+                }
+                else
+                {
+                    isNull = value == null;
                 }
             }
 
             RectTransform list = null;
+            RectTransform group;
             if( redrawData.CreateNew )
             {
-                RectTransform group = InspectorVerticalList.Create( "group", redrawData.ObjectGraphNodeUI.Root, style, new InspectorVerticalList.Params() { IncludeMargin = false } );
+                group = InspectorVerticalList.Create( "group", redrawData.ObjectGraphNodeUI.Root, style, new InspectorVerticalList.Params() { IncludeMargin = false } );
 
                 RectTransform label = InspectorLabel.Create( group, AssetRegistry<Sprite>.GetAsset( "RuntimeInspector/Sprites/icon_object" ), $"{binding.Name} >", style );
 
-                if( !isNullOrWriteOnly )
+                if( binding.CanRead && !isNull )
                 {
                     list = InspectorVerticalList.Create( "list", group, style, new InspectorVerticalList.Params() { IncludeMargin = true } );
                 }
             }
             else
             {
-                if( !isNullOrWriteOnly )
+                if( binding.CanRead && !isNull )
                 {
-                    list = InspectorVerticalList.Find( "list", redrawData.ObjectGraphNodeUI?.Root );
+                    group = InspectorVerticalList.Find( "group", redrawData.ObjectGraphNodeUI?.Root );
+
+                    list = InspectorVerticalList.Find( "list", group );
                 }
             }
 
             // regardless whether the node was created or not, we should ping the child objects.
 
             // Set up the UI elements that will be shown/updated.
-            if( !isNullOrWriteOnly )
+            if( binding.CanRead && !isNull )
             {
                 foreach( var memberBinding in binding.Children )
                 {

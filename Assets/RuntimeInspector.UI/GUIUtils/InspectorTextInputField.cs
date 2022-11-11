@@ -14,9 +14,15 @@ namespace RuntimeInspector.UI.GUIUtils
     /// </summary>
     public static class InspectorTextInputField
     {
-        public static readonly string READONLY_PLACEHOLDER = string.Empty;
+        /// <summary>
+        /// The placeholder display to be used with write-only properties.
+        /// </summary>
+        public static readonly string WRITEONLY_PLACEHOLDER = string.Empty;
 
-        public static RectTransform Create( RectTransform parent, ObjectGraphNodeUI uiBinding, ObjectGraphNode binding, InspectorStyle style )
+        /// <summary>
+        /// Creates a text input field and binds it to a graph node UI.
+        /// </summary>
+        public static RectTransform Create( RectTransform parent, ObjectGraphNodeUI existingGraphNodeUI, ObjectGraphNode graphNode, InspectorStyle style )
         {
             GameObject valueGO = new GameObject( $"_value" );
             valueGO.layer = 5;
@@ -67,16 +73,16 @@ namespace RuntimeInspector.UI.GUIUtils
             valueText.overflowMode = TMPro.TextOverflowModes.Overflow;
             valueText.color = style.ValueTextColor;
 
-            if( binding.CanRead )
+            if( graphNode.CanRead )
             {
-                valueText.text = binding.GetValue().ToString();
+                valueText.text = graphNode.GetValue().ToString();
             }
             else
             {
-                valueText.text = READONLY_PLACEHOLDER;
+                valueText.text = WRITEONLY_PLACEHOLDER;
             }
 
-            if( binding.CanWrite )
+            if( graphNode.CanWrite )
             {
                 TMPro.TMP_InputField valueInput = valueGO.AddComponent<TMPro.TMP_InputField>();
 
@@ -86,25 +92,25 @@ namespace RuntimeInspector.UI.GUIUtils
                 valueInput.pointSize = style.FontSize;
                 valueInput.restoreOriginalTextOnEscape = true;
 
-                if( binding.CanRead )
+                if( graphNode.CanRead )
                 {
-                    valueInput.text = binding.GetValue().ToString();
+                    valueInput.text = graphNode.GetValue().ToString();
                 }
                 else
                 {
-                    valueInput.text = READONLY_PLACEHOLDER;
+                    valueInput.text = WRITEONLY_PLACEHOLDER;
                 }
 
                 valueInput.RegenerateCaret();
 
-                uiBinding.InputField = valueInput;
-                valueInput.onSubmit.AddListener( uiBinding.SetValueText );
+                existingGraphNodeUI.InputField = valueInput;
+                valueInput.onSubmit.AddListener( existingGraphNodeUI.SetValueText );
             }
-            if( !binding.CanWrite && binding.CanRead )
+            if( !graphNode.CanWrite && graphNode.CanRead )
             {
                 image.color = style.InputFieldColorReadonly;
             }
-            if( binding.CanWrite && !binding.CanRead )
+            if( graphNode.CanWrite && !graphNode.CanRead )
             {
                 image.color = style.InputFieldColorWriteonly;
             }

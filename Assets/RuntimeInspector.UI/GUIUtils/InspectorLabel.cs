@@ -10,6 +10,9 @@ namespace RuntimeInspector.UI.GUIUtils
 {
     public static class InspectorLabel
     {
+        /// <summary>
+        /// Creates a text label
+        /// </summary>
         public static RectTransform Create( RectTransform parent, string text, InspectorStyle style )
         {
             GameObject gameObject = new GameObject( $"_label" );
@@ -23,7 +26,7 @@ namespace RuntimeInspector.UI.GUIUtils
             rectTransform.pivot = new Vector2( 0.0f, 0.5f );
             rectTransform.anchoredPosition = new Vector2( 0.0f, 0.0f );
             rectTransform.sizeDelta = new Vector2( 200.0f, style.FieldHeight );
-#warning TODO - separate method for standalone labels? (they should have size of 0, 0)
+#warning TODO - separate method for standalone labels? (they should have size of 0, 0 and anchors to max)
 
             TMPro.TextMeshProUGUI labelText = gameObject.AddComponent<TMPro.TextMeshProUGUI>();
             labelText.fontSize = style.FontSize;
@@ -36,7 +39,10 @@ namespace RuntimeInspector.UI.GUIUtils
             return rectTransform;
         }
 
-        public static RectTransform Create( RectTransform parent, Sprite typeIcon, string text, InspectorStyle style )
+        /// <summary>
+        /// Creates a icon + text label
+        /// </summary>
+        public static RectTransform Create( RectTransform parent, Sprite icon, string text, InspectorStyle style )
         {
             GameObject gameObject = new GameObject( $"_label" );
             gameObject.layer = 5;
@@ -63,7 +69,7 @@ namespace RuntimeInspector.UI.GUIUtils
             iconTransform.sizeDelta = new Vector2( style.TypeIconSize, style.TypeIconSize );
 
             Image typeImage = iconGameObject.AddComponent<Image>();
-            typeImage.sprite = typeIcon;
+            typeImage.sprite = icon;
 
             GameObject textGameObject = new GameObject( $"text" );
             textGameObject.layer = 5;

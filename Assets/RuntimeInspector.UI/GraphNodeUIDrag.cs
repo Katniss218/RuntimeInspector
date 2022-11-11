@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace RuntimeInspector.UI
 {
@@ -39,8 +40,7 @@ namespace RuntimeInspector.UI
 
             CurrentlyDragged = drag;
 
-            sourceNodeUI.Drag = drag;
-#warning TODO - change to event.
+            sourceNodeUI.onDestroy += () => Object.Destroy(drag.gameObject);
         }
 
         public static void EndDragging( ObjectGraphNodeUI targetNodeUI )
@@ -50,7 +50,7 @@ namespace RuntimeInspector.UI
                 throw new Exception( "Tried to end drag when nothing was being dragged." );
             }
 
-            targetNodeUI.SetValue( CurrentlyDragged.Node.Node.GetInstanceType(), CurrentlyDragged.Node.CurrentValue );
+            targetNodeUI.SetValue( CurrentlyDragged.Node.GraphNode.GetInstanceType(), CurrentlyDragged.Node.CurrentValue );
 
             Destroy( CurrentlyDragged.gameObject );
             CurrentlyDragged = null;

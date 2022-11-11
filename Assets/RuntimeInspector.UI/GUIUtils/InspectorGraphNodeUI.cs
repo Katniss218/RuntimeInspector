@@ -10,11 +10,14 @@ using UnityEngine.UI;
 
 namespace RuntimeInspector.UI.GUIUtils
 {
-    public static class UINode
+    public static class InspectorGraphNodeUI
     {
-        public static (RectTransform, ObjectGraphNodeUI) Create( RectTransform parent, ObjectGraphNode binding, InspectorStyle style )
+        /// <summary>
+        /// Creates a new UI element for a graph node. 
+        /// </summary>
+        public static (RectTransform, ObjectGraphNodeUI) Create( RectTransform parent, ObjectGraphNode graphNode, InspectorStyle style )
         {
-            GameObject gameObject = new GameObject( $"{binding.Name} ({binding.GetInstanceType().FullName})" );
+            GameObject gameObject = new GameObject( $"{graphNode.Name} ({graphNode.GetInstanceType().FullName})" );
             gameObject.layer = 5;
 
             RectTransform rootTransform = gameObject.AddComponent<RectTransform>();
@@ -26,7 +29,6 @@ namespace RuntimeInspector.UI.GUIUtils
             rootTransform.sizeDelta = new Vector2( 0.0f, style.FieldHeight );
 
             ObjectGraphNodeUI submitter = gameObject.AddComponent<ObjectGraphNodeUI>();
-            //submitter.UpdateGraphNode( binding ); // ------- noNOPE this is still needed here because it looks for that.
             submitter.Root = rootTransform;
 
 #warning TODO - replace with custom layout element class that takes preferred width from the content size fitter.

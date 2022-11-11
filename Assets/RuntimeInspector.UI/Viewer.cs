@@ -14,8 +14,31 @@ namespace RuntimeInspector.UI
     /// </summary>
     public class Viewer : MonoBehaviour
     {
+        /// <summary>
+        /// Holds all of the graph node UIs associated with this viewer.
+        /// </summary>
+        public List<ObjectGraphNodeUI> GraphNodeUIs { get; } = new List<ObjectGraphNodeUI>();
+
+        /// <summary>
+        /// Finds a UIBinding for a graphnode based on hierarchy and name.
+        /// </summary>
+        public ObjectGraphNodeUI Find( ObjectGraphNode node )
+        {
+            foreach( var uiBinding in GraphNodeUIs )
+            {
+                if( uiBinding.GraphNode.Equals( node ) )
+                {
+                    return uiBinding;
+                }
+            }
+            return null;
+        }
+
         [field: SerializeField]
         public RectTransform ViewerPanel { get; set; }
+
+        [field: SerializeField]
+        public RectTransform MouseCanvas { get; set; }
 
         [field: SerializeField]
         public Component DrawnObj { get; private set; }

@@ -7,6 +7,9 @@ using UnityEngine;
 
 namespace RuntimeInspector.UI.GUIUtils
 {
+    /// <summary>
+    /// A class containing all the variable properties controlling the look of a viewed graph.
+    /// </summary>
     public class InspectorStyle
     {
         public float FontSize { get; set; } = 12.0f;
@@ -28,6 +31,9 @@ namespace RuntimeInspector.UI.GUIUtils
         public Color LabelTextColor { get; set; } = new Color( 1.0f, 1.0f, 1.0f );
         public Color ValueTextColor { get; set; } = new Color( 1.0f, 1.0f, 1.0f );
 
+        /// <summary>
+        /// Returns the default style.
+        /// </summary>
         public static InspectorStyle Default => new InspectorStyle();
     }
 }

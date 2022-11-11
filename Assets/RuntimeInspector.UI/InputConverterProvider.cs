@@ -53,42 +53,54 @@ namespace RuntimeInspector.UI
             }
         }
 
-        public static bool TryConvertForward( Type outType, Type inType, object incoming, out object converted )
+        public static bool TryConvertForward( Type outputType, Type inputType, object incoming, out object convertedValue )
         {
+            // OutType equal to InType -> no conversion
+            // OutType derived from InType -> no conversion
+            // otherwise -> find a converter that best matches. direct inType->outType is the best, but inType.BaseType (recursive) will work too.
             if( _cachedConverters == null )
             {
                 ReloadConverters();
             }
 
             // When the types are the same, there is no need to convert.
-            if( outType.IsAssignableFrom( inType ) )
+            if( outputType.IsAssignableFrom( inputType ) )
             {
-                converted = incoming;
+                convertedValue = incoming;
                 return true;
             }
 
             // TODO - Take into account base types if available??? Do we want that?
-
-            _cachedConverters.TryGetValue( (inType, outType), out object converter );
-            if( converter == null )
+            object foundConverter;
+            Type currentInputType = inputType;
+            while( true )
             {
-                Debug.LogError( $"Converter for types '{inType}' -> '{outType}' not found." );
+                _cachedConverters.TryGetValue( (currentInputType, outputType), out foundConverter );
+                if( foundConverter != null )
+                {
+                    break;
+                }
 
-                converted = null;
-                return false;
+                if( currentInputType.BaseType == null && foundConverter == null )
+                {
+                    Debug.LogError( $"Converter for types '{currentInputType}' -> '{outputType}' not found." );
+
+                    convertedValue = null;
+                    return false;
+                }
+                currentInputType = currentInputType.BaseType;
             }
 
             try
             {
-                converted = converter.GetType().GetMethod( CONVERT_FORWARD_METHOD_NAME ).Invoke( converter, new[] { incoming } );
+                convertedValue = foundConverter.GetType().GetMethod( CONVERT_FORWARD_METHOD_NAME ).Invoke( foundConverter, new[] { incoming } );
+                return true;
             }
             catch
             {
-                converted = null;
+                convertedValue = null;
                 return false;
             }
-
-            return true;
         }
     }
 }
