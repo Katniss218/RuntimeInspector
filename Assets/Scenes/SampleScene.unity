@@ -670,6 +670,7 @@ GameObject:
   - component: {fileID: 838860471}
   - component: {fileID: 838860470}
   - component: {fileID: 838860473}
+  - component: {fileID: 838860474}
   m_Layer: 5
   m_Name: Scroll View
   m_TagString: Untagged
@@ -781,7 +782,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <ViewerPanel>k__BackingField: {fileID: 420597815}
-  <DrawnObj>k__BackingField: {fileID: 1143109831}
+  <MouseCanvas>k__BackingField: {fileID: 497577187}
+  <DrawnObj>k__BackingField: {fileID: 838860474}
+--- !u!114 &838860474
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 838860468}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e917df18819c87a48b4aeb9d5dbce2e9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <Value>k__BackingField: 0300000094090000a77e00000828080015bea621
+  <haha>k__BackingField: 234
 --- !u!1 &843346748
 GameObject:
   m_ObjectHideFlags: 0

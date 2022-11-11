@@ -19,8 +19,8 @@ namespace RuntimeInspector.Core
         private Func<object> _getter;
         private Action<object> _setter;
 
-        internal ObjectGraphNodeArbitrary( Func<object> getter, Action<object> setter )
-            : base( null, null, null, getter()?.GetType(), getter != null, setter != null )
+        internal ObjectGraphNodeArbitrary( string name, Func<object> getter, Action<object> setter )
+            : base( null, name, null, getter()?.GetType(), getter != null, setter != null )
         {
             _getter = getter;
             _setter = setter;

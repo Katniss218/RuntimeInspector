@@ -12,7 +12,7 @@ namespace RuntimeInspector.UI.GUIUtils
     /// <summary>
     /// Helper class to create GUI input fields.
     /// </summary>
-    public static class InspectorFieldOrProperty
+    public static class InspectorStandardFieldOrProperty
     {
         public static RectTransform Create( RectTransform parent, Sprite typeIcon, ObjectGraphNode binding, InspectorStyle style )
         {

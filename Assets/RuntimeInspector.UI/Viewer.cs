@@ -50,7 +50,7 @@ namespace RuntimeInspector.UI
                 return;
             }
 
-            ObjectGraphNode rootGraphNode = ObjectGraphNode.CreateGraph( () => DrawnObj, ( o ) => DrawnObj = (Component)o );
+            ObjectGraphNode rootGraphNode = ObjectGraphNode.CreateGraph( null, () => DrawnObj, ( o ) => DrawnObj = (Component)o );
 
             Drawer drawer = DrawerProvider.GetDrawerOfType( rootGraphNode.GetInstanceType() );
             drawer.Draw( ViewerPanel, rootGraphNode, style );

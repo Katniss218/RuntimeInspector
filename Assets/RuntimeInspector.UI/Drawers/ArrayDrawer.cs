@@ -2,6 +2,7 @@
 using RuntimeInspector.Core.AssetManagement;
 using RuntimeInspector.UI.GUIUtils;
 using System;
+using System.Linq;
 using UnityEngine;
 
 namespace RuntimeInspector.UI.Drawers
@@ -9,15 +10,16 @@ namespace RuntimeInspector.UI.Drawers
     /// <summary>
     /// Draws instances of objects (not references).
     /// </summary>
-    [DrawerOf( typeof( object ) )]
-    public class ObjectDrawer : Drawer
+    [DrawerOf( typeof( Array ) )]
+    public class ArrayDrawer : Drawer
     {
         protected override void DrawInternal( RedrawDataInternal redrawData, ObjectGraphNode node, InspectorStyle style )
         {
             bool isNull = false;
+            Array value = null;
             if( node.CanRead )
             {
-                isNull = IsUnityNull( node.GetValue() );
+                value = (Array)node.GetValue();
             }
 
             RectTransform list = null;
@@ -45,30 +47,19 @@ namespace RuntimeInspector.UI.Drawers
 
             // We have to ALWAYS ping the child objects, or their displayed values will get stale when their parent is not updated.
 
+            var children = node.Children;
             if( node.CanRead && !isNull )
             {
-                foreach( var memberBinding in node.Children )
+#warning TODO - this is harder than I thought to make properly.
+                //ObjectGraphNode indexer = children.FirstOrDefault( n => n is ObjectGraphNodeProperty p && p.IndexParameters != null && p.IndexParameters.SequenceEqual( new[] { typeof( int ) } ) );
+
+                for( int i = 0; i < value.Length; i++ )
                 {
-                    // skip over indexers.
-                    if( memberBinding is ObjectGraphNodeProperty p && p.IndexParameters != null && p.IndexParameters.Length != 0 )
-                    {
-                        continue;
-                    }
-                    // Hide members defined by Unity component classes.
-                    // - Component, MonoBehaviour and others have a bunch of internal Unity garbage that doesn't need to be shown.
+                    int index = i;
+                    ObjectGraphNode graphNode = ObjectGraphNode.CreateGraph( $"{node.Name}[{i}]", () => value.GetValue( index ), ( o ) => value.SetValue( o, index ) );
 
-                    Type declaringType = memberBinding.DeclaringType;
-                    if(
-                        declaringType == typeof( UnityEngine.Object )
-                     || declaringType == typeof( UnityEngine.Component )
-                     || declaringType == typeof( UnityEngine.Behaviour )
-                     || declaringType == typeof( UnityEngine.MonoBehaviour ) )
-                    {
-                        continue;
-                    }
-
-                    Drawer drawer = DrawerProvider.GetDrawerOfType( memberBinding.GetInstanceType() );
-                    drawer.Draw( list, memberBinding, style );
+                    Drawer drawer = DrawerProvider.GetDrawerOfType( graphNode.GetInstanceType() );
+                    drawer.Draw( list, graphNode, style );
                 }
             }
         }

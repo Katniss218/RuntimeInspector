@@ -163,13 +163,8 @@ namespace RuntimeInspector.Core
                 return false;
             }
 
-            if( this.Parent == null )
-            {
-                return other.Parent == null;
-            }
-
             return this.Name == other.Name
-                && this.Parent.Equals( other.Parent );
+                && (this.Parent == null ? other.Parent == null : this.Parent.Equals( other.Parent ));
         }
 
         public override int GetHashCode()
@@ -203,19 +198,15 @@ namespace RuntimeInspector.Core
                 FieldInfo[] fields = currentDeclaringType.GetFields( BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly );
                 PropertyInfo[] properties = currentDeclaringType.GetProperties( BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly );
 
+                MethodInfo[] methods = currentDeclaringType.GetMethods( BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly );
+
                 foreach( var field in fields )
                 {
                     ObjectGraphNode member = new ObjectGraphNodeField( field, this );
                 }
-
+#warning TODO - arrays should be directly individually assignable. - also ties into indexers because they could work in the same way
                 foreach( var property in properties )
                 {
-                    // Don't include indexers.
-#warning TODO - fix later by including indexers in the graph, since graph should be complete. But the indexers should be later filtered out when drawn - if( child.IsIndexer ) - or something.
-                    if( property.GetIndexParameters().Length != 0 )
-                    {
-                        continue;
-                    }
                     ObjectGraphNode binding = new ObjectGraphNodeProperty( property, this );
                 }
 
@@ -227,14 +218,22 @@ namespace RuntimeInspector.Core
             }
         }
 
-        public static ObjectGraphNode CreateGraph( object root )
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="name">Used to distinguish between 2 different graphs.</param>
+        public static ObjectGraphNode CreateGraph( string name, object root )
         {
-            return new ObjectGraphNodeDirect( root );
+            return new ObjectGraphNodeDirect( name, root );
         }
 
-        public static ObjectGraphNode CreateGraph( Func<object> rootGetter, Action<object> rootSetter )
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="name">Used to distinguish between 2 different graphs.</param>
+        public static ObjectGraphNode CreateGraph( string name, Func<object> getter, Action<object> setter )
         {
-            return new ObjectGraphNodeArbitrary( rootGetter, rootSetter );
+            return new ObjectGraphNodeArbitrary( name, getter, setter );
         }
     }
 }

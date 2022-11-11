@@ -40,7 +40,7 @@ namespace RuntimeInspector.UI
 
             CurrentlyDragged = drag;
 
-            sourceNodeUI.onDestroy += () => Object.Destroy(drag.gameObject);
+            sourceNodeUI.onDestroy += () => Destroy(drag.gameObject);
         }
 
         public static void EndDragging( ObjectGraphNodeUI targetNodeUI )

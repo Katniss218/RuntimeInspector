@@ -67,23 +67,21 @@ namespace RuntimeInspector.UI
         [field: SerializeField]
         public object CurrentValue { get; private set; }
 
-        public bool IsEditing()
+        /// <summary>
+        /// Sets the value of the underlying graph node (and thus the inspected object) to a value converted from a string value.
+        /// </summary>
+        public void SetValueText( string inputValue )
         {
-            if( InputField != null && InputField.isFocused )
-            {
-                return true;
-            }
-            return false;
+            SetValue( typeof( string ), inputValue );
         }
 
-        public void SetValueText( string userProvidedValue )
+        /// <summary>
+        /// Sets the value of the underlying graph node (and thus the inspected object) to a value converted from an arbitrary value.
+        /// </summary>
+        /// <param name="inputType">This is used because <see cref="inputValue"/> can be null and thus have no type associated with it.</param>
+        public void SetValue( Type inputType, object inputValue )
         {
-            SetValue( typeof( string ), userProvidedValue );
-        }
-
-        public void SetValue( Type inType, object userProvidedValue )
-        {
-            if( InputConverterProvider.TryConvertForward( GraphNode.Type, inType, userProvidedValue, out object converted ) )
+            if( InputConverterProvider.TryConvertForward( GraphNode.Type, inputType, inputValue, out object converted ) )
             {
                 GraphNode.SetValue( converted );
 
@@ -94,10 +92,22 @@ namespace RuntimeInspector.UI
             }
             else
             {
-                Debug.LogWarning( $"Couldn't convert value '{userProvidedValue}' of type '{inType.FullName}' into type '{GraphNode.Type.FullName}'" );
+                Debug.LogWarning( $"Couldn't convert value '{inputValue}' of type '{inputType.FullName}' into type '{GraphNode.Type.FullName}'" );
             }
         }
 
+        public bool IsEditing()
+        {
+            if( InputField != null && InputField.isFocused )
+            {
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// An event that is called when the object is destroyed.
+        /// </summary>
         public event Action onDestroy;
 
         void Awake()

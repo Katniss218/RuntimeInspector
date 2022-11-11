@@ -18,11 +18,12 @@ namespace RuntimeInspector.Core
     {
         private object _backingObject;
 
-        internal ObjectGraphNodeDirect( object root )
-            : base( null, null, null, root.GetType(), true, true )
+        internal ObjectGraphNodeDirect( string name, object root )
+            : base( null, name, null, root.GetType(), true, true )
         {
+            _backingObject = root;
         }
-
+        
         public override object GetValue()
         {
             return _backingObject;
