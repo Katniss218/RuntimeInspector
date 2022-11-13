@@ -1,21 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace RuntimeInspector.UI.Inspector.Converters
 {
-    public class StringToInt32Converter : IConverter<string, int>
+    public sealed class StringToInt32Converter : IConverter<string, int>
     {
-        public int ConvertForward( string value )
+        public int ConvertForward( Type _, string value )
         {
-            return int.Parse( value );
+            return int.Parse( value, CultureInfo.InvariantCulture );
         }
 
         public string ConvertReverse( int value )
         {
-            return value.ToString();
+            return value.ToString( CultureInfo.InvariantCulture );
         }
     }
 }

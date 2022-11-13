@@ -7,14 +7,14 @@ using System.Threading.Tasks;
 
 namespace RuntimeInspector.UI.Inspector.Converters
 {
-    public sealed class StringToSingleConverter : IConverter<string, float>
+    public sealed class StringToDoubleConverter : IConverter<string, double>
     {
-        public float ConvertForward( Type _, string value )
+        public double ConvertForward( Type _, string value )
         {
-            return float.Parse( value, CultureInfo.InvariantCulture );
+            return double.Parse( value, CultureInfo.InvariantCulture );
         }
 
-        public string ConvertReverse( float value )
+        public string ConvertReverse( double value )
         {
             return value.ToString( CultureInfo.InvariantCulture );
         }

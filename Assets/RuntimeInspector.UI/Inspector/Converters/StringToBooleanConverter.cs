@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace RuntimeInspector.UI.Inspector.Converters
 {
-    public class StringToBooleanConverter : IConverter<string, bool>
+    public sealed class StringToBooleanConverter : IConverter<string, bool>
     {
-        public bool ConvertForward( string value )
+        public bool ConvertForward( Type _, string value )
         {
             return bool.Parse( value );
         }

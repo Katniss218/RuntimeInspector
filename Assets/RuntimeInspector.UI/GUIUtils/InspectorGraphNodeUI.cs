@@ -16,7 +16,7 @@ namespace RuntimeInspector.UI.GUIUtils
         /// <summary>
         /// Creates a new UI element for a graph node. 
         /// </summary>
-        public static (RectTransform, ObjectGraphNodeUI) Create( RectTransform parent, ObjectGraphNode graphNode, InspectorStyle style )
+        public static (RectTransform, GraphNodeUI) Create( RectTransform parent, ObjectGraphNode graphNode, InspectorStyle style )
         {
             GameObject gameObject = new GameObject( $"{graphNode.Name} ({graphNode.GetInstanceType().FullName})" );
             gameObject.layer = 5;
@@ -29,7 +29,7 @@ namespace RuntimeInspector.UI.GUIUtils
             rootTransform.anchoredPosition = new Vector2( 0.0f, 0.0f );
             rootTransform.sizeDelta = new Vector2( 0.0f, style.FieldHeight );
 
-            ObjectGraphNodeUI submitter = gameObject.AddComponent<ObjectGraphNodeUI>();
+            GraphNodeUI submitter = gameObject.AddComponent<GraphNodeUI>();
             submitter.Root = rootTransform;
 
 #warning TODO - replace with custom layout element class that takes preferred width from the content size fitter.

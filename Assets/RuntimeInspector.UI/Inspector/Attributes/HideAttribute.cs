@@ -15,14 +15,8 @@ namespace RuntimeInspector.UI.Inspector.Attributes
       | AttributeTargets.Event
       | AttributeTargets.Method
       | AttributeTargets.Constructor, AllowMultiple = false )]
-    public class HideAttribute : Attribute
+    public sealed class HideAttribute : Attribute
     {
-        // TODO - Figure out why having hidden field and serialized property makes it flicker.
-        /*
-            [SerializeField]
-            [field: Hide]
-            public MeshRenderer Renderer { get; set; }
-        */
         public HideAttribute()
         {
 

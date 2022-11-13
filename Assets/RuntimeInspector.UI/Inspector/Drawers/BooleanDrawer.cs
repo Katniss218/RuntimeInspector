@@ -12,7 +12,7 @@ using Object = UnityEngine.Object;
 namespace RuntimeInspector.UI.Inspector.Drawers
 {
     [DrawerOf( typeof( bool ) )]
-    public class BooleanDrawer : Drawer
+    public sealed class BooleanDrawer : Drawer
     {
         protected override void DrawInternal( RedrawDataInternal redrawData, ObjectGraphNode binding, InspectorStyle style )
         {

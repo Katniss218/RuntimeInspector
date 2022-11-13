@@ -14,12 +14,12 @@ namespace RuntimeInspector.UI.Inspector
     public interface IConverter<TIn, TOut>
     {
         /// <summary>
-        /// Converts the input value into the output value (forward conversion).
+        /// Converts the input value into the output value (using the Forward conversion path).
         /// </summary>
-        TOut ConvertForward( TIn value );
+        TOut ConvertForward( Type outType, TIn value );
 
         /// <summary>
-        /// Converts the output value into the input value (reverse conversion).
+        /// Converts the output value into the input value (using the Reverse conversion path).
         /// </summary>
         TIn ConvertReverse( TOut value );
     }

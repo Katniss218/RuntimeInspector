@@ -11,7 +11,7 @@ namespace RuntimeInspector.UI.Inspector
     /// <summary>
     /// Represents a specific graph node as a UI element.
     /// </summary>
-    public class ObjectGraphNodeUI : MonoBehaviour, IPointerClickHandler
+    public class GraphNodeUI : MonoBehaviour, IPointerClickHandler
     {
         /// <summary>
         /// Gets the actual graph node associated with this graph node UI element.
@@ -62,26 +62,43 @@ namespace RuntimeInspector.UI.Inspector
         }
 
         /// <summary>
-        /// The value of the currently viewed graph node.
+        /// Cached currently viewed value.
         /// </summary>
         [field: SerializeField]
         public object CurrentValue { get; private set; }
 
         /// <summary>
-        /// Sets the value of the underlying graph node (and thus the inspected object) to a value converted from a string value.
+        /// Sets the value of the underlying graph node (and thus the inspected object) to a value converted from an arbitrary value.
         /// </summary>
-        public void SetValueText( string inputValue )
+        /// <remarks>
+        /// The type for conversion will be inferred from the type of the inputValue.
+        /// </remarks>
+        public void SetValue( object inputValue )
         {
-            SetValue( typeof( string ), inputValue );
+            if( inputValue == null )
+            {
+                throw new ArgumentNullException( nameof( inputValue ), "Input Value can't be null or else the type inferrence can't be performed" );
+            }
+            SetValueInternal( inputValue.GetType(), GraphNode.GetInstanceType(), inputValue );
+        }
+
+        /// <summary>
+        /// Sets the value of the underlying graph node (and thus the inspected object) to a value of a different graph node UI.
+        /// </summary>
+        public void SetValue( GraphNodeUI graphNodeUI )
+        {
+            SetValueInternal( graphNodeUI.GraphNode.GetInstanceType(), this.GraphNode.GetInstanceType(), graphNodeUI.CurrentValue );
         }
 
         /// <summary>
         /// Sets the value of the underlying graph node (and thus the inspected object) to a value converted from an arbitrary value.
         /// </summary>
-        /// <param name="inputType">This is used because <see cref="inputValue"/> can be null and thus have no type associated with it.</param>
-        public void SetValue( Type inputType, object inputValue )
+        /// <remarks>
+        /// inputValue can be null.
+        /// </remarks>
+        private void SetValueInternal( Type inputType, Type outputType, object inputValue )
         {
-            if( InputConverterProvider.TryConvertForward( GraphNode.Type, inputType, inputValue, out object converted ) )
+            if( Converter.TryConvertForward( outputType, inputType, inputValue, out object converted ) )
             {
                 GraphNode.SetValue( converted );
 
@@ -96,6 +113,10 @@ namespace RuntimeInspector.UI.Inspector
             }
         }
 
+        /// <summary>
+        /// Checks whether or not this graph node UI is currently being edited by the user and shouldn't be updated.
+        /// </summary>
+        /// <returns>True if the graph node UI is being edited, otherwise false.</returns>
         public bool IsEditing()
         {
             if( InputField != null && InputField.isFocused )
@@ -124,7 +145,7 @@ namespace RuntimeInspector.UI.Inspector
         public void OnPointerClick( PointerEventData e )
         {
             Debug.Log( "pointer click " + this.gameObject.name );
-            if( GraphNodeUIDrag.CurrentlyDragged == null )
+            if( GraphNodeDrag.CurrentlyDragged == null )
             {
                 HandleStartDrag();
             }
@@ -136,22 +157,22 @@ namespace RuntimeInspector.UI.Inspector
 
         private void HandleStartDrag()
         {
-            if( GraphNodeUIDrag.CurrentlyDragged != null )
+            if( GraphNodeDrag.CurrentlyDragged != null )
             {
                 return;
             }
-            GraphNodeUIDrag.StartDragging( this );
+            GraphNodeDrag.StartDragging( this );
             // guard against already dragging something.
             // create the drag object, populate it to reflect this object.
         }
 
         private void HandleEndDrag()
         {
-            if( GraphNodeUIDrag.CurrentlyDragged == null )
+            if( GraphNodeDrag.CurrentlyDragged == null )
             {
                 return;
             }
-            GraphNodeUIDrag.EndDragging( this );
+            GraphNodeDrag.EndDragging( this );
             // check if drag object exists.
             // - if it does - assign its value (if possible), destroy it.
         }

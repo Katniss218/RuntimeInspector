@@ -10,7 +10,7 @@ namespace RuntimeInspector.UI.Inspector.Drawers
     /// Draws instances of objects (not references).
     /// </summary>
     [DrawerOf( typeof( object ) )]
-    public class ObjectDrawer : Drawer
+    public sealed class ObjectDrawer : Drawer
     {
         protected override void DrawInternal( RedrawDataInternal redrawData, ObjectGraphNode node, InspectorStyle style )
         {

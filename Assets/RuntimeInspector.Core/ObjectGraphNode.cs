@@ -103,7 +103,7 @@ namespace RuntimeInspector.Core
         public bool CanWrite { get; }
 
         /// <summary>
-        /// Returns the type of the currently assigned value, or the declared type of the member, if the value is not readable or not assigned.
+        /// Returns the type of the currently assigned value, or the declared type of the member, if the value is not readable or null.
         /// </summary>
         public Type GetInstanceType()
         {

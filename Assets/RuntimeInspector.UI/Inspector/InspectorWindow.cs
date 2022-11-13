@@ -17,12 +17,12 @@ namespace RuntimeInspector.UI.Inspector
         /// <summary>
         /// Holds all of the graph node UIs associated with this viewer.
         /// </summary>
-        public List<ObjectGraphNodeUI> GraphNodeUIs { get; } = new List<ObjectGraphNodeUI>();
+        public List<GraphNodeUI> GraphNodeUIs { get; } = new List<GraphNodeUI>();
 
         /// <summary>
         /// Finds a UIBinding for a graphnode based on hierarchy and name.
         /// </summary>
-        public ObjectGraphNodeUI Find( ObjectGraphNode node )
+        public GraphNodeUI Find( ObjectGraphNode node )
         {
             foreach( var uiBinding in GraphNodeUIs )
             {

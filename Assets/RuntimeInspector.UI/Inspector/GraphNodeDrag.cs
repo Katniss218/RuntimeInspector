@@ -12,11 +12,11 @@ namespace RuntimeInspector.UI.Inspector
     /// <summary>
     /// Used when dragging values from one object input field into another.
     /// </summary>
-    public class GraphNodeUIDrag : MonoBehaviour
+    public class GraphNodeDrag : MonoBehaviour
     {
-        public static GraphNodeUIDrag CurrentlyDragged { get; private set; }
+        public static GraphNodeDrag CurrentlyDragged { get; private set; }
 
-        public ObjectGraphNodeUI Node { get; set; }
+        public GraphNodeUI Node { get; set; }
 
         public void Awake()
         {
@@ -26,7 +26,7 @@ namespace RuntimeInspector.UI.Inspector
             }
         }
 
-        public static void StartDragging( ObjectGraphNodeUI sourceNodeUI )
+        public static void StartDragging( GraphNodeUI sourceNodeUI )
         {
             if( CurrentlyDragged != null )
             {
@@ -35,7 +35,7 @@ namespace RuntimeInspector.UI.Inspector
 
             GameObject go = new GameObject( "Drag" );
 
-            GraphNodeUIDrag drag = go.AddComponent<GraphNodeUIDrag>();
+            GraphNodeDrag drag = go.AddComponent<GraphNodeDrag>();
             drag.Node = sourceNodeUI;
 
             CurrentlyDragged = drag;
@@ -44,14 +44,14 @@ namespace RuntimeInspector.UI.Inspector
             sourceNodeUI.onDestroy += () => Destroy(drag.gameObject);
         }
 
-        public static void EndDragging( ObjectGraphNodeUI targetNodeUI )
+        public static void EndDragging( GraphNodeUI targetNodeUI )
         {
             if( CurrentlyDragged == null )
             {
                 throw new Exception( "Tried to end drag when nothing was being dragged." );
             }
 
-            targetNodeUI.SetValue( CurrentlyDragged.Node.GraphNode.GetInstanceType(), CurrentlyDragged.Node.CurrentValue );
+            targetNodeUI.SetValue( CurrentlyDragged.Node );
 
             Destroy( CurrentlyDragged.gameObject );
             CurrentlyDragged = null;

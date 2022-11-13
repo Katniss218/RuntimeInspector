@@ -12,7 +12,7 @@ using Object = UnityEngine.Object;
 namespace RuntimeInspector.UI.Inspector.Drawers
 {
     [DrawerOf( typeof( Enum ) )]
-    public class EnumDrawer : Drawer
+    public sealed class EnumDrawer : Drawer
     {
         protected override void DrawInternal( RedrawDataInternal redrawData, ObjectGraphNode binding, InspectorStyle style )
         {

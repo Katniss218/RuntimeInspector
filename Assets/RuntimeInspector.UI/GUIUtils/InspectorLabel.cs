@@ -21,12 +21,11 @@ namespace RuntimeInspector.UI.GUIUtils
             RectTransform rectTransform = gameObject.AddComponent<RectTransform>();
             rectTransform.SetParent( parent );
 
-            rectTransform.anchorMin = new Vector2( 0.0f, 0.5f );
-            rectTransform.anchorMax = new Vector2( 0.0f, 0.5f );
+            rectTransform.anchorMin = new Vector2( 0.0f, 0.0f );
+            rectTransform.anchorMax = new Vector2( 0.5f, 1.0f );
             rectTransform.pivot = new Vector2( 0.0f, 0.5f );
             rectTransform.anchoredPosition = new Vector2( 0.0f, 0.0f );
-            rectTransform.sizeDelta = new Vector2( 200.0f, style.FieldHeight );
-#warning TODO - separate method for standalone labels? (they should have size of 0, 0 and anchors to max)
+            rectTransform.sizeDelta = new Vector2( 0.0f, style.FieldHeight );
 
             AddTextComponent( text, style, gameObject );
 

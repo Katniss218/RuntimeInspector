@@ -23,7 +23,7 @@ namespace RuntimeInspector.UI.GUIUtils
         /// <summary>
         /// Creates a text input field and binds it to a graph node UI.
         /// </summary>
-        public static RectTransform Create( RectTransform parent, ObjectGraphNodeUI existingGraphNodeUI, ObjectGraphNode graphNode, InspectorStyle style )
+        public static RectTransform Create( RectTransform parent, GraphNodeUI existingGraphNodeUI, ObjectGraphNode graphNode, InspectorStyle style )
         {
             GameObject valueGO = new GameObject( $"_value" );
             valueGO.layer = 5;
@@ -68,46 +68,50 @@ namespace RuntimeInspector.UI.GUIUtils
             valueTextTransform.anchoredPosition = new Vector2( 0.0f, 0.0f );
             valueTextTransform.sizeDelta = new Vector2( style.InputFieldMargin * -2.0f, style.InputFieldMargin * -2.0f );
 
-            TMPro.TextMeshProUGUI valueText = valueTextGO.AddComponent<TMPro.TextMeshProUGUI>();
-            valueText.fontSize = style.FontSize;
-            valueText.alignment = TMPro.TextAlignmentOptions.Right;
-            valueText.overflowMode = TMPro.TextOverflowModes.Overflow;
-            valueText.color = style.ValueTextColor;
-            valueText.font = style.Font;
+            TMPro.TextMeshProUGUI text = valueTextGO.AddComponent<TMPro.TextMeshProUGUI>();
+            text.fontSize = style.FontSize;
+            text.alignment = TMPro.TextAlignmentOptions.Right;
+            text.overflowMode = TMPro.TextOverflowModes.Overflow;
+            text.color = style.ValueTextColor;
+            text.font = style.Font;
 
             if( graphNode.CanRead )
             {
-                valueText.text = graphNode.GetValue().ToString();
+                object value = graphNode.GetValue();
+                if( Converter.TryConvertReverse( graphNode.GetInstanceType(), typeof( string ), value, out object converted ) )
+                {
+                    text.text = (string)converted;
+                }
+                else
+                {
+                    text.text = "$FAIL";
+                    Debug.LogWarning( $"Couldn't convert value '{value}' of type '{graphNode.Type.FullName}' into type '{typeof( string ).FullName}'" );
+                }
             }
             else
             {
-                valueText.text = WRITEONLY_PLACEHOLDER;
+                text.text = WRITEONLY_PLACEHOLDER;
             }
 
             if( graphNode.CanWrite )
             {
-                TMPro.TMP_InputField valueInput = valueGO.AddComponent<TMPro.TMP_InputField>();
+                string cachedText = text.text; // Temporary variable because adding TMPro.TMP_InputField clears the 'valueText.text'.
 
-                valueInput.textViewport = valueTextAreaTransform;
-                valueInput.textComponent = valueText;
-                valueInput.fontAsset = valueText.font;
-                valueInput.pointSize = style.FontSize;
-                valueInput.restoreOriginalTextOnEscape = true;
-                valueInput.fontAsset = style.Font;
+                TMPro.TMP_InputField inputField = valueGO.AddComponent<TMPro.TMP_InputField>();
 
-                if( graphNode.CanRead )
-                {
-                    valueInput.text = graphNode.GetValue().ToString();
-                }
-                else
-                {
-                    valueInput.text = WRITEONLY_PLACEHOLDER;
-                }
+                inputField.textViewport = valueTextAreaTransform;
+                inputField.textComponent = text;
+                inputField.fontAsset = text.font;
+                inputField.pointSize = style.FontSize;
+                inputField.restoreOriginalTextOnEscape = true;
+                inputField.fontAsset = style.Font;
 
-                valueInput.RegenerateCaret();
+                inputField.text = cachedText;
 
-                existingGraphNodeUI.InputField = valueInput;
-                valueInput.onSubmit.AddListener( existingGraphNodeUI.SetValueText );
+                inputField.RegenerateCaret();
+
+                existingGraphNodeUI.InputField = inputField;
+                inputField.onSubmit.AddListener( existingGraphNodeUI.SetValue );
             }
             if( !graphNode.CanWrite && graphNode.CanRead )
             {

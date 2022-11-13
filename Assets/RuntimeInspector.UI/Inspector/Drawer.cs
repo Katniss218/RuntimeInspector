@@ -19,11 +19,11 @@ namespace RuntimeInspector.UI.Inspector
         {
             public bool DestroyOld { get; set; }
             public bool CreateNew { get; set; }
-            public ObjectGraphNodeUI GraphUI { get; set; }
+            public GraphNodeUI GraphUI { get; set; }
 
             public bool Hidden { get; set; }
 
-            public RedrawDataPrivate( bool destroyOld, bool createNew, ObjectGraphNodeUI binding, bool hidden )
+            public RedrawDataPrivate( bool destroyOld, bool createNew, GraphNodeUI binding, bool hidden )
             {
                 this.DestroyOld = destroyOld;
                 this.CreateNew = createNew;
@@ -44,7 +44,7 @@ namespace RuntimeInspector.UI.Inspector
                 bool destroyOld = false;
                 bool createNew = false;
 
-                ObjectGraphNodeUI drawnBinding = viewer.Find( node );
+                GraphNodeUI drawnBinding = viewer.Find( node );
 
                 // we should redraw if the value changed, or if the value isn't drawn at all.
                 // we should remove the previous value if it changed, and is drawn.
@@ -97,9 +97,9 @@ namespace RuntimeInspector.UI.Inspector
             /// The UI component representing the value of this graph node.
             /// </summary>
             /// <remarks>
-            /// Use <see cref="ObjectGraphNodeUI.Root"/> to get the root UI object matching this particular graph node (guaranteed to not be null inside <see cref="DrawInternal(RedrawDataInternal, ObjectGraphNode, InspectorStyle)"/> method.
+            /// Use <see cref="GraphNodeUI.Root"/> to get the root UI object matching this particular graph node (guaranteed to not be null inside <see cref="DrawInternal(RedrawDataInternal, ObjectGraphNode, InspectorStyle)"/> method.
             /// </remarks>
-            public ObjectGraphNodeUI ObjectGraphNodeUI { get; set; }
+            public GraphNodeUI ObjectGraphNodeUI { get; set; }
         }
 
         /// <summary>
@@ -123,7 +123,7 @@ namespace RuntimeInspector.UI.Inspector
         /// </summary>
         /// <param name="parent">The root of the graph node will be drawn as a child of this object.</param>
         /// <param name="graphNode">The graph node to draw.</param>
-        public ObjectGraphNodeUI Draw( RectTransform parent, ObjectGraphNode graphNode, InspectorStyle style )
+        public GraphNodeUI Draw( RectTransform parent, ObjectGraphNode graphNode, InspectorStyle style )
         {
             if( parent == null )
             {

@@ -11,7 +11,7 @@ namespace RuntimeInspector.UI.Inspector.Attributes
     /// Makes a member drawn as value instead of reference when drawing its parent object with the <see cref="ObjectDrawer"/>.
     /// </summary>
     [AttributeUsage( AttributeTargets.Field | AttributeTargets.Property, AllowMultiple = false )]
-    public class DrawAsValueAttribute : Attribute
+    public sealed class DrawAsValueAttribute : Attribute
     {
         public DrawAsValueAttribute()
         {

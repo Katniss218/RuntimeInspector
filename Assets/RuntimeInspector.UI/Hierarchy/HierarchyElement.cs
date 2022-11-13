@@ -39,7 +39,6 @@ namespace RuntimeInspector.UI.Hierarchy
 
         public void UpdateHierarchyItem()
         {
-#warning TODO - reparenting the object doesn't update the hierarchy.
             if( Obj == null )
             {
                 Destroy( this.gameObject );

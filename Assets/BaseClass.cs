@@ -9,6 +9,17 @@ namespace A
 {
     public class BaseClass : MonoBehaviour, ISelfSerialize
     {
+        public enum Values
+        {
+            Val1,
+            Val2,
+            Val3
+        }
+
+        [field: SerializeField]
+        [field: Hide]
+        public Values EnumField { get; set; }
+
         [field: SerializeField]
         [field: Hide]
         public int IntValue { get; set; }

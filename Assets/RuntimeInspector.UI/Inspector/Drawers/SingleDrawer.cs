@@ -12,7 +12,7 @@ using Object = UnityEngine.Object;
 namespace RuntimeInspector.UI.Inspector.Drawers
 {
     [DrawerOf( typeof( float ) )]
-    public class SingleDrawer : Drawer
+    public sealed class SingleDrawer : Drawer
     {
         protected override void DrawInternal( RedrawDataInternal redrawData, ObjectGraphNode binding, InspectorStyle style )
         {

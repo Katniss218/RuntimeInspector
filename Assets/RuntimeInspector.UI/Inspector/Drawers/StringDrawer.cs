@@ -12,7 +12,7 @@ using Object = UnityEngine.Object;
 namespace RuntimeInspector.UI.Inspector.Drawers
 {
     [DrawerOf( typeof( string ) )]
-    public class StringDrawer : Drawer
+    public sealed class StringDrawer : Drawer
     {
         protected override void DrawInternal( RedrawDataInternal redrawData, ObjectGraphNode binding, InspectorStyle style )
         {

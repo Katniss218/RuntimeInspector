@@ -11,7 +11,7 @@ namespace RuntimeInspector.UI.Inspector.Drawers
     /// Draws instances of objects (not references).
     /// </summary>
     [DrawerOf( typeof( Array ) )]
-    public class ArrayDrawer : Drawer
+    public sealed class ArrayDrawer : Drawer
     {
         protected override void DrawInternal( RedrawDataInternal redrawData, ObjectGraphNode node, InspectorStyle style )
         {
@@ -50,7 +50,9 @@ namespace RuntimeInspector.UI.Inspector.Drawers
             var children = node.Children;
             if( node.CanRead && !isNull )
             {
-#warning TODO - this is harder than I thought to make properly.
+#warning TODO - Drawing array elements is harder than I thought. This will fail with multiple arrays of the same name.
+                // dynamically (or statically) adding children to the graph node could work.
+
                 //ObjectGraphNode indexer = children.FirstOrDefault( n => n is ObjectGraphNodeProperty p && p.IndexParameters != null && p.IndexParameters.SequenceEqual( new[] { typeof( int ) } ) );
 
                 for( int i = 0; i < value.Length; i++ )
