@@ -1,5 +1,5 @@
 using Newtonsoft.Json.Linq;
-using RuntimeInspector.UI.Attributes;
+using RuntimeInspector.UI.Inspector.Attributes;
 using RuntimeInspector.Serialization;
 using System.Collections;
 using System.Collections.Generic;

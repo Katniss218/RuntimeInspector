@@ -13,7 +13,7 @@ namespace RuntimeInspector.UI.GUIUtils
     /// </summary>
     public class InspectorStyle
     {
-        public TMPro.TMP_FontAsset Font { get; set; } = AssetRegistry<TMPro.TMP_FontAsset>.GetAsset( "RuntimeInspector/Fonts/Consolas-Normal SDF" );
+        public TMPro.TMP_FontAsset Font { get; set; }
 
         public float FontSize { get; set; } = 12.0f;
 
@@ -39,7 +39,7 @@ namespace RuntimeInspector.UI.GUIUtils
         /// </summary>
         public static InspectorStyle Default => new InspectorStyle()
         {
-
+            Font = AssetRegistry<TMPro.TMP_FontAsset>.GetAsset( "RuntimeInspector/Fonts/Consolas-Normal SDF" )
         };
     }
 }

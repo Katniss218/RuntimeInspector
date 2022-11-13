@@ -17,7 +17,7 @@ namespace RuntimeInspector.Core.AssetManagement
         private static IDictionary<string, T> registry = new Dictionary<string, T>();
         private static IDictionary<T, string> reverseRegistry = new Dictionary<T, string>();
 
-        private static bool isLazyLoaded = false;
+        private static bool hasLazyLoaded = false;
 
         static AssetRegistry()
         {
@@ -36,38 +36,10 @@ namespace RuntimeInspector.Core.AssetManagement
             }
         }
 
-        /*
-        /// <summary>
-        /// Creates a registry with no asset providers. Use this if you want to only register assets manually.
-        /// </summary>
-        public AssetRegistry()
-        {
-            this.providers = new IAssetProvider<T>[] { };
-        }
-
-        /// <summary>
-        /// Creates a registry with one asset provider
-        /// </summary>
-        public AssetRegistry( IAssetProvider<T> assetProvider )
-        {
-            this.providers = new IAssetProvider<T>[]
-            {
-                assetProvider
-            };
-        }
-
-        /// <summary>
-        /// Creates a registry with multiple asset providers.
-        /// </summary>
-        public AssetRegistry( params IAssetProvider<T>[] assetProviders )
-        {
-            this.providers = assetProviders;
-        }
-        */
         private static void TryLazyLoad()
         {
             // Already loaded and wasn't cleared - return.
-            if( isLazyLoaded )
+            if( hasLazyLoaded )
             {
                 return;
             }
@@ -84,7 +56,7 @@ namespace RuntimeInspector.Core.AssetManagement
                 }
             }
 
-            isLazyLoaded = true;
+            hasLazyLoaded = true;
         }
 
         private static void TryLazyLoadOne( string assetID )
@@ -120,7 +92,7 @@ namespace RuntimeInspector.Core.AssetManagement
         {
             registry.Clear();
             reverseRegistry.Clear();
-            isLazyLoaded = false;
+            hasLazyLoaded = false;
         }
 
         /// <summary>

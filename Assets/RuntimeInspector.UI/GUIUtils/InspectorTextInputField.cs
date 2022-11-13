@@ -1,4 +1,5 @@
 ﻿using RuntimeInspector.Core;
+using RuntimeInspector.UI.Inspector;
 using System;
 using System.Collections.Generic;
 using System.Linq;
