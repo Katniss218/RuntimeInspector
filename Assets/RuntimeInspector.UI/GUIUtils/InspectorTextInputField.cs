@@ -72,6 +72,7 @@ namespace RuntimeInspector.UI.GUIUtils
             valueText.alignment = TMPro.TextAlignmentOptions.Right;
             valueText.overflowMode = TMPro.TextOverflowModes.Overflow;
             valueText.color = style.ValueTextColor;
+            valueText.font = style.Font;
 
             if( graphNode.CanRead )
             {
@@ -91,6 +92,7 @@ namespace RuntimeInspector.UI.GUIUtils
                 valueInput.fontAsset = valueText.font;
                 valueInput.pointSize = style.FontSize;
                 valueInput.restoreOriginalTextOnEscape = true;
+                valueInput.fontAsset = style.Font;
 
                 if( graphNode.CanRead )
                 {

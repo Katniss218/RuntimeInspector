@@ -28,13 +28,7 @@ namespace RuntimeInspector.UI.GUIUtils
             rectTransform.sizeDelta = new Vector2( 200.0f, style.FieldHeight );
 #warning TODO - separate method for standalone labels? (they should have size of 0, 0 and anchors to max)
 
-            TMPro.TextMeshProUGUI labelText = gameObject.AddComponent<TMPro.TextMeshProUGUI>();
-            labelText.fontSize = style.FontSize;
-            labelText.alignment = TMPro.TextAlignmentOptions.Left;
-            labelText.overflowMode = TMPro.TextOverflowModes.Overflow;
-            labelText.color = style.LabelTextColor;
-
-            labelText.text = text;
+            AddTextComponent( text, style, gameObject );
 
             return rectTransform;
         }
@@ -83,15 +77,21 @@ namespace RuntimeInspector.UI.GUIUtils
             textTransform.anchoredPosition = new Vector2( (style.TypeIconSize + style.TypeIconMargin) / 2, 0.0f );
             textTransform.sizeDelta = new Vector2( -(style.TypeIconSize + style.TypeIconMargin), 0.0f );
 
-            TMPro.TextMeshProUGUI labelText = textGameObject.AddComponent<TMPro.TextMeshProUGUI>();
+            AddTextComponent( text, style, textGameObject );
+
+            return rectTransform;
+        }
+
+        private static void AddTextComponent( string text, InspectorStyle style, GameObject gameObject )
+        {
+            TMPro.TextMeshProUGUI labelText = gameObject.AddComponent<TMPro.TextMeshProUGUI>();
             labelText.fontSize = style.FontSize;
             labelText.alignment = TMPro.TextAlignmentOptions.Left;
             labelText.overflowMode = TMPro.TextOverflowModes.Overflow;
             labelText.color = style.LabelTextColor;
 
             labelText.text = text;
-
-            return rectTransform;
+            labelText.font = style.Font;
         }
     }
 }

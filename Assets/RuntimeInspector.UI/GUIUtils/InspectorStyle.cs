@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RuntimeInspector.Core.AssetManagement;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,6 +13,8 @@ namespace RuntimeInspector.UI.GUIUtils
     /// </summary>
     public class InspectorStyle
     {
+        public TMPro.TMP_FontAsset Font { get; set; } = AssetRegistry<TMPro.TMP_FontAsset>.GetAsset( "RuntimeInspector/Fonts/Consolas-Normal SDF" );
+
         public float FontSize { get; set; } = 12.0f;
 
         public float FieldHeight { get; set; } = 24.0f;
@@ -34,6 +37,9 @@ namespace RuntimeInspector.UI.GUIUtils
         /// <summary>
         /// Returns the default style.
         /// </summary>
-        public static InspectorStyle Default => new InspectorStyle();
+        public static InspectorStyle Default => new InspectorStyle()
+        {
+
+        };
     }
 }

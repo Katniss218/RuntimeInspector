@@ -47,18 +47,7 @@ namespace RuntimeInspector.UI.Hierarchy
                 Destroy( this.gameObject );
                 return;
             }
-            if( this.Parent != null && Obj.parent != this.Parent.Obj )
-            {
-                this.transform.SetParent( this.Parent.List );
-                this.transform.SetSiblingIndex( Obj.GetSiblingIndex() );
-            }
-            int siblingIndex = this.transform.GetSiblingIndex();
-            int objSiblingIndex = this.Obj.GetSiblingIndex();
-            if( siblingIndex != objSiblingIndex )
-            {
-                this.transform.SetSiblingIndex( objSiblingIndex );
-            }
-
+            
             // If the hierarchy's children are stale - delete, and redraw all of them. TODO - this could potentially be optimized.
             if( this.List.childCount != this.Obj.childCount )
             {
@@ -95,6 +84,18 @@ namespace RuntimeInspector.UI.Hierarchy
             else
             {
                 this.List.gameObject.SetActive( false );
+            }
+
+            if( this.Parent != null && Obj.parent != this.Parent.Obj )
+            {
+                this.transform.SetParent( this.Parent.List );
+                this.transform.SetSiblingIndex( Obj.GetSiblingIndex() );
+            }
+            int siblingIndex = this.transform.GetSiblingIndex();
+            int objSiblingIndex = this.Obj.GetSiblingIndex();
+            if( siblingIndex != objSiblingIndex )
+            {
+                this.transform.SetSiblingIndex( objSiblingIndex );
             }
         }
 
