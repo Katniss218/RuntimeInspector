@@ -37,12 +37,13 @@ namespace RuntimeInspector.UI.ObjectViewer
 
         void Awake()
         {
-            _nameInputField.onSubmit.AddListener( SubmitName );
-            style = InspectorStyle.Default;
+            this._nameInputField.onSubmit.AddListener( SubmitName );
+            this.style = InspectorStyle.Default;
         }
 
         public void SubmitName( string name )
         {
+            this.FindObjects();
             this.UpdateSearchQuery( SearchQuery.Empty.WithName( name ) );
         }
 
@@ -53,8 +54,16 @@ namespace RuntimeInspector.UI.ObjectViewer
         {
             this.ObjectType = objType;
 
-            _allObjects = FindObjectsOfType( ObjectType );
-            _foundObjects = new List<Object>( _allObjects );
+            FindObjects();
+        }
+
+        /// <summary>
+        /// Sets the type and recalculates the cached objects.
+        /// </summary>
+        public void FindObjects()
+        {
+            this._allObjects = FindObjectsOfType( this.ObjectType );
+            this._foundObjects = new List<Object>( this._allObjects );
 
             UpdateList();
         }
