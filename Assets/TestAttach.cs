@@ -22,51 +22,57 @@ public class TestAttach : MonoBehaviour
         }
     }
 
-    void Start()
-    {/*
-        Test donor = new Test();
-        donor.TestField = donor.Equal;
+    //void Start()
+    //{/*
+    //    Test donor = new Test();
+    //    donor.TestField = donor.Equal;
 
-        Test obj = new Test();
-        obj.TestField = ( a, b ) => false;
+    //    Test obj = new Test();
+    //    obj.TestField = ( a, b ) => false;
 
-        ObjectRegistry.Clear();
+    //    ObjectRegistry.Clear();
 
-        JToken val = ObjectSerializer.WriteDelegate( donor.TestField );
+    //    JToken val = ObjectSerializer.WriteDelegate( donor.TestField );
 
-        string json = JsonConvert.SerializeObject( val );
+    //    string json = JsonConvert.SerializeObject( val );
 
-        obj.TestField = (Func<int, int, bool>)ObjectSerializer.ReadDelegate( val );*/
+    //    obj.TestField = (Func<int, int, bool>)ObjectSerializer.ReadDelegate( val );*/
 
-        Mesh mesh = new Mesh();
-        AssetRegistry<Mesh>.Register( "Mesh|test_mesh", mesh );
-        AssetRegistry<Material>.Register( "Material|default", regMat );
+    //    Mesh mesh = new Mesh();
+    //    AssetRegistry<Mesh>.Register( "Mesh|test_mesh", mesh );
+    //    AssetRegistry<Material>.Register( "Material|default", regMat );
 
-        MeshFilter mf = test.GetComponentInChildren<MeshFilter>();
-        mf.mesh = mesh;
+    //    MeshFilter mf = test.GetComponentInChildren<MeshFilter>();
+    //    mf.mesh = mesh;
 
-        MeshRenderer mr = test.GetComponentInChildren<MeshRenderer>();
-        mr.sharedMaterial = regMat;
+    //    MeshRenderer mr = test.GetComponentInChildren<MeshRenderer>();
+    //    mr.sharedMaterial = regMat;
 
-        // Serialize
-        ObjectSerializer.StartSerialization();
+    //    // Serialize
+    //    ObjectSerializer.StartSerialization();
 
-        JObject val = ComponentSerializer.WriteGameObject( test );
+    //    JObject val = ComponentSerializer.WriteGameObject( test );
 
-        ObjectSerializer.EndSerialization();
+    //    ObjectSerializer.EndSerialization();
 
-        string json = JsonConvert.SerializeObject( val );
+    //    string json = JsonConvert.SerializeObject( val );
 
-        // Deserialize
-        ObjectSerializer.StartSerialization();
+    //    // Deserialize
+    //    ObjectSerializer.StartSerialization();
 
-        //GameObject newObj = ComponentSerializer.ReadGameObject( val );
+    //    //GameObject newObj = ComponentSerializer.ReadGameObject( val );
 
-        ObjectSerializer.EndSerialization();
-    }
+    //    ObjectSerializer.EndSerialization();
+    //}
+
+    float timestamp = -555;
 
     void Update()
     {
-
+        if( timestamp + 2.0f < Time.time )
+        {
+            timestamp = Time.time;
+            new GameObject( "test adder" );
+        }
     }
 }

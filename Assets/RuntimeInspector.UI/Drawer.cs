@@ -34,7 +34,7 @@ namespace RuntimeInspector.UI
             /// <summary>
             /// Calculates what should be done with a given binding. Whether to draw it all over, just update, or do nothing.
             /// </summary>
-            public static RedrawDataPrivate GetRedrawData( Viewer viewer, ObjectGraphNode node )
+            public static RedrawDataPrivate GetRedrawData( ObjectViewer viewer, ObjectGraphNode node )
             {
                 if( node.GetAttributes<HideAttribute>().FirstOrDefault() != null )
                 {
@@ -137,7 +137,7 @@ namespace RuntimeInspector.UI
             {
                 throw new ArgumentNullException( nameof( style ), "Style must be set." );
             }
-            Viewer viewer = parent.GetComponentInParent<Viewer>( false );
+            ObjectViewer viewer = parent.GetComponentInParent<ObjectViewer>( false );
             if( viewer == null )
             {
                 throw new InvalidOperationException( $"The parent object for drawing must be a child of an object with a Viewer component." );

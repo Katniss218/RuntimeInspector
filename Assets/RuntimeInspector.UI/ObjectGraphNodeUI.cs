@@ -40,17 +40,17 @@ namespace RuntimeInspector.UI
         /// </summary>
         public RectTransform Root { get; set; }
 
-        private Viewer _viewer;
+        private ObjectViewer _viewer;
         /// <summary>
         /// Gets the viewer that this graph node UI is associated with.
         /// </summary>
-        public Viewer Viewer
+        public ObjectViewer Viewer
         {
             get
             {
                 if( _viewer == null )
                 {
-                    _viewer = this.GetComponentInParent<Viewer>( false );
+                    _viewer = this.GetComponentInParent<ObjectViewer>( false );
                 }
                 if( _viewer == null )
                 {

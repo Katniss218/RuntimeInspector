@@ -12,7 +12,7 @@ namespace RuntimeInspector.UI
     /// <summary>
     /// Used to inspect objects.
     /// </summary>
-    public class Viewer : MonoBehaviour
+    public class ObjectViewer : MonoBehaviour
     {
         /// <summary>
         /// Holds all of the graph node UIs associated with this viewer.
@@ -34,16 +34,19 @@ namespace RuntimeInspector.UI
             return null;
         }
 
+        /// <summary>
+        /// The parent object for the graph nodes.
+        /// </summary>
         [field: SerializeField]
         public RectTransform ViewerPanel { get; set; }
 
-        [field: SerializeField]
-        public RectTransform MouseCanvas { get; set; }
-
+        /// <summary>
+        /// Gets the inspected object.
+        /// </summary>
         [field: SerializeField]
         public Component DrawnObj { get; private set; }
 
-        public void Show( InspectorStyle style )
+        public void RedrawInspectedObject( InspectorStyle style )
         {
             if( DrawnObj is null )
             {
@@ -55,12 +58,13 @@ namespace RuntimeInspector.UI
             Drawer drawer = DrawerProvider.GetDrawerOfType( rootGraphNode.GetInstanceType() );
             drawer.Draw( ViewerPanel, rootGraphNode, style );
 
-            LayoutRebuilder.MarkLayoutForRebuild( ViewerPanel ); // Force layout to update to reflect the now potentially changed visuals.     TODO - kinda flicker'y.
+#warning TODO - Layout update is kinda flicker'y and takes a long time with nested objects.
+            LayoutRebuilder.ForceRebuildLayoutImmediate( ViewerPanel );
         }
 
         void Start()
         {
-            Show( InspectorStyle.Default );
+            RedrawInspectedObject( InspectorStyle.Default );
         }
 
         int timer = 0;
@@ -74,7 +78,7 @@ namespace RuntimeInspector.UI
             {
                 timer = 0;
 
-                Show( InspectorStyle.Default );
+                RedrawInspectedObject( InspectorStyle.Default );
             }
         }
     }

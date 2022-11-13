@@ -40,6 +40,7 @@ namespace RuntimeInspector.UI
 
             CurrentlyDragged = drag;
 
+#warning TODO - remove this delegate on end dragging because it throws errors later??.
             sourceNodeUI.onDestroy += () => Destroy(drag.gameObject);
         }
 
