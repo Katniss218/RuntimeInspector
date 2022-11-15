@@ -13,7 +13,7 @@ namespace RuntimeInspector.UI.GUIUtils
     /// <summary>
     /// Helper class to create GUI input fields.
     /// </summary>
-    public static class InspectorTextInputField
+    public static class InspectorReferenceInputField
     {
         /// <summary>
         /// The placeholder display to be used with write-only properties.
@@ -77,16 +77,7 @@ namespace RuntimeInspector.UI.GUIUtils
 
             if( graphNode.CanRead )
             {
-                object value = graphNode.GetValue();
-                if( Converter.TryConvertReverse( graphNode.GetInstanceType(), typeof( string ), value, out object converted ) )
-                {
-                    text.text = (string)converted;
-                }
-                else
-                {
-                    text.text = "$FAIL";
-                    Debug.LogWarning( $"Couldn't convert value '{value}' of type '{graphNode.Type.FullName}' into type '{typeof( string ).FullName}'" );
-                }
+                text.text = graphNode.GetValue()?.ToString() ?? "< null >";
             }
             else
             {
@@ -95,24 +86,16 @@ namespace RuntimeInspector.UI.GUIUtils
 
             if( graphNode.CanWrite )
             {
-                string cachedText = text.text; // Temporary variable because adding TMPro.TMP_InputField clears the 'valueText.text'.
+               // string cachedText = text.text;
 
-                TMPro.TMP_InputField inputField = valueGO.AddComponent<TMPro.TMP_InputField>();
+                ReferenceInputField inputField = valueGO.AddComponent<ReferenceInputField>();
 
-                inputField.textViewport = valueTextAreaTransform;
-                inputField.textComponent = text;
-                inputField.fontAsset = text.font;
-                inputField.pointSize = style.FontSize;
-                inputField.restoreOriginalTextOnEscape = true;
-                inputField.fontAsset = style.Font;
+                inputField.Type = graphNode.Type;
+                inputField.onSubmit += existingGraphNodeUI.SetValue;
 
-                inputField.text = cachedText;
-
-                inputField.RegenerateCaret();
-
-                inputField.onSubmit.AddListener( existingGraphNodeUI.SetValue );
-                inputField.onSelect.AddListener( (e) => existingGraphNodeUI.SetSelected() );
-                inputField.onDeselect.AddListener( (e) => existingGraphNodeUI.SetSelected() );
+                // technically unneeded because a reference is assigned instantaneously.
+                //inputField.onSelect.AddListener( ( e ) => existingGraphNodeUI.SetSelected() );
+                //inputField.onDeselect.AddListener( ( e ) => existingGraphNodeUI.SetSelected() );
             }
             if( !graphNode.CanWrite && graphNode.CanRead )
             {

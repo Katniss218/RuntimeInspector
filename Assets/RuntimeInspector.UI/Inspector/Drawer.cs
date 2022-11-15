@@ -23,20 +23,20 @@ namespace RuntimeInspector.UI.Inspector
 
             public bool Hidden { get; set; }
 
-            public RedrawDataPrivate( bool destroyOld, bool createNew, GraphNodeUI binding, bool hidden )
+            public RedrawDataPrivate( bool destroyOld, bool createNew, GraphNodeUI graphNodeUI, bool hidden )
             {
                 this.DestroyOld = destroyOld;
                 this.CreateNew = createNew;
-                this.GraphUI = binding;
+                this.GraphUI = graphNodeUI;
                 this.Hidden = hidden;
             }
 
             /// <summary>
             /// Calculates what should be done with a given binding. Whether to draw it all over, just update, or do nothing.
             /// </summary>
-            public static RedrawDataPrivate GetRedrawData( InspectorWindow viewer, ObjectGraphNode node )
+            public static RedrawDataPrivate GetRedrawData( InspectorWindow viewer, ObjectGraphNode graphNode )
             {
-                if( node.GetAttributes<HideAttribute>().FirstOrDefault() != null )
+                if( graphNode.GetAttributes<HideAttribute>().FirstOrDefault() != null )
                 {
                     return new RedrawDataPrivate( false, false, null, true );
                 }
@@ -44,7 +44,7 @@ namespace RuntimeInspector.UI.Inspector
                 bool destroyOld = false;
                 bool createNew = false;
 
-                GraphNodeUI drawnBinding = viewer.Find( node );
+                GraphNodeUI drawnBinding = viewer.Find( graphNode );
 
                 // we should redraw if the value changed, or if the value isn't drawn at all.
                 // we should remove the previous value if it changed, and is drawn.
@@ -52,10 +52,10 @@ namespace RuntimeInspector.UI.Inspector
                 bool isDisplayedValueStale = false;
                 if( drawnBinding != null )
                 {
-                    if( node.CanRead )
+                    if( graphNode.CanRead )
                     {
                         object displayedValue = drawnBinding.CurrentValue;
-                        object newValue = node.GetValue();
+                        object newValue = graphNode.GetValue();
                         isDisplayedValueStale = !displayedValue?.Equals( newValue ) ?? newValue != null;
                     }
                     else
@@ -67,7 +67,7 @@ namespace RuntimeInspector.UI.Inspector
                     {
                         if( drawnBinding.Root == null )
                         {
-                            Debug.LogWarning( $"UIBinding.Root for Binding '{node.Name}' was null." );
+                            Debug.LogWarning( $"UIBinding.Root for Binding '{graphNode.Name}' was null." );
                         }
 
                         destroyOld = true;
@@ -110,7 +110,7 @@ namespace RuntimeInspector.UI.Inspector
         /// </remarks>
         protected static bool IsUnityNull( object obj )
         {
-            if( obj is UnityEngine.Object unityobject )
+            if( obj is Object unityobject )
             {
                 return unityobject == null;
             }

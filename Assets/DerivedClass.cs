@@ -14,8 +14,10 @@ namespace A
 
         [field: SerializeField]
         [field: Hide]
+        [DrawAsValue]
         public BaseClass AdditionalValue { get; set; }
-        
+
+        [field: SerializeField]
         [field: Hide]
         public BaseClass AdditionalValueButNull { get; set; }
 

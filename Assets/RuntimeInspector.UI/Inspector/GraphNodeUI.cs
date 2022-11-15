@@ -33,7 +33,7 @@ namespace RuntimeInspector.UI.Inspector
         /// <summary>
         /// The (string) input field associated with this graph node UI. Can be null.
         /// </summary>
-        public TMPro.TMP_InputField InputField { get; set; }
+       // public TMPro.TMP_InputField InputField { get; set; }
 
         /// <summary>
         /// Describes the root UI object for this drawn binding.
@@ -66,6 +66,18 @@ namespace RuntimeInspector.UI.Inspector
         /// </summary>
         [field: SerializeField]
         public object CurrentValue { get; private set; }
+
+        public bool IsSelected { get; private set; }
+
+        public void SetSelected()
+        {
+            IsSelected = true;
+        }
+
+        public void SetDeselected()
+        {
+            IsSelected = false;
+        }
 
         /// <summary>
         /// Sets the value of the underlying graph node (and thus the inspected object) to a value converted from an arbitrary value.
@@ -104,7 +116,8 @@ namespace RuntimeInspector.UI.Inspector
 
                 if( !GraphNode.CanRead )
                 {
-                    InputField.text = InspectorTextInputField.WRITEONLY_PLACEHOLDER;
+#warning TODo - add an event to tell the input field to set the displayed value.
+                    // InputField.text = InspectorTextInputField.WRITEONLY_PLACEHOLDER;
                 }
             }
             else
@@ -119,11 +132,12 @@ namespace RuntimeInspector.UI.Inspector
         /// <returns>True if the graph node UI is being edited, otherwise false.</returns>
         public bool IsEditing()
         {
-            if( InputField != null && InputField.isFocused )
+            return IsSelected;
+            /*if( InputField != null && InputField.isFocused )
             {
                 return true;
             }
-            return false;
+            return false;*/
         }
 
         /// <summary>

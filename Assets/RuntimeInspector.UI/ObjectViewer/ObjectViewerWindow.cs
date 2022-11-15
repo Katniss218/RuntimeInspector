@@ -21,7 +21,7 @@ namespace RuntimeInspector.UI.ObjectViewer
         /// <summary>
         /// The method to call when the user selects a specific object from the list.
         /// </summary>
-        public Action<Type, object> onSelect { get; set; }
+        public Action<Type, object> onSubmit { get; set; }
 
         [SerializeField]
         private RectTransform _list;
@@ -75,7 +75,7 @@ namespace RuntimeInspector.UI.ObjectViewer
                 throw new InvalidOperationException( "The type of the passed object must be the same as the type of the window" );
             }
 
-            onSelect?.Invoke( ObjectType, obj );
+            onSubmit?.Invoke( ObjectType, obj );
         }
 
         /// <summary>
@@ -115,7 +115,11 @@ namespace RuntimeInspector.UI.ObjectViewer
 
         void Start()
         {
-            FindObjects( typeof( GameObject ) );
+            if( this.ObjectType == null )
+            {
+                return;
+            }
+            FindObjects( this.ObjectType );
             UpdateSearchQuery( SearchQuery.Empty );
         }
 
@@ -124,13 +128,15 @@ namespace RuntimeInspector.UI.ObjectViewer
             Destroy( this.gameObject );
         }
 
-        public static void Create( Transform modalCanvas, Type objType )
+        public static ObjectViewerWindow Create( Transform modalCanvas, Type objType )
         {
             GameObject prefab = AssetRegistry<GameObject>.GetAsset( "RuntimeInspector/Prefabs/ObjectViewerWindow" );
 
             GameObject windowGO = Instantiate( prefab, modalCanvas );
             ObjectViewerWindow window = windowGO.GetComponent<ObjectViewerWindow>();
             window.FindObjects( objType );
+
+            return window;
         }
 
         private RectTransform CreateEntry( Object obj )
@@ -157,6 +163,7 @@ namespace RuntimeInspector.UI.ObjectViewer
             labelText.font = style.Font;
 
             ObjectViewerElement elem = gameObject.AddComponent<ObjectViewerElement>();
+            elem.Window = this;
             elem.Obj = obj;
 
             return rectTransform;
