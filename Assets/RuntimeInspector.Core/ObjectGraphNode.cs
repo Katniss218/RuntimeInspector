@@ -16,11 +16,11 @@ namespace RuntimeInspector.Core
         /// <summary>
         /// The node that this node is a member of.
         /// </summary>
-        public ObjectGraphNode Parent { get; }
+        public ObjectGraphNode Parent { get; private set; }
 
         bool _setMembersCalled = false;
         private List<ObjectGraphNode> _children = new List<ObjectGraphNode>();
-        
+
         protected Attribute[] Attributes { get; set; }
 
         /// <summary>
@@ -80,18 +80,47 @@ namespace RuntimeInspector.Core
         /// </summary>
         protected ObjectGraphNode( ObjectGraphNode parent, string name, Type declaringType, Type type, bool canRead, bool canWrite )
         {
-            this.Parent = parent;
-
-            if( parent != null )
-            {
-                this.Parent._children.Add( this );
-            }
+            this.SetParent( parent );
 
             this.Name = name;
             this.DeclaringType = declaringType;
             this.Type = type;
             this.CanRead = canRead;
             this.CanWrite = canWrite;
+        }
+
+        /// <summary>
+        /// Adds the current graph node to the hierarchy of the specified graph node.
+        /// </summary>
+        public void SetParent( ObjectGraphNode parent )
+        {
+            if( parent == this.Parent )
+            {
+                return;
+            }
+
+            // Remove outselves from our parent.
+            if( this.Parent != null )
+            {
+                this.Parent._children.Remove( this );
+            }
+
+            // Set our parent.
+            this.Parent = parent;
+
+            // Add outselves to our new parent's children.
+            if( parent != null )
+            {
+                foreach( var child in parent._children )
+                {
+                    if( child.Equals( this ) )
+                    {
+                        throw new InvalidOperationException( $"Can't set parent of {{{this}}} to {{{parent}}}. An equivalent node already exists on the parent." );
+                    }
+                }
+
+                this.Parent._children.Add( this );
+            }
         }
 
         /// <summary>
@@ -162,6 +191,7 @@ namespace RuntimeInspector.Core
             }
 
             return this.Name == other.Name
+                && this.DeclaringType == other.DeclaringType
                 && (this.Parent == null ? other.Parent == null : this.Parent.Equals( other.Parent ));
         }
 
@@ -214,6 +244,11 @@ namespace RuntimeInspector.Core
                 }
                 currentDeclaringType = currentDeclaringType.BaseType;
             }
+        }
+
+        public override string ToString()
+        {
+            return $"{this.Type} {this.Name}";
         }
 
         /// <summary>

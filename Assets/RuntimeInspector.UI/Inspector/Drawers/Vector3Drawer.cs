@@ -50,27 +50,34 @@ namespace RuntimeInspector.UI.Inspector.Drawers
             if( graphNode.CanRead && !isNull )
             {
 #warning TODO - this *works* but is kinda ugly.
+
+                // method to get child by some predicate.
+
+
                 ObjectGraphNode nXs = graphNode.GetChildren().FirstOrDefault( n => n.Name == "x" );
                 ObjectGraphNode nYs = graphNode.GetChildren().FirstOrDefault( n => n.Name == "y" );
                 ObjectGraphNode nZs = graphNode.GetChildren().FirstOrDefault( n => n.Name == "z" );
 
-                ObjectGraphNode nx = ObjectGraphNode.CreateGraph( $"{graphNode.Name}.x", nXs.GetValue, ( o ) => graphNode.SetValue( new Vector3(
+                ObjectGraphNode nx = ObjectGraphNode.CreateGraph( $"x", nXs.GetValue, ( o ) => graphNode.SetValue( new Vector3(
                    (float)o,
                    (float)nYs.GetValue(),
                    (float)nZs.GetValue()
                    ) ) );
+                nx.SetParent( graphNode );
 
-                ObjectGraphNode ny = ObjectGraphNode.CreateGraph( $"{graphNode.Name}.y", nYs.GetValue, ( o ) => graphNode.SetValue( new Vector3(
+                ObjectGraphNode ny = ObjectGraphNode.CreateGraph( $"y", nYs.GetValue, ( o ) => graphNode.SetValue( new Vector3(
                    (float)nXs.GetValue(),
                    (float)o,
                    (float)nZs.GetValue()
                    ) ) );
+                ny.SetParent( graphNode );
 
-                ObjectGraphNode nz = ObjectGraphNode.CreateGraph( $"{graphNode.Name}.z", nZs.GetValue, ( o ) => graphNode.SetValue( new Vector3(
+                ObjectGraphNode nz = ObjectGraphNode.CreateGraph( $"z", nZs.GetValue, ( o ) => graphNode.SetValue( new Vector3(
                    (float)nZs.GetValue(),
                    (float)nYs.GetValue(),
                    (float)o
                    ) ) );
+                nz.SetParent( graphNode );
 
                 Drawer drawer = DrawerProvider.GetDrawerOfType( nx.GetInstanceType() );
                 drawer.Draw( list, nx, style );
