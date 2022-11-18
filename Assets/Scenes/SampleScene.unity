@@ -1669,6 +1669,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e8d2e67099d57374a9a488eed5a46ed5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  <EnumField>k__BackingField: 0
   <IntValue>k__BackingField: 218
   <StringValue>k__BackingField: Nested
   <Filter>k__BackingField: {fileID: 0}
@@ -1699,12 +1700,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8e7182e74412f664a8ff4fe8cc1b2321, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  <EnumField>k__BackingField: 0
   <IntValue>k__BackingField: 50
   <StringValue>k__BackingField: Basal
   <Filter>k__BackingField: {fileID: 0}
   <Renderer>k__BackingField: {fileID: 0}
   <FloatValue>k__BackingField: 3.1415925
   <AdditionalValue>k__BackingField: {fileID: 1143109830}
+  <AdditionalValueButNull>k__BackingField: {fileID: 0}
   _readOnly: Read only
   _writeOnly: test
 --- !u!1 &1185041385
@@ -2720,6 +2723,22 @@ MonoBehaviour:
   <DeadEnds>k__BackingField:
   - {fileID: 420597815}
   - {fileID: 1185041386}
+  onSelect:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1361237499}
+        m_TargetAssemblyTypeName: RuntimeInspector.UI.Inspector.InspectorWindow,
+          RuntimeInspector.UI
+        m_MethodName: InspectObject
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &2085568249
 MonoBehaviour:
   m_ObjectHideFlags: 0

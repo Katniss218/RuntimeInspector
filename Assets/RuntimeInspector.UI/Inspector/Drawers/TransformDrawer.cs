@@ -11,46 +11,11 @@ namespace RuntimeInspector.UI.Inspector.Drawers
     /// <summary>
     /// Draws instances of objects (not references).
     /// </summary>
-    [DrawerOf( typeof( object ) )]
-    public sealed class ObjectDrawer : Drawer
+    [DrawerOf( typeof( Transform ) )]
+    public sealed class TransformDrawer : Drawer
     {
         protected override void DrawInternal( RedrawDataInternal redrawData, ObjectGraphNode graphNode, InspectorStyle style )
         {
-            // not root
-            // not a struct
-            // not draw as value
-            // - we can draw as reference.
-            if( !graphNode.IsRoot && !graphNode.GetAttributes<DrawAsValueAttribute>().Any() )
-            {
-                if( graphNode.CanRead && redrawData.CreateNew )
-                {
-                    GameObject root = new GameObject( $"{graphNode.Name} ({graphNode.GetInstanceType().FullName})" );
-                    root.layer = 5;
-
-                    RectTransform rootTransform = root.AddComponent<RectTransform>();
-                    rootTransform.SetParent( redrawData.ObjectGraphNodeUI.Root );
-                    rootTransform.anchorMin = new Vector2( 0.0f, 0.5f );
-                    rootTransform.anchorMax = new Vector2( 1.0f, 0.5f );
-                    rootTransform.pivot = new Vector2( 0.5f, 0.5f );
-                    rootTransform.anchoredPosition = new Vector2( 0.0f, 0.0f );
-                    rootTransform.sizeDelta = new Vector2( 0.0f, style.FieldHeight );
-
-                    RectTransform label = InspectorLabel.Create( rootTransform, AssetRegistry<Sprite>.GetAsset( "RuntimeInspector/Sprites/icon_objectreference" ), graphNode.Name, style );
-
-                    GraphNodeUI graphNodeUI = redrawData.ObjectGraphNodeUI;
-
-                    RectTransform value = InspectorReferenceInputField.Create( rootTransform, graphNodeUI, graphNode, style );
-
-                    value.anchorMin = new Vector2( 0.5f, 0.0f );
-                    value.anchorMax = new Vector2( 1.0f, 1.0f );
-                    value.pivot = new Vector2( 1.0f, 0.5f );
-                    value.anchoredPosition = new Vector2( 0.0f, 0.0f );
-                    value.sizeDelta = new Vector2( 0.0f, 0.0f );
-                }
-
-                return;
-            }
-
             bool isNull = false;
             if( graphNode.CanRead )
             {
@@ -84,7 +49,7 @@ namespace RuntimeInspector.UI.Inspector.Drawers
 
             if( graphNode.CanRead && !isNull )
             {
-                foreach( var memberBinding in graphNode.GetChildren() )
+                foreach( var memberBinding in graphNode.GetChildren().Where( n => n.Name == "localPosition" || n.Name == "localRotation" || n.Name == "localScale" ) )
                 {
                     // skip over indexers.
                     if( memberBinding is ObjectGraphNodeProperty p && p.IndexParameters != null && p.IndexParameters.Length != 0 )

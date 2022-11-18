@@ -47,7 +47,7 @@ namespace RuntimeInspector.UI.Inspector.Drawers
 
             // We have to ALWAYS ping the child objects, or their displayed values will get stale when their parent is not updated.
 
-            var children = node.Children;
+            var children = node.GetChildren();
             if( node.CanRead && !isNull )
             {
 #warning TODO - Drawing array elements is harder than I thought. This will fail with multiple arrays of the same name.

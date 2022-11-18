@@ -46,14 +46,23 @@ namespace RuntimeInspector.UI.Inspector
         [field: SerializeField]
         public Component DrawnObj { get; private set; }
 
+        public object InspectedObject { get; private set; }
+
+        public void InspectObject( object obj )
+        {
+            this.InspectedObject = obj;
+
+            this.RedrawInspectedObject( InspectorStyle.Default );
+        }
+
         public void RedrawInspectedObject( InspectorStyle style )
         {
-            if( DrawnObj is null )
+            if( InspectedObject is null )
             {
                 return;
             }
 
-            ObjectGraphNode rootGraphNode = ObjectGraphNode.CreateGraph( null, () => DrawnObj, ( o ) => DrawnObj = (Component)o );
+            ObjectGraphNode rootGraphNode = ObjectGraphNode.CreateGraph( null, () => InspectedObject, ( o ) => InspectedObject = (Component)o );
 
             Drawer drawer = DrawerProvider.GetDrawerOfType( rootGraphNode.GetInstanceType() );
             drawer.Draw( ViewerPanel, rootGraphNode, style );
@@ -64,7 +73,7 @@ namespace RuntimeInspector.UI.Inspector
 
         void Start()
         {
-            RedrawInspectedObject( InspectorStyle.Default );
+            InspectObject( DrawnObj );
         }
 
         int timer = 0;

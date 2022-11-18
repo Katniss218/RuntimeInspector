@@ -20,54 +20,8 @@ namespace RuntimeInspector.Core
 
         bool _setMembersCalled = false;
         private List<ObjectGraphNode> _children = new List<ObjectGraphNode>();
-        /// <summary>
-        /// The members that this value declares.
-        /// </summary>
-        public List<ObjectGraphNode> Children
-        {
-            get
-            {
-                TrySetMembers();
-                return _children;
-            }
-        }
-
+        
         protected Attribute[] Attributes { get; set; }
-
-        /// <summary>
-        /// Gets all of the attributes of the specified type belonging to this graph node.
-        /// </summary>
-        /// <typeparam name="T">The type of attribute to search for.</typeparam>
-        /// <param name="includeDerived">If true it will include attributes derived from the target attribute, if false it will look for an EXACT match.</param>
-        public List<T> GetAttributes<T>( bool includeDerived = true ) where T : Attribute
-        {
-            List<T> matchedAttribs = new List<T>();
-
-            if( Attributes == null )
-            {
-                return matchedAttribs;
-            }
-
-            foreach( var attrib in Attributes )
-            {
-                if( includeDerived )
-                {
-                    if( attrib is T a )
-                    {
-                        matchedAttribs.Add( a );
-                    }
-                }
-                else
-                {
-                    if( attrib.GetType() == typeof( T ) )
-                    {
-                        matchedAttribs.Add( (T)attrib );
-                    }
-                }
-            }
-
-            return matchedAttribs;
-        }
 
         /// <summary>
         /// Checks whether the value is the root of the graph.
@@ -130,7 +84,7 @@ namespace RuntimeInspector.Core
 
             if( parent != null )
             {
-                this.Parent.Children.Add( this );
+                this.Parent._children.Add( this );
             }
 
             this.Name = name;
@@ -138,6 +92,50 @@ namespace RuntimeInspector.Core
             this.Type = type;
             this.CanRead = canRead;
             this.CanWrite = canWrite;
+        }
+
+        /// <summary>
+        /// The members that this value declares.
+        /// </summary>
+        public List<ObjectGraphNode> GetChildren()
+        {
+            TrySetMembers();
+            return _children;
+        }
+
+        /// <summary>
+        /// Gets all of the attributes of the specified type belonging to this graph node.
+        /// </summary>
+        /// <typeparam name="T">The type of attribute to search for.</typeparam>
+        /// <param name="includeDerived">If true it will include attributes derived from the target attribute, if false it will look for an EXACT match.</param>
+        public List<T> GetAttributes<T>( bool includeDerived = true ) where T : Attribute
+        {
+            List<T> matchedAttribs = new List<T>();
+
+            if( Attributes == null )
+            {
+                return matchedAttribs;
+            }
+
+            foreach( var attrib in Attributes )
+            {
+                if( includeDerived )
+                {
+                    if( attrib is T a )
+                    {
+                        matchedAttribs.Add( a );
+                    }
+                }
+                else
+                {
+                    if( attrib.GetType() == typeof( T ) )
+                    {
+                        matchedAttribs.Add( (T)attrib );
+                    }
+                }
+            }
+
+            return matchedAttribs;
         }
 
         /// <summary>

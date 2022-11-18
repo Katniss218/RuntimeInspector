@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
@@ -24,6 +25,8 @@ namespace RuntimeInspector.UI.Hierarchy
         /// If true, this hierarchy item should display its children.
         /// </summary>
         public bool IsExpanded { get; private set; } = false;
+
+        public HierarchyWindow Window { get; set; }
 
         public HierarchyElement Parent { get; private set; }
 
@@ -104,23 +107,30 @@ namespace RuntimeInspector.UI.Hierarchy
 
         public void OnPointerClick( PointerEventData e )
         {
-            ToggleExpanded();
+            if( e.button == PointerEventData.InputButton.Right )
+            {
+                ToggleExpanded();
+            }
+            else if( e.button == PointerEventData.InputButton.Left )
+            {
+                Window.onSelect?.Invoke( /*new Vector3( 5, 6, 2 ) );  //*/ Obj );
+            }
         }
 
-        public static HierarchyElement Create( RectTransform list, Transform obj )
+        public static HierarchyElement Create( HierarchyWindow window, Transform obj )
         {
-            return CreateInternal( null, list, obj );
+             return CreateInternal( null, window, window.ViewerPanel, obj );
         }
         
         public static HierarchyElement Create( HierarchyElement parent, Transform obj )
         {
-            return CreateInternal( parent, parent.List, obj );
+            return CreateInternal( parent, parent.Window, parent.List, obj );
         }
 
         /// <summary>
         /// Creates a new HierarchyItem that is a child of another HierarchyItem, and refers to a specific object.
         /// </summary>
-        private static HierarchyElement CreateInternal( HierarchyElement hierarchyParent, RectTransform list, Transform obj )
+        private static HierarchyElement CreateInternal( HierarchyElement hierarchyParent, HierarchyWindow window, RectTransform list, Transform obj )
         {
             InspectorStyle style = InspectorStyle.Default;
 
@@ -159,6 +169,7 @@ namespace RuntimeInspector.UI.Hierarchy
             RectTransform label = InspectorLabel.Create( rectTransform, "", style );
             TMPro.TextMeshProUGUI textMesh = label.GetComponent<TMPro.TextMeshProUGUI>();
             hi._text = textMesh;
+            hi.Window = window;
 
             RectTransform newList = InspectorVerticalList.Create( "abc", rectTransform, style, new InspectorVerticalList.Params() { IncludeMargin = true } );
             hi.List = newList;

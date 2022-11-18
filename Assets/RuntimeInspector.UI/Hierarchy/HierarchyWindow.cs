@@ -6,6 +6,7 @@ using RuntimeInspector.UI.GUIUtils;
 using System.Linq;
 using UnityEngine.UI;
 using System;
+using UnityEngine.Events;
 
 namespace RuntimeInspector.UI.Hierarchy
 {
@@ -19,13 +20,15 @@ namespace RuntimeInspector.UI.Hierarchy
 
         private Dictionary<GameObject, HierarchyElement> _rootHierarchies = new Dictionary<GameObject, HierarchyElement>();
 
-        InspectorStyle style;
+        //InspectorStyle style;
 
-        void Awake()
+        public UnityEvent<object> onSelect;
+
+        /*void Awake()
         {
             style = InspectorStyle.Default;
         }
-
+        */
         public void RedrawHierarchy()
         {
             // go through
@@ -51,7 +54,7 @@ namespace RuntimeInspector.UI.Hierarchy
                     }
                 }
 
-                hi = HierarchyElement.Create( ViewerPanel, go.transform );
+                hi = HierarchyElement.Create( this, go.transform );
                 _rootHierarchies.Add( go, hi );
             }
 
