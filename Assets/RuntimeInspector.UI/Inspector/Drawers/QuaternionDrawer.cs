@@ -49,29 +49,78 @@ namespace RuntimeInspector.UI.Inspector.Drawers
 
             if( graphNode.CanRead && !isNull )
             {
-                foreach( var memberBinding in graphNode.GetChildren().Where( n => n.Name == "x" || n.Name == "y" || n.Name == "z" || n.Name == "w" ) )
-                {
-                    // skip over indexers.
-                    if( memberBinding is ObjectGraphNodeProperty p && p.IndexParameters != null && p.IndexParameters.Length != 0 )
-                    {
-                        continue;
-                    }
-                    // Hide members defined by Unity component classes.
-                    // - Component, MonoBehaviour and others have a bunch of internal Unity garbage that doesn't need to be shown.
+                /*
+                Quaternion value = (Quaternion)graphNode.GetValue();
 
-                    Type declaringType = memberBinding.DeclaringType;
-                    if(
-                        declaringType == typeof( UnityEngine.Object )
-                     || declaringType == typeof( UnityEngine.Component )
-                     || declaringType == typeof( UnityEngine.Behaviour )
-                     || declaringType == typeof( UnityEngine.MonoBehaviour ) )
-                    {
-                        continue;
-                    }
+                ObjectGraphNode nx = ObjectGraphNode.CreateNode( graphNode, "x", null, () => value.x, ( o ) => graphNode.SetValue( new Quaternion(
+                   (float)o,
+                   value.y,
+                   value.z,
+                   value.w
+                   ) ) );
 
-                    Drawer drawer = DrawerProvider.GetDrawerOfType( memberBinding.GetInstanceType() );
-                    drawer.Draw( list, memberBinding, style );
-                }
+                ObjectGraphNode ny = ObjectGraphNode.CreateNode( graphNode, "y", null, () => value.y, ( o ) => graphNode.SetValue( new Quaternion(
+                   value.x,
+                   (float)o,
+                   value.z,
+                   value.w
+                   ) ) );
+
+                ObjectGraphNode nz = ObjectGraphNode.CreateNode( graphNode, "z", null, () => value.z, ( o ) => graphNode.SetValue( new Quaternion(
+                   value.x,
+                   value.y,
+                   (float)o,
+                   value.w
+                   ) ) );
+
+                ObjectGraphNode nw = ObjectGraphNode.CreateNode( graphNode, "w", null, () => value.w, ( o ) => graphNode.SetValue( new Quaternion(
+                   value.x,
+                   value.y,
+                   value.z,
+                   (float)o
+                   ) ) );
+
+                Drawer drawer = DrawerProvider.GetDrawerOfType( nx.GetInstanceType() );
+                drawer.Draw( list, nx, style );
+
+                drawer = DrawerProvider.GetDrawerOfType( ny.GetInstanceType() );
+                drawer.Draw( list, ny, style );
+
+                drawer = DrawerProvider.GetDrawerOfType( nz.GetInstanceType() );
+                drawer.Draw( list, nz, style );
+
+                drawer = DrawerProvider.GetDrawerOfType( nw.GetInstanceType() );
+                drawer.Draw( list, nw, style );
+                */
+
+                Vector3 euler = ((Quaternion)graphNode.GetValue()).eulerAngles;
+
+                ObjectGraphNode nx = ObjectGraphNode.CreateNode( graphNode, "x", null, () => euler.x, ( o ) => graphNode.SetValue( Quaternion.Euler(
+                   (float)o,
+                   euler.y,
+                   euler.z
+                   ) ) );
+
+                ObjectGraphNode ny = ObjectGraphNode.CreateNode( graphNode, "y", null, () => euler.y, ( o ) => graphNode.SetValue( Quaternion.Euler(
+                   euler.x,
+                   (float)o,
+                   euler.z
+                   ) ) );
+
+                ObjectGraphNode nz = ObjectGraphNode.CreateNode( graphNode, "z", null, () => euler.z, ( o ) => graphNode.SetValue( Quaternion.Euler(
+                   euler.x,
+                   euler.y,
+                   (float)o
+                   ) ) );
+
+                Drawer drawer = DrawerProvider.GetDrawerOfType( nx.GetInstanceType() );
+                drawer.Draw( list, nx, style );
+
+                drawer = DrawerProvider.GetDrawerOfType( ny.GetInstanceType() );
+                drawer.Draw( list, ny, style );
+
+                drawer = DrawerProvider.GetDrawerOfType( nz.GetInstanceType() );
+                drawer.Draw( list, nz, style );
             }
         }
     }

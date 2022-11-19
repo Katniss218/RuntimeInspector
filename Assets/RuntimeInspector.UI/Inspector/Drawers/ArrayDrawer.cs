@@ -13,31 +13,25 @@ namespace RuntimeInspector.UI.Inspector.Drawers
     [DrawerOf( typeof( Array ) )]
     public sealed class ArrayDrawer : Drawer
     {
-        protected override void DrawInternal( RedrawDataInternal redrawData, ObjectGraphNode node, InspectorStyle style )
+        protected override void DrawInternal( RedrawDataInternal redrawData, ObjectGraphNode graphNode, InspectorStyle style )
         {
             bool isNull = false;
-            Array value = null;
-            if( node.CanRead )
-            {
-                value = (Array)node.GetValue();
-            }
-
-            RectTransform list = null;
             RectTransform group;
+            RectTransform list = null;
             if( redrawData.CreateNew )
             {
                 group = InspectorVerticalList.Create( "group", redrawData.ObjectGraphNodeUI.Root, style, new InspectorVerticalList.Params() { IncludeMargin = false } );
 
-                RectTransform label = InspectorLabel.Create( group, AssetRegistry<Sprite>.GetAsset( "RuntimeInspector/Sprites/icon_object" ), $"{node.Name} >", style );
+                RectTransform label = InspectorLabel.Create( group, AssetRegistry<Sprite>.GetAsset( "RuntimeInspector/Sprites/icon_object" ), $"{graphNode.GetDisplayName()} >", style );
 
-                if( node.CanRead && !isNull )
+                if( graphNode.CanRead && !isNull )
                 {
                     list = InspectorVerticalList.Create( "list", group, style, new InspectorVerticalList.Params() { IncludeMargin = true } );
                 }
             }
             else
             {
-                if( node.CanRead && !isNull )
+                if( graphNode.CanRead && !isNull )
                 {
                     group = InspectorVerticalList.Find( "group", redrawData.ObjectGraphNodeUI?.Root );
 
@@ -47,21 +41,23 @@ namespace RuntimeInspector.UI.Inspector.Drawers
 
             // We have to ALWAYS ping the child objects, or their displayed values will get stale when their parent is not updated.
 
-            var children = node.GetChildren();
-            if( node.CanRead && !isNull )
+            Array value = null;
+            if( graphNode.CanRead )
             {
-#warning TODO - Drawing array elements is harder than I thought. This will fail with multiple arrays of the same name.
-                // dynamically (or statically) adding children to the graph node could work.
+                value = (Array)graphNode.GetValue();
+            }
 
-                //ObjectGraphNode indexer = children.FirstOrDefault( n => n is ObjectGraphNodeProperty p && p.IndexParameters != null && p.IndexParameters.SequenceEqual( new[] { typeof( int ) } ) );
-
+            var children = graphNode.GetChildren();
+            if( graphNode.CanRead && !isNull )
+            {
                 for( int i = 0; i < value.Length; i++ )
                 {
                     int index = i;
-                    ObjectGraphNode graphNode = ObjectGraphNode.CreateGraph( $"{node.Name}[{i}]", () => value.GetValue( index ), ( o ) => value.SetValue( o, index ) );
 
-                    Drawer drawer = DrawerProvider.GetDrawerOfType( graphNode.GetInstanceType() );
-                    drawer.Draw( list, graphNode, style );
+                    ObjectGraphNode elementNode = ObjectGraphNode.CreateNode( graphNode, $"[{i}]", null, () => value.GetValue( index ), ( o ) => value.SetValue( o, index ) );
+
+                    Drawer drawer = DrawerProvider.GetDrawerOfType( elementNode.GetInstanceType() );
+                    drawer.Draw( list, elementNode, style );
                 }
             }
         }

@@ -21,6 +21,9 @@ namespace RuntimeInspector.Core
         bool _setMembersCalled = false;
         private List<ObjectGraphNode> _children = new List<ObjectGraphNode>();
 
+        /// <summary>
+        /// The attributes of this graph node.
+        /// </summary>
         protected Attribute[] Attributes { get; set; }
 
         /// <summary>
@@ -92,7 +95,7 @@ namespace RuntimeInspector.Core
         /// <summary>
         /// Adds the current graph node to the hierarchy of the specified graph node.
         /// </summary>
-        public void SetParent( ObjectGraphNode parent )
+        internal void SetParent( ObjectGraphNode parent )
         {
             if( parent == this.Parent )
             {
@@ -133,10 +136,25 @@ namespace RuntimeInspector.Core
         }
 
         /// <summary>
+        /// Returns a child node by its name and declaring type.
+        /// </summary>
+        public ObjectGraphNode GetChild( string name, Type declaringType )
+        {
+            foreach( var child in this.GetChildren() )
+            {
+                if( child.Name == name && child.DeclaringType == declaringType )
+                {
+                    return child;
+                }
+            }
+            return null;
+        }
+
+        /// <summary>
         /// Gets all of the attributes of the specified type belonging to this graph node.
         /// </summary>
         /// <typeparam name="T">The type of attribute to search for.</typeparam>
-        /// <param name="includeDerived">If true it will include attributes derived from the target attribute, if false it will look for an EXACT match.</param>
+        /// <param name="includeDerived">If true it will include attributes derived from the target attribute, otherwise it will look for the exact type specified.</param>
         public List<T> GetAttributes<T>( bool includeDerived = true ) where T : Attribute
         {
             List<T> matchedAttribs = new List<T>();
@@ -181,26 +199,6 @@ namespace RuntimeInspector.Core
         public abstract void SetValue( object value );
 
         /// <summary>
-        /// Checks whether the two GraphObjectNodes are the same node by equivalence.
-        /// </summary>
-        public override bool Equals( object obj )
-        {
-            if( obj is not ObjectGraphNode other )
-            {
-                return false;
-            }
-
-            return this.Name == other.Name
-                && this.DeclaringType == other.DeclaringType
-                && (this.Parent == null ? other.Parent == null : this.Parent.Equals( other.Parent ));
-        }
-
-        public override int GetHashCode()
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
         /// Figures out what fields/properties/etc are members of this specific graph node and adds them as children.
         /// </summary>
         protected void TrySetMembers()
@@ -209,7 +207,7 @@ namespace RuntimeInspector.Core
             {
                 return;
             }
-            _setMembersCalled = true; // this needs to be at the start, or we get stackoverflow.
+            _setMembersCalled = true; // this needs to be at the start, or we get a stack overflow.
 
             Type instanceType = this.GetInstanceType();
 
@@ -232,11 +230,13 @@ namespace RuntimeInspector.Core
                 {
                     ObjectGraphNode member = new ObjectGraphNodeField( field, this );
                 }
-#warning TODO - arrays should be directly individually assignable. - also ties into indexers because they could work in the same way
+
                 foreach( var property in properties )
                 {
                     ObjectGraphNode binding = new ObjectGraphNodeProperty( property, this );
                 }
+
+#warning TODO - methods and events.
 
                 if( currentDeclaringType.BaseType == null )
                 {
@@ -246,27 +246,61 @@ namespace RuntimeInspector.Core
             }
         }
 
+        /// <summary>
+        /// Checks whether the two GraphObjectNodes are the same node by equivalence.
+        /// </summary>
+        public override bool Equals( object obj )
+        {
+            if( obj is not ObjectGraphNode other )
+            {
+                return false;
+            }
+
+            return this.Name == other.Name
+                && this.DeclaringType == other.DeclaringType
+                && (this.Parent == null ? other.Parent == null : this.Parent.Equals( other.Parent ));
+        }
+
+        public override int GetHashCode()
+        {
+            throw new NotImplementedException();
+        }
+
         public override string ToString()
         {
             return $"{this.Type} {this.Name}";
         }
 
         /// <summary>
-        /// 
+        /// Creates a new graph that points directly to an object.
         /// </summary>
-        /// <param name="name">Used to distinguish between 2 different graphs.</param>
-        public static ObjectGraphNode CreateGraph( string name, object root )
+        /// <remarks>
+        /// The root object can't be reassigned, but its members can.
+        /// </remarks>
+        public static ObjectGraphNode CreateGraph( string graphName, object root )
         {
-            return new ObjectGraphNodeDirect( name, root );
+            return new ObjectGraphNodeDirect( graphName, root );
         }
 
         /// <summary>
-        /// 
+        /// Creates a new graph with getters and setters to change the value of the root object.
         /// </summary>
-        /// <param name="name">Used to distinguish between 2 different graphs.</param>
-        public static ObjectGraphNode CreateGraph( string name, Func<object> getter, Action<object> setter )
+        public static ObjectGraphNode CreateGraph( string graphName, Func<object> getter, Action<object> setter )
         {
-            return new ObjectGraphNodeArbitrary( name, getter, setter );
+            return new ObjectGraphNodeArbitrary( graphName, getter, setter );
+        }
+
+        /// <summary>
+        /// Adds a new arbitrary node to the graph.
+        /// </summary>
+        public static ObjectGraphNode CreateNode( ObjectGraphNode parentNode, string name, Type declaringType, Func<object> getter, Action<object> setter )
+        {
+            if( parentNode == null )
+            {
+                throw new ArgumentNullException( "The parent node can't be null. If you want to make an entire new graph, use 'CreateGraph' methods." );
+            }
+
+            return new ObjectGraphNodeArbitrary( parentNode, name, declaringType, getter, setter );
         }
     }
 }

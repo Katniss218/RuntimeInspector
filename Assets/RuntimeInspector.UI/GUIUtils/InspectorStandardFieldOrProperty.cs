@@ -15,9 +15,9 @@ namespace RuntimeInspector.UI.GUIUtils
     /// </summary>
     public static class InspectorStandardFieldOrProperty
     {
-        public static RectTransform Create( RectTransform parent, Sprite typeIcon, ObjectGraphNode binding, InspectorStyle style )
+        public static RectTransform Create( RectTransform parent, Sprite typeIcon, ObjectGraphNode graphNode, InspectorStyle style )
         {
-            GameObject root = new GameObject( $"{binding.Name} ({binding.GetInstanceType().FullName})" );
+            GameObject root = new GameObject( $"{graphNode.Name} ({graphNode.GetInstanceType().FullName})" );
             root.layer = 5;
 
             RectTransform rootTransform = root.AddComponent<RectTransform>();
@@ -28,11 +28,11 @@ namespace RuntimeInspector.UI.GUIUtils
             rootTransform.anchoredPosition = new Vector2( 0.0f, 0.0f );
             rootTransform.sizeDelta = new Vector2( 0.0f, style.FieldHeight );
 
-            RectTransform label = InspectorLabel.Create( rootTransform, typeIcon, binding.Name, style );
+            RectTransform label = InspectorLabel.Create( rootTransform, typeIcon, graphNode.GetDisplayName(), style );
 
             GraphNodeUI uiBinding = parent.GetComponent<GraphNodeUI>();
 
-            RectTransform value = InspectorTextInputField.Create( rootTransform, uiBinding, binding, style );
+            RectTransform value = InspectorTextInputField.Create( rootTransform, uiBinding, graphNode, style );
 
             value.anchorMin = new Vector2( 0.5f, 0.0f );
             value.anchorMax = new Vector2( 1.0f, 1.0f );

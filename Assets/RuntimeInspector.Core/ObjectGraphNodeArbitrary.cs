@@ -11,9 +11,6 @@ namespace RuntimeInspector.Core
     /// <summary>
     /// Represents a graph node for an object with arbitrarily defined getter and setter methods. Either or both methods can be null.
     /// </summary>
-    /// <remarks>
-    /// This node must be a root node.
-    /// </remarks>
     public sealed class ObjectGraphNodeArbitrary : ObjectGraphNode
     {
         private Func<object> _getter;
@@ -21,6 +18,13 @@ namespace RuntimeInspector.Core
 
         internal ObjectGraphNodeArbitrary( string name, Func<object> getter, Action<object> setter )
             : base( null, name, null, getter()?.GetType(), getter != null, setter != null )
+        {
+            _getter = getter;
+            _setter = setter;
+        }
+        
+        internal ObjectGraphNodeArbitrary( ObjectGraphNode parentNode, string name, Type declaringType, Func<object> getter, Action<object> setter )
+            : base( parentNode, name, declaringType, getter()?.GetType(), getter != null, setter != null )
         {
             _getter = getter;
             _setter = setter;

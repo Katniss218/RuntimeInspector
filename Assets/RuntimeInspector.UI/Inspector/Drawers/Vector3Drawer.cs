@@ -51,33 +51,25 @@ namespace RuntimeInspector.UI.Inspector.Drawers
             {
 #warning TODO - this *works* but is kinda ugly.
 
-                // method to get child by some predicate.
+                Vector3 value = (Vector3)graphNode.GetValue();
 
-
-                ObjectGraphNode nXs = graphNode.GetChildren().FirstOrDefault( n => n.Name == "x" );
-                ObjectGraphNode nYs = graphNode.GetChildren().FirstOrDefault( n => n.Name == "y" );
-                ObjectGraphNode nZs = graphNode.GetChildren().FirstOrDefault( n => n.Name == "z" );
-
-                ObjectGraphNode nx = ObjectGraphNode.CreateGraph( $"x", nXs.GetValue, ( o ) => graphNode.SetValue( new Vector3(
+                ObjectGraphNode nx = ObjectGraphNode.CreateNode( graphNode, "x", null, () => value.x, ( o ) => graphNode.SetValue( new Vector3(
                    (float)o,
-                   (float)nYs.GetValue(),
-                   (float)nZs.GetValue()
+                   value.y,
+                   value.z
                    ) ) );
-                nx.SetParent( graphNode );
 
-                ObjectGraphNode ny = ObjectGraphNode.CreateGraph( $"y", nYs.GetValue, ( o ) => graphNode.SetValue( new Vector3(
-                   (float)nXs.GetValue(),
+                ObjectGraphNode ny = ObjectGraphNode.CreateNode( graphNode, "y", null, () => value.y, ( o ) => graphNode.SetValue( new Vector3(
+                   value.x,
                    (float)o,
-                   (float)nZs.GetValue()
+                   value.z
                    ) ) );
-                ny.SetParent( graphNode );
 
-                ObjectGraphNode nz = ObjectGraphNode.CreateGraph( $"z", nZs.GetValue, ( o ) => graphNode.SetValue( new Vector3(
-                   (float)nZs.GetValue(),
-                   (float)nYs.GetValue(),
+                ObjectGraphNode nz = ObjectGraphNode.CreateNode( graphNode, "z", null, () => value.z, ( o ) => graphNode.SetValue( new Vector3(
+                   value.x,
+                   value.y,
                    (float)o
                    ) ) );
-                nz.SetParent( graphNode );
 
                 Drawer drawer = DrawerProvider.GetDrawerOfType( nx.GetInstanceType() );
                 drawer.Draw( list, nx, style );
