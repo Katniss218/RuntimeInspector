@@ -7,16 +7,13 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using Object = UnityEngine.Object;
 
-namespace RuntimeInspector.UI.ObjectViewer
+namespace RuntimeInspector.UI.FixedValuesDropdown
 {
-    /// <summary>
-    /// Represents a single element that shows up in the results list of the <see cref="ObjectViewerWindow"/>
-    /// </summary>
-    public class ObjectViewerElement : MonoBehaviour, IPointerClickHandler
+    public class FixedValuesElement : MonoBehaviour, IPointerClickHandler
     {
-        public Object Value { get; internal set; }
+        public object Value { get; internal set; }
 
-        public ObjectViewerWindow Window { get; internal set; }
+        public FixedValuesDropdownWindow Window { get; internal set; }
 
         public void SelectMe()
         {

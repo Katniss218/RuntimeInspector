@@ -91,7 +91,7 @@ namespace RuntimeInspector.UI.Inspector
             {
                 throw new ArgumentNullException( nameof( inputValue ), "Input Value can't be null or else the type inferrence can't be performed" );
             }
-            SetValueInternal( inputValue.GetType(), GraphNode.GetInstanceType(), inputValue );
+            SetValueInternal( inputValue.GetType(), GraphNode.Type, inputValue );
         }
 
         /// <summary>
@@ -99,7 +99,7 @@ namespace RuntimeInspector.UI.Inspector
         /// </summary>
         public void SetValue( GraphNodeUI graphNodeUI )
         {
-            SetValueInternal( graphNodeUI.GraphNode.GetInstanceType(), this.GraphNode.GetInstanceType(), graphNodeUI.CurrentValue );
+            SetValueInternal( graphNodeUI.GraphNode.GetInstanceType(), this.GraphNode.Type, graphNodeUI.CurrentValue );
         }
 
         /// <summary>

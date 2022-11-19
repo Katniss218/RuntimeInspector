@@ -8,9 +8,11 @@ using UnityEngine.EventSystems;
 
 namespace RuntimeInspector.UI
 {
-    public class ReferenceInputField : MonoBehaviour, IPointerClickHandler
+    public class GenericClickHandler : MonoBehaviour, IPointerClickHandler
     {
         public event Action<object> onSubmit;
+
+        public Action<PointerEventData> OnClickFunc;
 
         public Type Type { get; set; }
 
@@ -21,8 +23,7 @@ namespace RuntimeInspector.UI
 
         public void OnPointerClick( PointerEventData eventData )
         {
-            ObjectViewer.ObjectViewerWindow v = ObjectViewer.ObjectViewerWindow.Create( GameObject.Find( "ModalCanvas" ).transform, Type );
-            v.onSubmit += this.OnSubmit;
+            OnClickFunc?.Invoke(eventData);
         }
     }
 }

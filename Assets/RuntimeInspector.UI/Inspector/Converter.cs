@@ -107,7 +107,11 @@ namespace RuntimeInspector.UI.Inspector
 
         private static bool TryConvertInternal( bool backwards, Type outputType, Type inputType, object incoming, out object convertedValue )
         {
-            // converting from output to input.
+            if( outputType == inputType )
+            {
+                convertedValue = incoming;
+                return true;
+            }
 
             if( _cachedConverters == null )
             {

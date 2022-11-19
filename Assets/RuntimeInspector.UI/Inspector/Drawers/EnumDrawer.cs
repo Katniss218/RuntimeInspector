@@ -14,11 +14,35 @@ namespace RuntimeInspector.UI.Inspector.Drawers
     [DrawerOf( typeof( Enum ) )]
     public sealed class EnumDrawer : Drawer
     {
-        protected override void DrawInternal( RedrawDataInternal redrawData, ObjectGraphNode binding, InspectorStyle style )
+        protected override void DrawInternal( RedrawDataInternal redrawData, ObjectGraphNode graphNode, InspectorStyle style )
         {
             if( redrawData.CreateNew )
             {
-                InspectorStandardFieldOrProperty.Create( redrawData.ObjectGraphNodeUI.Root, AssetRegistry<Sprite>.GetAsset( "RuntimeInspector/Sprites/icon_enum" ), binding, style );
+
+                GameObject root = new GameObject( $"{graphNode.Name} ({graphNode.GetInstanceType().FullName})" );
+                root.layer = 5;
+
+                RectTransform rootTransform = root.AddComponent<RectTransform>();
+                rootTransform.SetParent( redrawData.ObjectGraphNodeUI.Root );
+                rootTransform.anchorMin = new Vector2( 0.0f, 0.5f );
+                rootTransform.anchorMax = new Vector2( 1.0f, 0.5f );
+                rootTransform.pivot = new Vector2( 0.5f, 0.5f );
+                rootTransform.anchoredPosition = new Vector2( 0.0f, 0.0f );
+                rootTransform.sizeDelta = new Vector2( 0.0f, style.FieldHeight );
+
+                RectTransform label = InspectorLabel.Create( rootTransform, AssetRegistry<Sprite>.GetAsset( "RuntimeInspector/Sprites/icon_objectreference" ), graphNode.Name, style );
+
+                GraphNodeUI graphNodeUI = redrawData.ObjectGraphNodeUI;
+
+                RectTransform value = InspectorDropdownInputField.Create( rootTransform, graphNodeUI, graphNode, Enum.GetValues( graphNode.GetInstanceType() ).Cast<object>(), style );
+
+                value.anchorMin = new Vector2( 0.5f, 0.0f );
+                value.anchorMax = new Vector2( 1.0f, 1.0f );
+                value.pivot = new Vector2( 1.0f, 0.5f );
+                value.anchoredPosition = new Vector2( 0.0f, 0.0f );
+                value.sizeDelta = new Vector2( 0.0f, 0.0f );
+
+                //InspectorStandardFieldOrProperty.Create( redrawData.ObjectGraphNodeUI.Root, AssetRegistry<Sprite>.GetAsset( "RuntimeInspector/Sprites/icon_enum" ), graphNode, style );
             }
         }
     }

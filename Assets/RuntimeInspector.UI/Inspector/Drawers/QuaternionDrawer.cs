@@ -49,50 +49,6 @@ namespace RuntimeInspector.UI.Inspector.Drawers
 
             if( graphNode.CanRead && !isNull )
             {
-                /*
-                Quaternion value = (Quaternion)graphNode.GetValue();
-
-                ObjectGraphNode nx = ObjectGraphNode.CreateNode( graphNode, "x", null, () => value.x, ( o ) => graphNode.SetValue( new Quaternion(
-                   (float)o,
-                   value.y,
-                   value.z,
-                   value.w
-                   ) ) );
-
-                ObjectGraphNode ny = ObjectGraphNode.CreateNode( graphNode, "y", null, () => value.y, ( o ) => graphNode.SetValue( new Quaternion(
-                   value.x,
-                   (float)o,
-                   value.z,
-                   value.w
-                   ) ) );
-
-                ObjectGraphNode nz = ObjectGraphNode.CreateNode( graphNode, "z", null, () => value.z, ( o ) => graphNode.SetValue( new Quaternion(
-                   value.x,
-                   value.y,
-                   (float)o,
-                   value.w
-                   ) ) );
-
-                ObjectGraphNode nw = ObjectGraphNode.CreateNode( graphNode, "w", null, () => value.w, ( o ) => graphNode.SetValue( new Quaternion(
-                   value.x,
-                   value.y,
-                   value.z,
-                   (float)o
-                   ) ) );
-
-                Drawer drawer = DrawerProvider.GetDrawerOfType( nx.GetInstanceType() );
-                drawer.Draw( list, nx, style );
-
-                drawer = DrawerProvider.GetDrawerOfType( ny.GetInstanceType() );
-                drawer.Draw( list, ny, style );
-
-                drawer = DrawerProvider.GetDrawerOfType( nz.GetInstanceType() );
-                drawer.Draw( list, nz, style );
-
-                drawer = DrawerProvider.GetDrawerOfType( nw.GetInstanceType() );
-                drawer.Draw( list, nw, style );
-                */
-
                 Vector3 euler = ((Quaternion)graphNode.GetValue()).eulerAngles;
 
                 ObjectGraphNode nx = ObjectGraphNode.CreateNode( graphNode, "x", null, () => euler.x, ( o ) => graphNode.SetValue( Quaternion.Euler(

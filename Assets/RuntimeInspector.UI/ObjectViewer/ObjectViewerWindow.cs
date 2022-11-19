@@ -16,7 +16,7 @@ namespace RuntimeInspector.UI.ObjectViewer
         /// <summary>
         /// The type of object that will be listed in the window.
         /// </summary>
-        public Type ObjectType { get; private set; }
+        public Type Type { get; private set; }
 
         /// <summary>
         /// The method to call when the user selects a specific object from the list.
@@ -52,7 +52,7 @@ namespace RuntimeInspector.UI.ObjectViewer
         /// </summary>
         public void FindObjects( Type objType )
         {
-            this.ObjectType = objType;
+            this.Type = objType;
 
             FindObjects();
         }
@@ -62,20 +62,20 @@ namespace RuntimeInspector.UI.ObjectViewer
         /// </summary>
         public void FindObjects()
         {
-            this._allObjects = FindObjectsOfType( this.ObjectType );
+            this._allObjects = FindObjectsOfType( this.Type );
             this._foundObjects = new List<Object>( this._allObjects );
 
             UpdateList();
         }
 
-        internal void Select( Object obj )
+        internal void Submit( Object value )
         {
-            if( obj.GetType() != ObjectType )
+            if( !Type.IsAssignableFrom( value.GetType() ) )
             {
-                throw new InvalidOperationException( "The type of the passed object must be the same as the type of the window" );
+                throw new InvalidOperationException( $"Invalid value type '{value.GetType().FullName}'. The value must be derived from or of the type '{Type.FullName}'." );
             }
 
-            onSubmit?.Invoke( ObjectType, obj );
+            onSubmit?.Invoke( Type, value );
         }
 
         /// <summary>
@@ -115,11 +115,11 @@ namespace RuntimeInspector.UI.ObjectViewer
 
         void Start()
         {
-            if( this.ObjectType == null )
+            if( this.Type == null )
             {
                 return;
             }
-            FindObjects( this.ObjectType );
+            FindObjects( this.Type );
             UpdateSearchQuery( SearchQuery.Empty );
         }
 
@@ -139,7 +139,7 @@ namespace RuntimeInspector.UI.ObjectViewer
             return window;
         }
 
-        private RectTransform CreateEntry( Object obj )
+        private RectTransform CreateEntry( Object value )
         {
             GameObject gameObject = new GameObject( $"_label" );
             gameObject.layer = 5;
@@ -159,12 +159,12 @@ namespace RuntimeInspector.UI.ObjectViewer
             labelText.overflowMode = TMPro.TextOverflowModes.Overflow;
             labelText.color = style.LabelTextColor;
 
-            labelText.text = obj.name;
+            labelText.text = value.name;
             labelText.font = style.Font;
 
             ObjectViewerElement elem = gameObject.AddComponent<ObjectViewerElement>();
             elem.Window = this;
-            elem.Obj = obj;
+            elem.Value = value;
 
             return rectTransform;
         }

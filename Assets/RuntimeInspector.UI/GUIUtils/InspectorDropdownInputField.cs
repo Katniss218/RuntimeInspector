@@ -14,7 +14,7 @@ namespace RuntimeInspector.UI.GUIUtils
     /// <summary>
     /// Helper class to create GUI input fields.
     /// </summary>
-    public static class InspectorReferenceInputField
+    public static class InspectorDropdownInputField
     {
         /// <summary>
         /// The placeholder display to be used with write-only properties.
@@ -24,7 +24,7 @@ namespace RuntimeInspector.UI.GUIUtils
         /// <summary>
         /// Creates a text input field and binds it to a graph node UI.
         /// </summary>
-        public static RectTransform Create( RectTransform parent, GraphNodeUI existingGraphNodeUI, ObjectGraphNode graphNode, InspectorStyle style )
+        public static RectTransform Create( RectTransform parent, GraphNodeUI existingGraphNodeUI, ObjectGraphNode graphNode, IEnumerable<object> values, InspectorStyle style )
         {
             GameObject valueGO = new GameObject( $"_value" );
             valueGO.layer = 5;
@@ -94,13 +94,14 @@ namespace RuntimeInspector.UI.GUIUtils
                 inputField.onSubmit += existingGraphNodeUI.SetValue;
                 inputField.OnClickFunc = ( eventData ) =>
                 {
-                    ObjectViewer.ObjectViewerWindow window = ObjectViewer.ObjectViewerWindow.Create( GameObject.Find( "ModalCanvas" ).transform, inputField.Type );
+                    FixedValuesDropdown.FixedValuesDropdownWindow window = FixedValuesDropdown.FixedValuesDropdownWindow.Create( GameObject.Find( "ModalCanvas" ).transform, inputField.Type, values );
                     window.onSubmit += inputField.OnSubmit;
                     existingGraphNodeUI.onDestroy += () =>
                     {
                         Object.Destroy( window.gameObject );
                     };
                 };
+
 
                 // technically unneeded because a reference is assigned instantaneously.
                 //inputField.onSelect.AddListener( ( e ) => existingGraphNodeUI.SetSelected() );
