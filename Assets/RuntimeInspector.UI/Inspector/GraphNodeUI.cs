@@ -26,7 +26,14 @@ namespace RuntimeInspector.UI.Inspector
             GraphNode = node;
             if( GraphNode.CanRead )
             {
+                //object oldValue = CurrentValue;
                 CurrentValue = GraphNode.GetValue();
+
+#warning TODO - if this is left here, it breaks the redraw and the node is deleted but not redrawn.
+                /*if( CurrentValue != oldValue )
+                {
+                    this.onValueChanged?.Invoke(); // node changed
+                }*/
             }
         }
 
@@ -113,10 +120,11 @@ namespace RuntimeInspector.UI.Inspector
             if( Converter.TryConvertForward( outputType, inputType, inputValue, out object converted ) )
             {
                 GraphNode.SetValue( converted );
+                this.onValueChanged?.Invoke();
 
                 if( !GraphNode.CanRead )
                 {
-#warning TODo - add an event to tell the input field to set the displayed value.
+#warning TODO - add an event to tell the input field to set the displayed value.
                     // InputField.text = InspectorTextInputField.WRITEONLY_PLACEHOLDER;
                 }
             }
@@ -133,17 +141,12 @@ namespace RuntimeInspector.UI.Inspector
         public bool IsEditing()
         {
             return IsSelected;
-            /*if( InputField != null && InputField.isFocused )
-            {
-                return true;
-            }
-            return false;*/
         }
 
         /// <summary>
         /// An event that is called when the object is destroyed.
         /// </summary>
-        public event Action onDestroy;
+        public event Action onValueChanged;
 
         void Awake()
         {
@@ -152,7 +155,7 @@ namespace RuntimeInspector.UI.Inspector
 
         void OnDestroy()
         {
-            this.onDestroy?.Invoke();
+            this.onValueChanged?.Invoke(); // node destroyed
             Viewer.GraphNodeUIs.Remove( this );
         }
 

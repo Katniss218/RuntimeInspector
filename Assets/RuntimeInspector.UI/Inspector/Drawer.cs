@@ -11,13 +11,13 @@ namespace RuntimeInspector.UI.Inspector
 {
     public abstract class Drawer
     {
-        private struct RedrawDataPrivate
+        private class RedrawDataPrivate
         {
-            public bool DestroyOld { get; set; }
-            public bool CreateNew { get; set; }
+            public bool DestroyOld { get; private set; }
+            public bool CreateNew { get; private set; }
             public GraphNodeUI GraphUI { get; set; }
 
-            public bool Hidden { get; set; }
+            public bool Hidden { get; private set; }
 
             public RedrawDataPrivate( bool destroyOld, bool createNew, GraphNodeUI graphNodeUI, bool hidden )
             {
@@ -123,7 +123,7 @@ namespace RuntimeInspector.UI.Inspector
         {
             if( parent == null )
             {
-                throw new ArgumentNullException( nameof(parent), "Parent transform must be set to a child of a valid viewer rect transform." );
+                throw new ArgumentNullException( nameof( parent ), "Parent transform must be set to a child of a valid viewer rect transform." );
             }
             if( graphNode == null )
             {

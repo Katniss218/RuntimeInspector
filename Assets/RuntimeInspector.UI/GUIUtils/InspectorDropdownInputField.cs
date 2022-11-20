@@ -96,9 +96,15 @@ namespace RuntimeInspector.UI.GUIUtils
                 {
                     FixedValuesDropdown.FixedValuesDropdownWindow window = FixedValuesDropdown.FixedValuesDropdownWindow.Create( GameObject.Find( "ModalCanvas" ).transform, inputField.Type, values );
                     window.onSubmit += inputField.OnSubmit;
-                    existingGraphNodeUI.onDestroy += () =>
+                    existingGraphNodeUI.onValueChanged += () =>
                     {
-                        Object.Destroy( window.gameObject );
+                        if( window == null )
+                        {
+                            Debug.LogWarning( "Remove me" );
+                            return;
+                        }
+#warning TODO - remove the listeners when the window is destroyed.
+                        window.Close();
                     };
                 };
 

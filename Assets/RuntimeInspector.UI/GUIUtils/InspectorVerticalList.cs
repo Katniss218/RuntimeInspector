@@ -17,7 +17,7 @@ namespace RuntimeInspector.UI.GUIUtils
 
         public static RectTransform Find( string identifier, RectTransform parent )
         {
-#warning TODO - kinda ugly.
+#warning TODO - finding stuff is kinda ugly. And it's not available in other helper methods.
             if( parent == null )
             {
                 return null;
