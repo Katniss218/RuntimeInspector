@@ -36,12 +36,10 @@ namespace RuntimeInspector.UI.Inspector
             GameObject go = new GameObject( "Drag" );
 
             GraphNodeDrag drag = go.AddComponent<GraphNodeDrag>();
-            drag.Node = sourceNodeUI;
 
             CurrentlyDragged = drag;
-
-#warning TODO - remove this delegate on end dragging because it throws errors later??.
-            sourceNodeUI.onValueChanged += () => Destroy(drag.gameObject);
+            CurrentlyDragged.Node = sourceNodeUI;
+            CurrentlyDragged.Node.onSetterInvalidated += CurrentlyDragged.Close;
         }
 
         public static void EndDragging( GraphNodeUI targetNodeUI )
@@ -54,7 +52,14 @@ namespace RuntimeInspector.UI.Inspector
             targetNodeUI.SetValue( CurrentlyDragged.Node );
 
             Destroy( CurrentlyDragged.gameObject );
+            CurrentlyDragged.Node.onSetterInvalidated -= CurrentlyDragged.Close;
             CurrentlyDragged = null;
+        }
+
+        private void Close()
+        {
+            Destroy( this.gameObject );
+            this.Node.onSetterInvalidated -= this.Close; // remove the listener so we don't close an already closed drag.
         }
     }
 }

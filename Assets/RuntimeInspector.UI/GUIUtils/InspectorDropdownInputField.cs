@@ -87,8 +87,6 @@ namespace RuntimeInspector.UI.GUIUtils
 
             if( graphNode.CanWrite )
             {
-               // string cachedText = text.text;
-
                 GenericClickHandler inputField = valueGO.AddComponent<GenericClickHandler>();
                 inputField.Type = graphNode.Type;
                 inputField.onSubmit += existingGraphNodeUI.SetValue;
@@ -96,18 +94,13 @@ namespace RuntimeInspector.UI.GUIUtils
                 {
                     FixedValuesDropdown.FixedValuesDropdownWindow window = FixedValuesDropdown.FixedValuesDropdownWindow.Create( GameObject.Find( "ModalCanvas" ).transform, inputField.Type, values );
                     window.onSubmit += inputField.OnSubmit;
-                    existingGraphNodeUI.onValueChanged += () =>
-                    {
-                        if( window == null )
-                        {
-                            Debug.LogWarning( "Remove me" );
-                            return;
-                        }
-#warning TODO - remove the listeners when the window is destroyed.
-                        window.Close();
+                   // window.CloseOnSubmit = true;
+                    existingGraphNodeUI.onSetterInvalidated += window.Close;
+                    window.onSubmit += ( t, o ) => 
+                    { 
+                        existingGraphNodeUI.onSetterInvalidated -= window.Close;
                     };
                 };
-
 
                 // technically unneeded because a reference is assigned instantaneously.
                 //inputField.onSelect.AddListener( ( e ) => existingGraphNodeUI.SetSelected() );

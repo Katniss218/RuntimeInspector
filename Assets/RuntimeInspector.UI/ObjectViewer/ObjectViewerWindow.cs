@@ -33,12 +33,9 @@ namespace RuntimeInspector.UI.ObjectViewer
 
         private List<Object> _foundObjects; // Objects of type T matching the search query.
 
-        InspectorStyle style;
-
         void Awake()
         {
             this._nameInputField.onSubmit.AddListener( SubmitName );
-            this.style = InspectorStyle.Default;
         }
 
         public void SubmitName( string name )
@@ -151,16 +148,16 @@ namespace RuntimeInspector.UI.ObjectViewer
             rectTransform.anchorMax = new Vector2( 0.0f, 0.5f );
             rectTransform.pivot = new Vector2( 0.0f, 0.5f );
             rectTransform.anchoredPosition = new Vector2( 0.0f, 0.0f );
-            rectTransform.sizeDelta = new Vector2( 200.0f, style.FieldHeight );
+            rectTransform.sizeDelta = new Vector2( 200.0f, InspectorStyle.Default.FieldHeight );
 
             TMPro.TextMeshProUGUI labelText = gameObject.AddComponent<TMPro.TextMeshProUGUI>();
-            labelText.fontSize = style.FontSize;
+            labelText.fontSize = InspectorStyle.Default.FontSize;
             labelText.alignment = TMPro.TextAlignmentOptions.Left;
             labelText.overflowMode = TMPro.TextOverflowModes.Overflow;
-            labelText.color = style.LabelTextColor;
+            labelText.color = InspectorStyle.Default.LabelTextColor;
 
             labelText.text = value.name;
-            labelText.font = style.Font;
+            labelText.font = InspectorStyle.Default.Font;
 
             ObjectViewerElement elem = gameObject.AddComponent<ObjectViewerElement>();
             elem.Window = this;

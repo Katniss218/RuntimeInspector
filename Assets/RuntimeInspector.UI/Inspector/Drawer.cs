@@ -104,7 +104,7 @@ namespace RuntimeInspector.UI.Inspector
         /// <remarks>
         /// Unassigned Unity objects are not truly null, UnityEngine.Object overrides the `==` operator to make empty references equal to null.
         /// </remarks>
-        protected static bool IsUnityNull( object obj )
+        public static bool IsUnityNull( object obj )
         {
             if( obj is Object unityobject )
             {

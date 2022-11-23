@@ -26,21 +26,9 @@ namespace RuntimeInspector.UI.Inspector
             GraphNode = node;
             if( GraphNode.CanRead )
             {
-                //object oldValue = CurrentValue;
                 CurrentValue = GraphNode.GetValue();
-
-#warning TODO - if this is left here, it breaks the redraw and the node is deleted but not redrawn.
-                /*if( CurrentValue != oldValue )
-                {
-                    this.onValueChanged?.Invoke(); // node changed
-                }*/
             }
         }
-
-        /// <summary>
-        /// The (string) input field associated with this graph node UI. Can be null.
-        /// </summary>
-       // public TMPro.TMP_InputField InputField { get; set; }
 
         /// <summary>
         /// Describes the root UI object for this drawn binding.
@@ -67,6 +55,11 @@ namespace RuntimeInspector.UI.Inspector
                 return _viewer;
             }
         }
+
+        /// <summary>
+        /// An event that's called whenever the external objects using SetValue method need to remove their listeners, because they would point to an old/invalid node.
+        /// </summary>
+        public event Action onSetterInvalidated;
 
         /// <summary>
         /// Cached currently viewed value.
@@ -120,7 +113,7 @@ namespace RuntimeInspector.UI.Inspector
             if( Converter.TryConvertForward( outputType, inputType, inputValue, out object converted ) )
             {
                 GraphNode.SetValue( converted );
-                this.onValueChanged?.Invoke();
+                this.onSetterInvalidated?.Invoke();
 
                 if( !GraphNode.CanRead )
                 {
@@ -143,11 +136,6 @@ namespace RuntimeInspector.UI.Inspector
             return IsSelected;
         }
 
-        /// <summary>
-        /// An event that is called when the object is destroyed.
-        /// </summary>
-        public event Action onValueChanged;
-
         void Awake()
         {
             Viewer.GraphNodeUIs.Add( this );
@@ -155,7 +143,7 @@ namespace RuntimeInspector.UI.Inspector
 
         void OnDestroy()
         {
-            this.onValueChanged?.Invoke(); // node destroyed
+            this.onSetterInvalidated?.Invoke();
             Viewer.GraphNodeUIs.Remove( this );
         }
 

@@ -34,12 +34,23 @@ namespace RuntimeInspector.UI.GUIUtils
         public Color LabelTextColor { get; set; } = new Color( 1.0f, 1.0f, 1.0f );
         public Color ValueTextColor { get; set; } = new Color( 1.0f, 1.0f, 1.0f );
 
+        private static InspectorStyle _default;
         /// <summary>
         /// Returns the default style.
         /// </summary>
-        public static InspectorStyle Default => new InspectorStyle()
+        public static InspectorStyle Default
         {
-            Font = AssetRegistry<TMPro.TMP_FontAsset>.GetAsset( "RuntimeInspector/Fonts/Consolas-Normal SDF" )
-        };
+            get
+            {
+                if( _default == null )
+                {
+                    _default = new InspectorStyle()
+                    {
+                        Font = AssetRegistry<TMPro.TMP_FontAsset>.GetAsset( "RuntimeInspector/Fonts/Consolas-Normal SDF" )
+                    };
+                }
+                return _default;
+            }
+        }
     }
 }

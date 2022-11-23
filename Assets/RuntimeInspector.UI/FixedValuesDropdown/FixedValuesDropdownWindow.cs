@@ -32,13 +32,6 @@ namespace RuntimeInspector.UI.FixedValuesDropdown
         [SerializeField]
         private RectTransform _list;
 
-        InspectorStyle style;
-
-        void Awake()
-        {
-            this.style = InspectorStyle.Default;
-        }
-
         public void Close()
         {
             Destroy( this.gameObject );
@@ -106,16 +99,16 @@ namespace RuntimeInspector.UI.FixedValuesDropdown
             rectTransform.anchorMax = new Vector2( 0.0f, 0.5f );
             rectTransform.pivot = new Vector2( 0.0f, 0.5f );
             rectTransform.anchoredPosition = new Vector2( 0.0f, 0.0f );
-            rectTransform.sizeDelta = new Vector2( 200.0f, style.FieldHeight );
+            rectTransform.sizeDelta = new Vector2( 200.0f, InspectorStyle.Default.FieldHeight );
 
             TMPro.TextMeshProUGUI labelText = gameObject.AddComponent<TMPro.TextMeshProUGUI>();
-            labelText.fontSize = style.FontSize;
+            labelText.fontSize = InspectorStyle.Default.FontSize;
             labelText.alignment = TMPro.TextAlignmentOptions.Left;
             labelText.overflowMode = TMPro.TextOverflowModes.Overflow;
-            labelText.color = style.LabelTextColor;
+            labelText.color = InspectorStyle.Default.LabelTextColor;
 
             labelText.text = value.ToString();
-            labelText.font = style.Font;
+            labelText.font = InspectorStyle.Default.Font;
 
             FixedValuesElement elem = gameObject.AddComponent<FixedValuesElement>();
             elem.Window = this;
