@@ -10,7 +10,7 @@ namespace RuntimeInspector.Core.AssetManagement
     /// <summary>
     /// A self contained registry for one type of asset.
     /// </summary>
-    public class AssetRegistry<T>
+    public static class AssetRegistry<T>
     {
         private static IAssetProvider<T>[] providers;
 
@@ -154,7 +154,7 @@ namespace RuntimeInspector.Core.AssetManagement
             throw new InvalidOperationException( $"A '{typeof( T ).FullName}' asset with assetID '{assetID}' is not registered." );
         }
 
-        public static IEnumerable<(string assetID, T obj)> GetAll()
+        public static List<(string assetID, T obj)> GetAll()
         {
             if( registry.Count == 0 )
             {
@@ -162,6 +162,26 @@ namespace RuntimeInspector.Core.AssetManagement
             }
 
             List<(string assetID, T obj)> all = new List<(string assetID, T obj)>();
+
+            foreach( var (key, obj) in registry )
+            {
+                all.Add( (key, obj) );
+            }
+
+            return all;
+        }
+
+        /// <summary>
+        /// This can be used with reflection.
+        /// </summary>
+        public static List<(string assetID, object obj)> GetAllReflection()
+        {
+            if( registry.Count == 0 )
+            {
+                TryLazyLoad();
+            }
+
+            List<(string assetID, object obj)> all = new List<(string assetID, object obj)>();
 
             foreach( var (key, obj) in registry )
             {

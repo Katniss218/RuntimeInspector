@@ -4,6 +4,7 @@ using RuntimeInspector.Serialization;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace A
 {
@@ -35,6 +36,28 @@ namespace A
         [field: SerializeField]
         [field: Hide]
         public MeshRenderer Renderer { get; set; }
+
+        [SerializeField]
+        [Hide]
+        private Sprite _asset;
+
+        [Asset]
+        public Sprite AssetField
+        {
+            get => _asset;
+            set
+            {
+                _asset = value;
+                if( this.ImageField != null )
+                {
+                    this.ImageField.sprite = value;
+                }
+            }
+        }
+
+        [field: SerializeField]
+        [field: Hide]
+        public Image ImageField { get; set; }
 
         public virtual JToken WriteJson()
         {

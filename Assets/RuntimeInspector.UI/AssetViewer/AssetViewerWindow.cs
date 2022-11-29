@@ -3,15 +3,17 @@ using RuntimeInspector.UI.GUIUtils;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using UnityEngine;
+using System.Linq;
 using Object = UnityEngine.Object;
 
-namespace RuntimeInspector.UI.ObjectViewer
+namespace RuntimeInspector.UI.AssetViewer
 {
     /// <summary>
     /// The Object Viewer Window is used to list and search through every object of a specific type that is currently loaded.
     /// </summary>
-    public class ObjectViewerWindow : MonoBehaviour, IInspectorWindow
+    public class AssetViewerWindow : MonoBehaviour, IInspectorWindow
     {
         /// <summary>
         /// The type of object that will be listed in the window.
@@ -29,9 +31,9 @@ namespace RuntimeInspector.UI.ObjectViewer
         [SerializeField]
         private TMPro.TMP_InputField _nameInputField;
 
-        private Object[] _allObjects; // Every object of type T.
+        private (string assetID, object)[] _allObjects; // objects that support batched fetching.
 
-        private List<Object> _foundObjects; // Objects of type T matching the search query.
+        private List<(string assetID, object)> _foundObjects;
 
         void Awake()
         {
@@ -41,7 +43,9 @@ namespace RuntimeInspector.UI.ObjectViewer
         public void SubmitName( string name )
         {
             this.FindObjects();
-            this.UpdateSearchQuery( SearchQuery.Empty.WithName( name ) );
+
+
+            this.UpdateSearchQuery( name );
         }
 
         /// <summary>
@@ -59,13 +63,27 @@ namespace RuntimeInspector.UI.ObjectViewer
         /// </summary>
         public void FindObjects()
         {
-            this._allObjects = FindObjectsOfType( this.Type );
-            this._foundObjects = new List<Object>( this._allObjects );
+            Type assetRegistryType = typeof( AssetRegistry<> );
+            Type t = assetRegistryType.MakeGenericType( Type );
+
+            MethodInfo method = t.GetMethod( nameof( AssetRegistry<object>.GetAllReflection ) );
+            try
+            {
+                object obj = method.Invoke( null, null );
+                List<(string, object)> objects = (List<(string, object)>)obj;
+                this._allObjects = objects.ToArray();
+            }
+            catch( InvalidOperationException ex )
+            {
+                Debug.LogException( ex );
+            }
+
+            this._foundObjects = new List<(string assetID, object)>( this._allObjects );
 
             UpdateList();
         }
 
-        internal void Submit( Object value )
+        internal void Submit( object value )
         {
             if( !Type.IsAssignableFrom( value.GetType() ) )
             {
@@ -78,17 +96,34 @@ namespace RuntimeInspector.UI.ObjectViewer
         /// <summary>
         /// Updates the cache of found objects to the subset of the all objects that match the query.
         /// </summary>
-        public void UpdateSearchQuery( SearchQuery query )
+        public void UpdateSearchQuery( string assetID )
         {
-            _foundObjects = new List<Object>();
+            _foundObjects = new List<(string assetID, object)>();
+
+            if( !string.IsNullOrEmpty( assetID ) )
+            {
+                Type assetRegistryType = typeof( AssetRegistry<> );
+                Type t = assetRegistryType.MakeGenericType( Type );
+
+                MethodInfo method = t.GetMethod( nameof( AssetRegistry<object>.GetAsset ) );
+                try
+                {
+                    object asset = method.Invoke( null, new[] { assetID } );
+                    _foundObjects.Add( (assetID, asset) );
+                }
+                catch( InvalidOperationException ex )
+                {
+                    Debug.LogException( ex );
+                }
+            }
 
             foreach( var obj in _allObjects )
             {
-                if( obj == null )
+                if( obj.Item2 == null )
                 {
                     continue;
                 }
-                if( query.Matches( obj ) )
+                if( obj.assetID.Contains( assetID ) )
                 {
                     _foundObjects.Add( obj );
                 }
@@ -96,6 +131,7 @@ namespace RuntimeInspector.UI.ObjectViewer
 
             UpdateList();
         }
+
 
         private void UpdateList()
         {
@@ -106,7 +142,7 @@ namespace RuntimeInspector.UI.ObjectViewer
 
             foreach( var obj in _foundObjects )
             {
-                CreateEntry( obj );
+                CreateEntry( $"{obj.assetID}", obj.Item2 );
             }
         }
 
@@ -117,7 +153,7 @@ namespace RuntimeInspector.UI.ObjectViewer
                 return;
             }
             FindObjects( this.Type );
-            UpdateSearchQuery( SearchQuery.Empty );
+            UpdateSearchQuery( "" );
         }
 
         public void Close()
@@ -125,18 +161,18 @@ namespace RuntimeInspector.UI.ObjectViewer
             Destroy( this.gameObject );
         }
 
-        public static ObjectViewerWindow Create( Transform modalCanvas, Type objType )
+        public static AssetViewerWindow Create( Transform modalCanvas, Type objType )
         {
-            GameObject prefab = AssetRegistry<GameObject>.GetAsset( "RuntimeInspector/Prefabs/ObjectViewerWindow" );
+            GameObject prefab = AssetRegistry<GameObject>.GetAsset( "RuntimeInspector/Prefabs/AssetViewerWindow" );
 
             GameObject windowGO = Instantiate( prefab, modalCanvas );
-            ObjectViewerWindow window = windowGO.GetComponent<ObjectViewerWindow>();
+            AssetViewerWindow window = windowGO.GetComponent<AssetViewerWindow>();
             window.FindObjects( objType );
 
             return window;
         }
 
-        private RectTransform CreateEntry( Object value )
+        private RectTransform CreateEntry( string assetID, object value )
         {
             GameObject gameObject = new GameObject( $"_label" );
             gameObject.layer = 5;
@@ -156,10 +192,10 @@ namespace RuntimeInspector.UI.ObjectViewer
             labelText.overflowMode = TMPro.TextOverflowModes.Overflow;
             labelText.color = InspectorStyle.Default.LabelTextColor;
 
-            labelText.text = value.name;
+            labelText.text = assetID;
             labelText.font = InspectorStyle.Default.Font;
 
-            ObjectViewerElement elem = gameObject.AddComponent<ObjectViewerElement>();
+            AssetViewerElement elem = gameObject.AddComponent<AssetViewerElement>();
             elem.Window = this;
             elem.Value = value;
 

@@ -117,7 +117,7 @@ namespace RuntimeInspector.UI.Inspector
 
                 if( !GraphNode.CanRead )
                 {
-#warning TODO - add an event to tell the input field to set the displayed value.
+#warning TODO - The displayed value should be the "default" value.
                     // InputField.text = InspectorTextInputField.WRITEONLY_PLACEHOLDER;
                 }
             }

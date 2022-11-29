@@ -8,10 +8,13 @@ using Object = UnityEngine.Object;
 
 namespace RuntimeInspector.UI.ObjectViewer
 {
+    /// <summary>
+    /// A class that can be used to match against Unity Objects.
+    /// </summary>
     public class SearchQuery
     {
-        public bool IncludeName { get; set; } = false;
-        public string Name { get; set; }
+        public bool IncludeName { get; private set; } = false;
+        public string Name { get; private set; }
 
         public static SearchQuery Empty => new SearchQuery();
 
