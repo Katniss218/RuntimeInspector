@@ -26,6 +26,7 @@ namespace RuntimeInspector.UI.Inspector
             }
         }
 
+#warning TODO - clicking on elements sometimes results in an infinite loop.
         public static void StartDragging( GraphNodeUI sourceNodeUI )
         {
             if( CurrentlyDragged != null )

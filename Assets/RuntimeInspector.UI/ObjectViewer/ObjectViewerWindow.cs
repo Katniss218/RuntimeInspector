@@ -142,6 +142,7 @@ namespace RuntimeInspector.UI.ObjectViewer
 
         public void Close()
         {
+#warning TODO - this sometimes doesn't get unpinned. Something to do with when you open a window and its node gets redrawn.
             Destroy( this.gameObject );
         }
 
