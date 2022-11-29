@@ -42,11 +42,16 @@ namespace RuntimeInspector.UI.ObjectViewer
         /// </summary>
         /// <param name="obj">The object to match.</param>
         /// <returns>True if the object matches all the criteria, otherwise false.</returns>
-        public bool Matches( Object obj )
+        public bool Matches( Entry entry )
         {
+            if( entry.IsDefault )
+            {
+                return !this.IncludeName;
+            }
+
             if( IncludeName )
             {
-                if( !obj.name.Contains( Name ) )
+                if( !entry.DisplayName.Contains( Name ) )
                 {
                     return false;
                 }

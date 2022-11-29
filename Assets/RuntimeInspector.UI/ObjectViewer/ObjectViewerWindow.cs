@@ -1,5 +1,6 @@
 using RuntimeInspector.Core.AssetManagement;
 using RuntimeInspector.UI.GUIUtils;
+using RuntimeInspector.UI.Inspector;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -8,6 +9,16 @@ using Object = UnityEngine.Object;
 
 namespace RuntimeInspector.UI.ObjectViewer
 {
+    public struct Entry
+    {
+        public string DisplayName { get; set; }
+        public object Obj { get; set; }
+
+        public bool IsDefault => DisplayName == null;
+
+        public static Entry Default => new Entry() { DisplayName = null, Obj = null };
+    }
+
     /// <summary>
     /// The Object Viewer Window is used to list and search through every object of a specific type that is currently loaded.
     /// </summary>
@@ -29,9 +40,9 @@ namespace RuntimeInspector.UI.ObjectViewer
         [SerializeField]
         private TMPro.TMP_InputField _nameInputField;
 
-        private Object[] _allObjects; // Every object of type T.
+        private Entry[] _allEntries;
 
-        private List<Object> _foundObjects; // Objects of type T matching the search query.
+        private List<Entry> _foundEntries;
 
         void Awake()
         {
@@ -59,15 +70,28 @@ namespace RuntimeInspector.UI.ObjectViewer
         /// </summary>
         public void FindObjects()
         {
-            this._allObjects = FindObjectsOfType( this.Type );
-            this._foundObjects = new List<Object>( this._allObjects );
+            List<Object> allObjects = new List<Object>( FindObjectsOfType( this.Type ) );
+
+            List<Entry> entries = new List<Entry>()
+            {
+                Entry.Default
+            };
+
+            foreach( var obj in allObjects )
+            {
+                entries.Add( new Entry() { DisplayName = obj.name, Obj = obj } );
+            }
+
+            this._allEntries = entries.ToArray();
+
+            this._foundEntries = new List<Entry>( this._allEntries );
 
             UpdateList();
         }
 
-        internal void Submit( Object value )
+        internal void Submit( object value )
         {
-            if( !Type.IsAssignableFrom( value.GetType() ) )
+            if( !Utils.UnityUtils.IsUnityNull( value ) && !Type.IsAssignableFrom( value.GetType() ) )
             {
                 throw new InvalidOperationException( $"Invalid value type '{value.GetType().FullName}'. The value must be derived from or of the type '{Type.FullName}'." );
             }
@@ -80,17 +104,13 @@ namespace RuntimeInspector.UI.ObjectViewer
         /// </summary>
         public void UpdateSearchQuery( SearchQuery query )
         {
-            _foundObjects = new List<Object>();
+            _foundEntries = new List<Entry>();
 
-            foreach( var obj in _allObjects )
+            foreach( var obj in _allEntries )
             {
-                if( obj == null )
-                {
-                    continue;
-                }
                 if( query.Matches( obj ) )
                 {
-                    _foundObjects.Add( obj );
+                    _foundEntries.Add( obj );
                 }
             }
 
@@ -104,7 +124,7 @@ namespace RuntimeInspector.UI.ObjectViewer
                 Destroy( _list.GetChild( i ).gameObject );
             }
 
-            foreach( var obj in _foundObjects )
+            foreach( var obj in _foundEntries )
             {
                 CreateEntry( obj );
             }
@@ -136,7 +156,7 @@ namespace RuntimeInspector.UI.ObjectViewer
             return window;
         }
 
-        private RectTransform CreateEntry( Object value )
+        private RectTransform CreateEntry( Entry entry )
         {
             GameObject gameObject = new GameObject( $"_label" );
             gameObject.layer = 5;
@@ -156,12 +176,12 @@ namespace RuntimeInspector.UI.ObjectViewer
             labelText.overflowMode = TMPro.TextOverflowModes.Overflow;
             labelText.color = InspectorStyle.Default.LabelTextColor;
 
-            labelText.text = value.name;
+            labelText.text = entry.DisplayName;
             labelText.font = InspectorStyle.Default.Font;
 
             ObjectViewerElement elem = gameObject.AddComponent<ObjectViewerElement>();
             elem.Window = this;
-            elem.Value = value;
+            elem.Value = entry.Obj;
 
             return rectTransform;
         }

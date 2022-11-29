@@ -99,22 +99,6 @@ namespace RuntimeInspector.UI.Inspector
         }
 
         /// <summary>
-        /// Checks whether an object should be treated as if it's null.
-        /// </summary>
-        /// <remarks>
-        /// Unassigned Unity objects are not truly null, UnityEngine.Object overrides the `==` operator to make empty references equal to null.
-        /// </remarks>
-        public static bool IsUnityNull( object obj )
-        {
-            if( obj is Object unityobject )
-            {
-                return unityobject == null;
-            }
-
-            return obj == null;
-        }
-
-        /// <summary>
         /// Draws a graph node using the drawer.
         /// </summary>
         /// <param name="parent">The root of the graph node will be drawn as a child of this object.</param>

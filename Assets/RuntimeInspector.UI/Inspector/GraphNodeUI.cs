@@ -87,9 +87,10 @@ namespace RuntimeInspector.UI.Inspector
         /// </remarks>
         public void SetValue( object inputValue )
         {
-            if( inputValue == null )
+            if( Utils.UnityUtils.IsUnityNull( inputValue ) )
             {
-                throw new ArgumentNullException( nameof( inputValue ), "Input Value can't be null or else the type inferrence can't be performed" );
+                SetValueInternal( GraphNode.Type, GraphNode.Type, null );
+                return;
             }
             SetValueInternal( inputValue.GetType(), GraphNode.Type, inputValue );
         }

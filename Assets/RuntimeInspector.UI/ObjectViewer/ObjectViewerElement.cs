@@ -14,7 +14,7 @@ namespace RuntimeInspector.UI.ObjectViewer
     /// </summary>
     public class ObjectViewerElement : MonoBehaviour, IPointerClickHandler
     {
-        public Object Value { get; internal set; }
+        public object Value { get; internal set; }
 
         public ObjectViewerWindow Window { get; internal set; }
 

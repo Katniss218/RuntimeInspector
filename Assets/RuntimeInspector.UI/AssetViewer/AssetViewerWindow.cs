@@ -7,9 +7,20 @@ using System.Reflection;
 using UnityEngine;
 using System.Linq;
 using Object = UnityEngine.Object;
+using RuntimeInspector.UI.Inspector;
 
 namespace RuntimeInspector.UI.AssetViewer
 {
+    public struct Entry
+    {
+        public string AssetID { get; set; }
+        public object Obj { get; set; }
+
+        public bool IsDefault => AssetID == null;
+
+        public static Entry Default => new Entry() { AssetID = null, Obj = null };
+    }
+
     /// <summary>
     /// The Object Viewer Window is used to list and search through every object of a specific type that is currently loaded.
     /// </summary>
@@ -31,9 +42,9 @@ namespace RuntimeInspector.UI.AssetViewer
         [SerializeField]
         private TMPro.TMP_InputField _nameInputField;
 
-        private (string assetID, object)[] _allObjects; // objects that support batched fetching.
+        private Entry[] _allEntries; // objects that support batched fetching.
 
-        private List<(string assetID, object)> _foundObjects;
+        private List<Entry> _foundEntries;
 
         void Awake()
         {
@@ -43,8 +54,6 @@ namespace RuntimeInspector.UI.AssetViewer
         public void SubmitName( string name )
         {
             this.FindObjects();
-
-
             this.UpdateSearchQuery( name );
         }
 
@@ -64,28 +73,38 @@ namespace RuntimeInspector.UI.AssetViewer
         public void FindObjects()
         {
             Type assetRegistryType = typeof( AssetRegistry<> );
-            Type t = assetRegistryType.MakeGenericType( Type );
+            assetRegistryType = assetRegistryType.MakeGenericType( Type );
 
-            MethodInfo method = t.GetMethod( nameof( AssetRegistry<object>.GetAllReflection ) );
+            MethodInfo method = assetRegistryType.GetMethod( nameof( AssetRegistry<object>.GetAllReflection ) );
             try
             {
-                object obj = method.Invoke( null, null );
-                List<(string, object)> objects = (List<(string, object)>)obj;
-                this._allObjects = objects.ToArray();
+                List<(string assetID, object obj)> foundAssets = (List<(string, object)>)method.Invoke( null, null );
+
+                List<Entry> entries = new List<Entry>( foundAssets.Count )
+                {
+                    Entry.Default
+                };
+
+                foreach( var obj in foundAssets )
+                {
+                    entries.Add( new Entry() { AssetID = obj.assetID, Obj = obj.obj } );
+                }
+
+                this._allEntries = entries.ToArray();
             }
             catch( InvalidOperationException ex )
             {
                 Debug.LogException( ex );
             }
 
-            this._foundObjects = new List<(string assetID, object)>( this._allObjects );
+            this._foundEntries = new List<Entry>( this._allEntries );
 
             UpdateList();
         }
 
         internal void Submit( object value )
         {
-            if( !Type.IsAssignableFrom( value.GetType() ) )
+            if( !Utils.UnityUtils.IsUnityNull( value ) && !Type.IsAssignableFrom( value.GetType() ) )
             {
                 throw new InvalidOperationException( $"Invalid value type '{value.GetType().FullName}'. The value must be derived from or of the type '{Type.FullName}'." );
             }
@@ -93,39 +112,44 @@ namespace RuntimeInspector.UI.AssetViewer
             onSubmit?.Invoke( Type, value );
         }
 
+        private Entry? FindExact( string assetID )
+        {
+            Type assetRegistryType = typeof( AssetRegistry<> );
+            assetRegistryType = assetRegistryType.MakeGenericType( Type );
+
+            MethodInfo checkMethod = assetRegistryType.GetMethod( nameof( AssetRegistry<object>.Exists ) );
+            MethodInfo getMethod = assetRegistryType.GetMethod( nameof( AssetRegistry<object>.GetAsset ) );
+
+            if( (bool)checkMethod.Invoke( null, new[] { assetID } ) )
+            {
+                object asset = getMethod.Invoke( null, new[] { assetID } );
+
+                return new Entry() { AssetID = assetID, Obj = asset };
+            }
+            return null;
+        }
+
         /// <summary>
         /// Updates the cache of found objects to the subset of the all objects that match the query.
         /// </summary>
         public void UpdateSearchQuery( string assetID )
         {
-            _foundObjects = new List<(string assetID, object)>();
+            _foundEntries = new List<Entry>();
 
             if( !string.IsNullOrEmpty( assetID ) )
             {
-                Type assetRegistryType = typeof( AssetRegistry<> );
-                Type t = assetRegistryType.MakeGenericType( Type );
-
-                MethodInfo method = t.GetMethod( nameof( AssetRegistry<object>.GetAsset ) );
-                try
+                Entry? result = FindExact( assetID );
+                if( result != null )
                 {
-                    object asset = method.Invoke( null, new[] { assetID } );
-                    _foundObjects.Add( (assetID, asset) );
-                }
-                catch( InvalidOperationException ex )
-                {
-                    Debug.LogException( ex );
+                    _foundEntries.Add( result.Value );
                 }
             }
 
-            foreach( var obj in _allObjects )
+            foreach( var entry in _allEntries )
             {
-                if( obj.Item2 == null )
+                if( entry.IsDefault || entry.AssetID.Contains( assetID ) )
                 {
-                    continue;
-                }
-                if( obj.assetID.Contains( assetID ) )
-                {
-                    _foundObjects.Add( obj );
+                    _foundEntries.Add( entry );
                 }
             }
 
@@ -140,9 +164,9 @@ namespace RuntimeInspector.UI.AssetViewer
                 Destroy( _list.GetChild( i ).gameObject );
             }
 
-            foreach( var obj in _foundObjects )
+            foreach( var entry in _foundEntries )
             {
-                CreateEntry( $"{obj.assetID}", obj.Item2 );
+                CreateEntry( entry );
             }
         }
 
@@ -172,7 +196,7 @@ namespace RuntimeInspector.UI.AssetViewer
             return window;
         }
 
-        private RectTransform CreateEntry( string assetID, object value )
+        private RectTransform CreateEntry( Entry entry )
         {
             GameObject gameObject = new GameObject( $"_label" );
             gameObject.layer = 5;
@@ -192,12 +216,12 @@ namespace RuntimeInspector.UI.AssetViewer
             labelText.overflowMode = TMPro.TextOverflowModes.Overflow;
             labelText.color = InspectorStyle.Default.LabelTextColor;
 
-            labelText.text = assetID;
+            labelText.text = entry.AssetID;
             labelText.font = InspectorStyle.Default.Font;
 
             AssetViewerElement elem = gameObject.AddComponent<AssetViewerElement>();
             elem.Window = this;
-            elem.Value = value;
+            elem.Value = entry.Obj;
 
             return rectTransform;
         }

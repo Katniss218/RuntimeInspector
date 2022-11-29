@@ -145,7 +145,7 @@ namespace RuntimeInspector.UI.Inspector
             object converter = GetConverter( outputType, inputType );
             if( converter == null )
             {
-                Debug.LogError( $"Converter for '{inputType}' -> '{outputType}' not found." );
+                Debug.LogWarning( $"Converter for '{inputType}' -> '{outputType}' not found." );
                 convertedValue = default;
                 return false;
             }

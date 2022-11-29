@@ -78,7 +78,15 @@ namespace RuntimeInspector.UI.GUIUtils
 
             if( graphNode.CanRead )
             {
-                text.text = graphNode.GetValue()?.ToString() ?? "< null >";
+                object value = graphNode.GetValue();
+                if( Utils.UnityUtils.IsUnityNull( value ) )
+                {
+                    text.text = "< null >";
+                }
+                else
+                {
+                    text.text = value.ToString();
+                }
             }
             else
             {
