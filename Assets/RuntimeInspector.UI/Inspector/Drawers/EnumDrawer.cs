@@ -35,7 +35,7 @@ namespace RuntimeInspector.UI.Inspector.Drawers
 
                 GraphNodeUI graphNodeUI = redrawData.ObjectGraphNodeUI;
 
-                RectTransform value = InspectorValueSelectionInputField.Create( rootTransform, graphNodeUI, graphNode, new EnumEntryProvider(), style );
+                RectTransform value = InspectorInputField.Create( rootTransform, graphNodeUI, graphNode, new EnumEntryProvider(), style );
 
                 value.anchorMin = new Vector2( 0.5f, 0.0f );
                 value.anchorMax = new Vector2( 1.0f, 1.0f );

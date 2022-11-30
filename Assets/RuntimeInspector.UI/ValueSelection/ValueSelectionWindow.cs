@@ -7,27 +7,20 @@ using RuntimeInspector.Core.AssetManagement;
 
 namespace RuntimeInspector.UI.ValueSelection
 {
-    public interface IEntryProvider
-    {
-        Entry[] GetAllEntries( Type type );
-    }
-
-    public struct Entry
-    {
-        public string Identifier { get; set; }
-        public object Obj { get; set; }
-
-        public bool IsDefault => Identifier == null;
-
-        /// <summary>
-        /// A special case when the entry represents the default value.
-        /// </summary>
-        public static Entry Default => new Entry() { Identifier = null, Obj = null };
-    }
-
+    /// <summary>
+    /// A window that displays a searchable list of values that can be submitted when the user clicks on them.
+    /// </summary>
     public class ValueSelectionWindow : MonoBehaviour, IInspectorWindow
     {
+        /// <summary>
+        /// The type of the object that this window displays.
+        /// </summary>
         public Type Type { get; private set; }
+
+        /// <summary>
+        /// The entry provider that will specify what the window will display.
+        /// </summary>
+        public IEntryProvider EntryProvider;
 
         /// <summary>
         /// The method to call when the user selects a specific object from the list.
@@ -35,14 +28,13 @@ namespace RuntimeInspector.UI.ValueSelection
         public Action<Type, object> onSubmit { get; set; }
 
         [SerializeField]
-        private RectTransform _list;
+        RectTransform _list;
 
-#warning TODO - helper class to translate the various possible window arrangements and input fields into a search query update that is sent whenever we need to refresh the list.
+        Entry[] _allEntries;
 
-        private Entry[] _allEntries; // objects that support batched fetching.
-
-        public IEntryProvider EntryProvider;
-
+        /// <summary>
+        /// Calls the entry provider and refreshes the list with the results.
+        /// </summary>
         public void FindObjectsAndRefreshList()
         {
             this._allEntries = EntryProvider.GetAllEntries( this.Type );
@@ -50,6 +42,9 @@ namespace RuntimeInspector.UI.ValueSelection
             this.RefreshFilteredEntries( SearchQuery.Empty );
         }
 
+        /// <summary>
+        /// Makes the window submit a specified value.
+        /// </summary>
         internal void Submit( object value )
         {
             if( !Utils.UnityUtils.IsUnityNull( value ) && !Type.IsAssignableFrom( value.GetType() ) )

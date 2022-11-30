@@ -7,7 +7,10 @@ using UnityEngine;
 
 namespace RuntimeInspector.UI.ValueSelection
 {
-    public class WindowSubmitter : MonoBehaviour
+    /// <summary>
+    /// Handles the translation between UI elements and search query.
+    /// </summary>
+    public class ValueSelectionWindowFilterHandler : MonoBehaviour
     {
         [SerializeField]
         TMPro.TMP_InputField _nameField;

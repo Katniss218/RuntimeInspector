@@ -1,5 +1,6 @@
 ﻿using RuntimeInspector.Core;
 using RuntimeInspector.UI.Inspector;
+using RuntimeInspector.UI.ValueSelection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +14,7 @@ namespace RuntimeInspector.UI.GUIUtils
     /// <summary>
     /// Helper class to create GUI input fields.
     /// </summary>
-    public static class InspectorTextInputField
+    public static class InspectorInputField
     {
         /// <summary>
         /// The placeholder display to be used with write-only properties.
@@ -24,6 +25,20 @@ namespace RuntimeInspector.UI.GUIUtils
         /// Creates a text input field and binds it to a graph node UI.
         /// </summary>
         public static RectTransform Create( RectTransform parent, GraphNodeUI existingGraphNodeUI, ObjectGraphNode graphNode, InspectorStyle style )
+        {
+            return CreateInternal( parent, existingGraphNodeUI, graphNode, style, null );
+        }
+
+        /// <summary>
+        /// Creates a text input field and binds it to a graph node UI.
+        /// </summary>
+        public static RectTransform Create( RectTransform parent, GraphNodeUI existingGraphNodeUI, ObjectGraphNode graphNode, IEntryProvider entryProvider, InspectorStyle style )
+        {
+            return CreateInternal( parent, existingGraphNodeUI, graphNode, style, entryProvider );
+        }
+
+        /// <param name="entryProvider">If this is set, it will create an input field that opens a value selection window on click.</param>
+        private static RectTransform CreateInternal( RectTransform parent, GraphNodeUI existingGraphNodeUI, ObjectGraphNode graphNode, InspectorStyle style, IEntryProvider entryProvider )
         {
             GameObject valueGO = new GameObject( $"_value" );
             valueGO.layer = 5;
@@ -78,14 +93,28 @@ namespace RuntimeInspector.UI.GUIUtils
             if( graphNode.CanRead )
             {
                 object value = graphNode.GetValue();
-                if( Converter.TryConvertReverse( graphNode.GetInstanceType(), typeof( string ), value, out object converted ) )
+                if( entryProvider == null )
                 {
-                    text.text = (string)converted;
+                    if( Converter.TryConvertReverse( graphNode.GetInstanceType(), typeof( string ), value, out object converted ) )
+                    {
+                        text.text = (string)converted;
+                    }
+                    else
+                    {
+                        text.text = "$FAIL";
+                        Debug.LogWarning( $"Couldn't convert value '{value}' of type '{graphNode.Type.FullName}' into type '{typeof( string ).FullName}'" );
+                    }
                 }
                 else
                 {
-                    text.text = "$FAIL";
-                    Debug.LogWarning( $"Couldn't convert value '{value}' of type '{graphNode.Type.FullName}' into type '{typeof( string ).FullName}'" );
+                    if( Utils.UnityUtils.IsUnityNull( value ) )
+                    {
+                        text.text = "< null >";
+                    }
+                    else
+                    {
+                        text.text = value.ToString();
+                    }
                 }
             }
             else
@@ -95,24 +124,45 @@ namespace RuntimeInspector.UI.GUIUtils
 
             if( graphNode.CanWrite )
             {
-                string cachedText = text.text; // Temporary variable because adding TMPro.TMP_InputField clears the 'valueText.text'.
+                if( entryProvider == null )
+                {
+                    string cachedText = text.text; // Temporary variable because adding TMPro.TMP_InputField clears the 'valueText.text'.
 
-                TMPro.TMP_InputField inputField = valueGO.AddComponent<TMPro.TMP_InputField>();
+                    TMPro.TMP_InputField inputField = valueGO.AddComponent<TMPro.TMP_InputField>();
+                    inputField.textViewport = valueTextAreaTransform;
+                    inputField.textComponent = text;
+                    inputField.fontAsset = text.font;
+                    inputField.pointSize = style.FontSize;
+                    inputField.restoreOriginalTextOnEscape = true;
+                    inputField.fontAsset = style.Font;
 
-                inputField.textViewport = valueTextAreaTransform;
-                inputField.textComponent = text;
-                inputField.fontAsset = text.font;
-                inputField.pointSize = style.FontSize;
-                inputField.restoreOriginalTextOnEscape = true;
-                inputField.fontAsset = style.Font;
+                    inputField.text = cachedText;
 
-                inputField.text = cachedText;
+                    inputField.RegenerateCaret();
 
-                inputField.RegenerateCaret();
-
-                inputField.onSubmit.AddListener( existingGraphNodeUI.SetValue );
-                inputField.onSelect.AddListener( (e) => existingGraphNodeUI.SetSelected() );
-                inputField.onDeselect.AddListener( (e) => existingGraphNodeUI.SetSelected() );
+                    inputField.onSubmit.AddListener( existingGraphNodeUI.SetValue );
+                    inputField.onSelect.AddListener( ( e ) => existingGraphNodeUI.SetSelected() );
+                    inputField.onDeselect.AddListener( ( e ) => existingGraphNodeUI.SetSelected() );
+                }
+                else
+                {
+                    GenericClickHandler inputField = valueGO.AddComponent<GenericClickHandler>();
+                    inputField.Type = graphNode.Type;
+                    inputField.onSubmit += existingGraphNodeUI.SetValue;
+                    inputField.OnClickFunc = ( eventData ) =>
+                    {
+                        ValueSelectionWindow window = ValueSelectionWindow.Create( GameObject.Find( "ModalCanvas" ).transform, inputField.Type, entryProvider );
+                        window.onSubmit += inputField.OnSubmit;
+                        existingGraphNodeUI.onSetterInvalidated += window.Close;
+                        window.onSubmit += ( t, o ) =>
+                        {
+                            existingGraphNodeUI.onSetterInvalidated -= window.Close;
+                        };
+                    };
+                    // technically unneeded because a reference is assigned instantaneously.
+                    //inputField.onSelect.AddListener( ( e ) => existingGraphNodeUI.SetSelected() );
+                    //inputField.onDeselect.AddListener( ( e ) => existingGraphNodeUI.SetSelected() );
+                }
             }
             if( !graphNode.CanWrite && graphNode.CanRead )
             {
@@ -125,5 +175,7 @@ namespace RuntimeInspector.UI.GUIUtils
 
             return valueTransform;
         }
+
+
     }
 }

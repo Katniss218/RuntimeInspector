@@ -32,7 +32,7 @@ namespace RuntimeInspector.UI.GUIUtils
 
             GraphNodeUI uiBinding = parent.GetComponent<GraphNodeUI>();
 
-            RectTransform value = InspectorTextInputField.Create( rootTransform, uiBinding, graphNode, style );
+            RectTransform value = InspectorInputField.Create( rootTransform, uiBinding, graphNode, style );
 
             value.anchorMin = new Vector2( 0.5f, 0.0f );
             value.anchorMax = new Vector2( 1.0f, 1.0f );
