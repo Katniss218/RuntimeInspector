@@ -2,6 +2,7 @@
 using RuntimeInspector.Core.AssetManagement;
 using RuntimeInspector.UI.GUIUtils;
 using RuntimeInspector.UI.Inspector.Attributes;
+using RuntimeInspector.UI.ValueSelection;
 using System;
 using System.Linq;
 using UnityEngine;
@@ -39,7 +40,7 @@ namespace RuntimeInspector.UI.Inspector.Drawers
 
                     GraphNodeUI graphNodeUI = redrawData.ObjectGraphNodeUI;
 
-                    RectTransform value = InspectorReferenceInputField.Create( rootTransform, graphNodeUI, graphNode, style );
+                    RectTransform value = InspectorValueSelectionInputField.Create( rootTransform, graphNodeUI, graphNode, new ObjectEntryProvider(), style );
 
                     value.anchorMin = new Vector2( 0.5f, 0.0f );
                     value.anchorMax = new Vector2( 1.0f, 1.0f );
@@ -70,7 +71,7 @@ namespace RuntimeInspector.UI.Inspector.Drawers
 
                     GraphNodeUI graphNodeUI = redrawData.ObjectGraphNodeUI;
 
-                    RectTransform value = InspectorAssetInputField.Create( rootTransform, graphNodeUI, graphNode, style );
+                    RectTransform value = InspectorValueSelectionInputField.Create( rootTransform, graphNodeUI, graphNode, new AssetEntryProvider(), style );
 
                     value.anchorMin = new Vector2( 0.5f, 0.0f );
                     value.anchorMax = new Vector2( 1.0f, 1.0f );

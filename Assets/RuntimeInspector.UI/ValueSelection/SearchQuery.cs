@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace RuntimeInspector.UI.ObjectViewer
+namespace RuntimeInspector.UI.ValueSelection
 {
     /// <summary>
     /// A class that can be used to match against Unity Objects.
@@ -51,7 +51,7 @@ namespace RuntimeInspector.UI.ObjectViewer
 
             if( IncludeName )
             {
-                if( !entry.DisplayName.Contains( Name ) )
+                if( !entry.Identifier.Contains( Name ) )
                 {
                     return false;
                 }

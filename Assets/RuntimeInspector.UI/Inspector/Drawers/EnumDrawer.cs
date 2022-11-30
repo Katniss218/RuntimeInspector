@@ -1,6 +1,7 @@
 ﻿using RuntimeInspector.Core;
 using RuntimeInspector.Core.AssetManagement;
 using RuntimeInspector.UI.GUIUtils;
+using RuntimeInspector.UI.ValueSelection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -34,7 +35,7 @@ namespace RuntimeInspector.UI.Inspector.Drawers
 
                 GraphNodeUI graphNodeUI = redrawData.ObjectGraphNodeUI;
 
-                RectTransform value = InspectorDropdownInputField.Create( rootTransform, graphNodeUI, graphNode, Enum.GetValues( graphNode.GetInstanceType() ).Cast<object>(), style );
+                RectTransform value = InspectorValueSelectionInputField.Create( rootTransform, graphNodeUI, graphNode, new EnumEntryProvider(), style );
 
                 value.anchorMin = new Vector2( 0.5f, 0.0f );
                 value.anchorMax = new Vector2( 1.0f, 1.0f );

@@ -122,8 +122,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: RuntimeInspector.UI.ObjectViewer.ObjectViewerWindow,
+      - m_Target: {fileID: 4943172844584056714}
+        m_TargetAssemblyTypeName: RuntimeInspector.UI.ValueSelection.ValueSelectionWindow,
           RuntimeInspector.UI
         m_MethodName: Close
         m_Mode: 1
@@ -910,7 +910,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Asset ID...
+  m_text: Name... (contains)
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 3b2583bef04eca045851da0b732393a7, type: 2}
   m_sharedMaterial: {fileID: -5727297886422493210, guid: 3b2583bef04eca045851da0b732393a7, type: 2}
@@ -1348,9 +1348,10 @@ GameObject:
   - component: {fileID: 7215546201339775155}
   - component: {fileID: 7215546201339775165}
   - component: {fileID: 7215546201339775164}
-  - component: {fileID: 277216454225517239}
+  - component: {fileID: 4943172844584056714}
+  - component: {fileID: 2488151156144005218}
   m_Layer: 5
-  m_Name: AssetViewerWindow
+  m_Name: ValueSelectionWindow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1417,7 +1418,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &277216454225517239
+--- !u!114 &4943172844584056714
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1426,11 +1427,24 @@ MonoBehaviour:
   m_GameObject: {fileID: 7215546201339775154}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c96bdf58a4ae839468f29b88c0aaa384, type: 3}
+  m_Script: {fileID: 11500000, guid: 7521b1cf1f6e30846913f3bc195ca3a5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _list: {fileID: 7215546200478658066}
-  _nameInputField: {fileID: 7215546200419420441}
+--- !u!114 &2488151156144005218
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7215546201339775154}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 348fe303de96a58408bbd7e47cd05a06, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _nameField: {fileID: 7215546200419420441}
+  _window: {fileID: 4943172844584056714}
 --- !u!1 &7215546201376224545
 GameObject:
   m_ObjectHideFlags: 0
