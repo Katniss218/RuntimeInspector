@@ -27,6 +27,8 @@ namespace RuntimeInspector.UI.ValueSelection
         /// </summary>
         public Action<Type, object> onSubmit { get; set; }
 
+        public Action onClose { get; set; }
+
         [SerializeField]
         RectTransform _list;
 
@@ -88,8 +90,9 @@ namespace RuntimeInspector.UI.ValueSelection
 
         public void Close()
         {
-#warning TODO - this sometimes doesn't get unpinned. Something to do with when you open a window and its node gets redrawn.
             Destroy( this.gameObject );
+
+            this.onClose?.Invoke();
         }
 
         public static ValueSelectionWindow Create( Transform modalCanvas, Type objType, IEntryProvider entryProvider )

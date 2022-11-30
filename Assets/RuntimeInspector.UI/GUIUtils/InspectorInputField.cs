@@ -154,7 +154,7 @@ namespace RuntimeInspector.UI.GUIUtils
                         ValueSelectionWindow window = ValueSelectionWindow.Create( GameObject.Find( "ModalCanvas" ).transform, inputField.Type, entryProvider );
                         window.onSubmit += inputField.OnSubmit;
                         existingGraphNodeUI.onSetterInvalidated += window.Close;
-                        window.onSubmit += ( t, o ) =>
+                        window.onClose += () =>
                         {
                             existingGraphNodeUI.onSetterInvalidated -= window.Close;
                         };
