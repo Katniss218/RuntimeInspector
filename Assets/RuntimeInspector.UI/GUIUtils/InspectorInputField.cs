@@ -12,17 +12,17 @@ using UnityEngine.UI;
 namespace RuntimeInspector.UI.GUIUtils
 {
     /// <summary>
-    /// Helper class to create GUI input fields.
+    /// A helper class to create GUI input fields.
     /// </summary>
     public static class InspectorInputField
     {
         /// <summary>
         /// The placeholder display to be used with write-only properties.
         /// </summary>
-        public static readonly string WRITEONLY_PLACEHOLDER = string.Empty;
+        public const string WRITEONLY_PLACEHOLDER = "";
 
         /// <summary>
-        /// Creates a text input field and binds it to a graph node UI.
+        /// Creates a text input field, and binds it to a graph node UI.
         /// </summary>
         public static RectTransform Create( RectTransform parent, GraphNodeUI existingGraphNodeUI, ObjectGraphNode graphNode, InspectorStyle style )
         {
@@ -30,7 +30,7 @@ namespace RuntimeInspector.UI.GUIUtils
         }
 
         /// <summary>
-        /// Creates a text input field and binds it to a graph node UI.
+        /// Creates an input field that will open a value selection window, and binds it to a graph node UI.
         /// </summary>
         public static RectTransform Create( RectTransform parent, GraphNodeUI existingGraphNodeUI, ObjectGraphNode graphNode, IEntryProvider entryProvider, InspectorStyle style )
         {

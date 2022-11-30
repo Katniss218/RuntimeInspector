@@ -1,5 +1,6 @@
 ﻿using RuntimeInspector.Core;
 using RuntimeInspector.UI.Inspector;
+using RuntimeInspector.UI.ValueSelection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,6 +18,16 @@ namespace RuntimeInspector.UI.GUIUtils
     {
         public static RectTransform Create( RectTransform parent, Sprite typeIcon, ObjectGraphNode graphNode, InspectorStyle style )
         {
+            return CreateInternal( parent, typeIcon, graphNode, style, null );
+        }
+
+        public static RectTransform Create( RectTransform parent, Sprite typeIcon, ObjectGraphNode graphNode, IEntryProvider entryProvider, InspectorStyle style )
+        {
+            return CreateInternal( parent, typeIcon, graphNode, style, entryProvider );
+        }
+
+        private static RectTransform CreateInternal( RectTransform parent, Sprite typeIcon, ObjectGraphNode graphNode, InspectorStyle style, IEntryProvider entryProvider )
+        {
             GameObject root = new GameObject( $"{graphNode.Name} ({graphNode.GetInstanceType().FullName})" );
             root.layer = 5;
 
@@ -30,9 +41,17 @@ namespace RuntimeInspector.UI.GUIUtils
 
             RectTransform label = InspectorLabel.Create( rootTransform, typeIcon, graphNode.GetDisplayName(), style );
 
-            GraphNodeUI uiBinding = parent.GetComponent<GraphNodeUI>();
+            GraphNodeUI existingGraphNodeUI = parent.GetComponent<GraphNodeUI>();
 
-            RectTransform value = InspectorInputField.Create( rootTransform, uiBinding, graphNode, style );
+            RectTransform value;
+            if( entryProvider == null )
+            {
+                value = InspectorInputField.Create( rootTransform, existingGraphNodeUI, graphNode, entryProvider, style );
+            }
+            else
+            {
+                value = InspectorInputField.Create( rootTransform, existingGraphNodeUI, graphNode, entryProvider, style );
+            }
 
             value.anchorMin = new Vector2( 0.5f, 0.0f );
             value.anchorMax = new Vector2( 1.0f, 1.0f );
