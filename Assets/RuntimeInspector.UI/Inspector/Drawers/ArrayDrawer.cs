@@ -54,7 +54,7 @@ namespace RuntimeInspector.UI.Inspector.Drawers
                 {
                     int index = i;
 
-                    ObjectGraphNode elementNode = ObjectGraphNode.CreateNode( graphNode, $"[{i}]", null, () => value.GetValue( index ), ( o ) => value.SetValue( o, index ) );
+                    ObjectGraphNode elementNode = graphNode.AddNode( $"[{i}]", null, () => value.GetValue( index ), ( o ) => value.SetValue( o, index ) );
 
                     Drawer drawer = DrawerProvider.GetDrawerOfType( elementNode.GetInstanceType() );
                     drawer.Draw( list, elementNode, style );

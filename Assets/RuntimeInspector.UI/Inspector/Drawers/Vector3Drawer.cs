@@ -49,26 +49,18 @@ namespace RuntimeInspector.UI.Inspector.Drawers
 
             if( graphNode.CanRead && !isNull )
             {
-#warning TODO - this *works* but is kinda ugly.
-
                 Vector3 value = (Vector3)graphNode.GetValue();
 
-                ObjectGraphNode nx = ObjectGraphNode.CreateNode( graphNode, "x", null, () => value.x, ( o ) => graphNode.SetValue( new Vector3(
-                   (float)o,
-                   value.y,
-                   value.z
+                ObjectGraphNode nx = graphNode.AddNode( "x", null, () => value.x, ( o ) => graphNode.SetValue( new Vector3(
+                   (float)o, value.y, value.z
                    ) ) );
 
-                ObjectGraphNode ny = ObjectGraphNode.CreateNode( graphNode, "y", null, () => value.y, ( o ) => graphNode.SetValue( new Vector3(
-                   value.x,
-                   (float)o,
-                   value.z
+                ObjectGraphNode ny = graphNode.AddNode( "y", null, () => value.y, ( o ) => graphNode.SetValue( new Vector3(
+                   value.x, (float)o, value.z
                    ) ) );
 
-                ObjectGraphNode nz = ObjectGraphNode.CreateNode( graphNode, "z", null, () => value.z, ( o ) => graphNode.SetValue( new Vector3(
-                   value.x,
-                   value.y,
-                   (float)o
+                ObjectGraphNode nz = graphNode.AddNode( "z", null, () => value.z, ( o ) => graphNode.SetValue( new Vector3(
+                   value.x, value.y, (float)o
                    ) ) );
 
                 Drawer drawer = DrawerProvider.GetDrawerOfType( nx.GetInstanceType() );

@@ -51,22 +51,16 @@ namespace RuntimeInspector.UI.Inspector.Drawers
             {
                 Vector3 euler = ((Quaternion)graphNode.GetValue()).eulerAngles;
 
-                ObjectGraphNode nx = ObjectGraphNode.CreateNode( graphNode, "x", null, () => euler.x, ( o ) => graphNode.SetValue( Quaternion.Euler(
-                   (float)o,
-                   euler.y,
-                   euler.z
+                ObjectGraphNode nx = graphNode.AddNode( "x", null, () => euler.x, ( o ) => graphNode.SetValue( Quaternion.Euler(
+                   (float)o, euler.y, euler.z
                    ) ) );
 
-                ObjectGraphNode ny = ObjectGraphNode.CreateNode( graphNode, "y", null, () => euler.y, ( o ) => graphNode.SetValue( Quaternion.Euler(
-                   euler.x,
-                   (float)o,
-                   euler.z
+                ObjectGraphNode ny = graphNode.AddNode( "y", null, () => euler.y, ( o ) => graphNode.SetValue( Quaternion.Euler(
+                   euler.x, (float)o, euler.z
                    ) ) );
 
-                ObjectGraphNode nz = ObjectGraphNode.CreateNode( graphNode, "z", null, () => euler.z, ( o ) => graphNode.SetValue( Quaternion.Euler(
-                   euler.x,
-                   euler.y,
-                   (float)o
+                ObjectGraphNode nz = graphNode.AddNode( "z", null, () => euler.z, ( o ) => graphNode.SetValue( Quaternion.Euler(
+                   euler.x, euler.y, (float)o
                    ) ) );
 
                 Drawer drawer = DrawerProvider.GetDrawerOfType( nx.GetInstanceType() );

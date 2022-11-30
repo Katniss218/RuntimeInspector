@@ -293,14 +293,9 @@ namespace RuntimeInspector.Core
         /// <summary>
         /// Adds a new arbitrary node to the graph.
         /// </summary>
-        public static ObjectGraphNode CreateNode( ObjectGraphNode parentNode, string name, Type declaringType, Func<object> getter, Action<object> setter )
+        public ObjectGraphNode AddNode( string name, Type declaringType, Func<object> getter, Action<object> setter )
         {
-            if( parentNode == null )
-            {
-                throw new ArgumentNullException( "The parent node can't be null. If you want to make an entire new graph, use 'CreateGraph' methods." );
-            }
-
-            return new ObjectGraphNodeArbitrary( parentNode, name, declaringType, getter, setter );
+            return new ObjectGraphNodeArbitrary( this, name, declaringType, getter, setter );
         }
     }
 }

@@ -58,7 +58,7 @@ namespace RuntimeInspector.UI.GUIUtils
             }
             layoutGroup.spacing = style.Spacing;
             layoutGroup.childControlWidth = true;
-            layoutGroup.childControlHeight = false; 
+            layoutGroup.childControlHeight = false;
             layoutGroup.childScaleWidth = false;
             layoutGroup.childScaleHeight = false;
             layoutGroup.childForceExpandWidth = true;
