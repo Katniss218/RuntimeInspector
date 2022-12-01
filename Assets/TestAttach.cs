@@ -18,6 +18,7 @@ public class TestAttach : MonoBehaviour
 
         public bool Equal( int a, int b )
         {
+            Debug.Log( "invoke!" );
             return a == b;
         }
     }

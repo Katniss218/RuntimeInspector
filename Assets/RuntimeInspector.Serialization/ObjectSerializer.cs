@@ -66,18 +66,29 @@ namespace RuntimeInspector.Serialization
         /// Writes a delegate (reference to a method).
         /// </summary>
         /// <remarks>
-        /// This is capable of fully serializing an arbitrary delegate, including lambdas and references to instance methods.
+        /// This is capable of fully serializing an arbitrary delegate, including multicasting, lambdas, and references to instance methods.
         /// 2. CHANGING CODE MIGHT INVALIDATE REFERENCES TO LAMBDAS.
         /// </remarks>
-        public static JToken WriteDelegate( object delegateObj )
+        public static JToken WriteDelegate( Delegate delegateObj )
+        {
+            JArray invocationListJson = new JArray();
+
+            foreach( var del in delegateObj.GetInvocationList() )
+            {
+                JToken delJson = WriteSingleDelegate( del );
+                invocationListJson.Add( delJson );
+            }
+
+            return invocationListJson;
+        }
+
+        private static JToken WriteSingleDelegate( Delegate delegateObj )
         {
             Type delegateType = delegateObj.GetType();
 
-            dynamic del = delegateObj;
-
-            MethodInfo method = del.Method;
+            MethodInfo method = delegateObj.Method;
             Type declaringType = method.DeclaringType;
-            object target = del.Target;
+            object target = delegateObj.Target;
 
             JArray jsonParameters = new JArray();
             ParameterInfo[] parameters = method.GetParameters();
@@ -103,11 +114,28 @@ namespace RuntimeInspector.Serialization
         /// Reads a delegate (reference to a method).
         /// </summary>
         /// <remarks>
-        /// This is capable of fully deserializing an arbitrary delegate, including lambdas and references to instance methods.
+        /// This is capable of fully deserializing an arbitrary delegate, including multicasting, lambdas, and references to instance methods.
         /// 1. THE TARGET OBJECT SHOULD BE DESERIALIZED BEFOREHAND.
         /// 2. CHANGING CODE MIGHT INVALIDATE REFERENCES TO LAMBDAS.
         /// </remarks>
-        public static object ReadDelegate( JToken json )
+        public static Delegate ReadDelegate( JToken json )
+        {
+            JArray jsonA = (JArray)json;
+
+            if( jsonA.Count == 1 )
+            {
+                return ReadSingleDelegate( jsonA[0] );
+            }
+
+            Delegate[] invocationList = new Delegate[jsonA.Count];
+            for( int i = 0; i < jsonA.Count; i++ )
+            {
+                invocationList[i] = ReadSingleDelegate( jsonA[i] );
+            }
+            return Delegate.Combine( invocationList );
+        }
+
+        private static Delegate ReadSingleDelegate( JToken json )
         {
             // TODO - this requires the target to be already deserialized.
             object target = ReadObjectReference( json["Target"] );
@@ -122,7 +150,7 @@ namespace RuntimeInspector.Serialization
             string methodName = (string)json["Method"]["Identifier"];
 
             MethodInfo method = declaringType.GetMethod( methodName, parameters.ToArray() );
-            object delegateObj = method.CreateDelegate( delegateType, target );
+            Delegate delegateObj = method.CreateDelegate( delegateType, target );
 
             return delegateObj;
             // returns the delegate object that is ready to be assigned to the field
