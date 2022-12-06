@@ -1,4 +1,5 @@
-﻿using RuntimeInspector.UI.GUIUtils;
+﻿using RuntimeInspector.Core.Input;
+using RuntimeInspector.UI.GUIUtils;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -9,7 +10,7 @@ using UnityEngine.UI;
 
 namespace RuntimeInspector.UI.Hierarchy
 {
-    public class HierarchyElement : MonoBehaviour, IPointerClickHandler
+    public class HierarchyElement : MonoBehaviour, IPointerClickHandler, IMouseDragBeginHandler, IMouseDragEndHandler
     {
         /// <summary>
         /// The GameObject corresponding to this hierarchy item.
@@ -47,7 +48,7 @@ namespace RuntimeInspector.UI.Hierarchy
                 Destroy( this.gameObject );
                 return;
             }
-            
+
             // If the hierarchy's children are stale - delete, and redraw all of them. TODO - this could potentially be optimized.
             if( this.List.childCount != this.Obj.childCount )
             {
@@ -119,9 +120,9 @@ namespace RuntimeInspector.UI.Hierarchy
 
         public static HierarchyElement Create( HierarchyWindow window, Transform obj )
         {
-             return CreateInternal( null, window, window.ViewerPanel, obj );
+            return CreateInternal( null, window, window.ViewerPanel, obj );
         }
-        
+
         public static HierarchyElement Create( HierarchyElement parent, Transform obj )
         {
             return CreateInternal( parent, parent.Window, parent.List, obj );
@@ -134,7 +135,7 @@ namespace RuntimeInspector.UI.Hierarchy
         {
             InspectorStyle style = InspectorStyle.Default;
 
-            GameObject gameObject = new GameObject();
+            GameObject gameObject = new GameObject($"o_{obj.gameObject.name}");
 
             RectTransform rectTransform = gameObject.AddComponent<RectTransform>();
             rectTransform.SetParent( list );
@@ -144,6 +145,9 @@ namespace RuntimeInspector.UI.Hierarchy
             rectTransform.pivot = new Vector2( 0.5f, 1.0f );
             rectTransform.anchoredPosition = new Vector2( 0.0f, 0.0f );
             rectTransform.sizeDelta = new Vector2( 0.0f, style.FieldHeight );
+
+            Image imgRT = gameObject.AddComponent<Image>();
+            imgRT.color = new Color( 0, 0, 0, 0 );
 
             HierarchyElement hi = gameObject.AddComponent<HierarchyElement>();
             hi.Obj = obj;
@@ -168,6 +172,7 @@ namespace RuntimeInspector.UI.Hierarchy
 
             RectTransform label = InspectorLabel.Create( rectTransform, "", style );
             TMPro.TextMeshProUGUI textMesh = label.GetComponent<TMPro.TextMeshProUGUI>();
+            textMesh.raycastTarget = false;
             hi._text = textMesh;
             hi.Window = window;
 
@@ -177,6 +182,16 @@ namespace RuntimeInspector.UI.Hierarchy
             hi.UpdateHierarchyItem();
 
             return hi;
+        }
+
+        public void BeginDrag()
+        {
+            Debug.Log( $"Begin drag on {this.gameObject.name}" );
+        }
+
+        public void EndDrag()
+        {
+            Debug.Log( $"End drag on {this.gameObject.name}" );
         }
     }
 }

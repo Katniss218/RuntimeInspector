@@ -42,17 +42,44 @@ namespace Assets.RuntimeInspector.Core.Input
 
     */
 
-    public static class InputHandler
+    public static class InputMap
     {
-        public static List<string> CurrentlyBlockedActions; 
-        // if we press attack on horseback, we don't want to swing our weapon. So we have to block that action when we get on, and unblock when we get off.
+        // defined inputs and their identifiers.
+        // these appear in the settings window, and have to be defined on startup (NOT at an arbitrary point at runtime).
+        private static Dictionary<string, InputPath> _definedInputs;
+
+        /// <summary>
+        /// Checks whether or not a given input ID is defined.
+        /// </summary>
+        public static bool IsDefined( string id )
+        {
+            return _definedInputs.ContainsKey( id );
+        }
+
+        /// <summary>
+        /// Sets the input path of a given input ID.
+        /// </summary>
+        public static void Define( string id, InputPath inputPath )
+        {
+            // this will be called by either the settings loader or by the class defining the default path for an input.
+
+            _definedInputs[id] = inputPath;
+        }
     }
 
     public class InputPath
     {
         // specifies which buttons need to be pressed/held/released as well as when and how.
 
-        public bool Check()
+        // we want this to support double-clicks, etc.
+        // Double-clicks don't happen instantaneously.
+        // We need to either store the previous states, or add a given input action to a queue and run a provided callable when the input manager determines that the condition was met.
+
+        /// <summary>
+        /// Returns true 
+        /// </summary>
+        /// <returns>True if the given input path has completed successfully. False otherwise.</returns>
+        public bool Run()
         {
             throw new NotImplementedException();
         }
