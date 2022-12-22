@@ -194,7 +194,7 @@ namespace RuntimeInspector.UI.Hierarchy
 
         public void EndDrag()
         {
-#warning TODO - agg graphical elements.
+#warning TODO - add graphical elements.
             if( Input.GetKey( KeyCode.LeftShift ) )
             {
                 dragged.Obj.SetParent( this.Obj );
@@ -203,7 +203,14 @@ namespace RuntimeInspector.UI.Hierarchy
             {
                 if( dragged.Obj.parent == this.Obj.parent )
                 {
-                    dragged.Obj.SetSiblingIndex( this.Obj.GetSiblingIndex() + 1 );
+                    int siblingIndex = this.Obj.GetSiblingIndex();
+                    int draggedSiblingIndex = dragged.Obj.GetSiblingIndex();
+
+                    // move the dragged object above or below the clicked object, depending on where the target object is relative to it.
+                    // if dragged starts below target -> resulting dragged is above target.
+                    // if dragged starts above target -> resulting dragged is below target.
+                    int targetSiblingIndex = draggedSiblingIndex < siblingIndex ? siblingIndex : siblingIndex;
+                    dragged.Obj.SetSiblingIndex( targetSiblingIndex );
                 }
             }
             dragged = null;
