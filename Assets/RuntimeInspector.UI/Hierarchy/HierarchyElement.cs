@@ -10,8 +10,10 @@ using UnityEngine.UI;
 
 namespace RuntimeInspector.UI.Hierarchy
 {
-    public class HierarchyElement : MonoBehaviour, IPointerClickHandler, IMouseDragBeginHandler, IMouseDragEndHandler
+    public class HierarchyElement : MonoBehaviour, IPointerClickHandler, IInputHandler_MouseDragBegin, IInputHandler_MouseDragEnd
     {
+        static HierarchyElement dragged = null;
+
         /// <summary>
         /// The GameObject corresponding to this hierarchy item.
         /// </summary>
@@ -186,11 +188,25 @@ namespace RuntimeInspector.UI.Hierarchy
 
         public void BeginDrag()
         {
+            dragged = this;
             Debug.Log( $"Begin drag on {this.gameObject.name}" );
         }
 
         public void EndDrag()
         {
+#warning TODO - agg graphical elements.
+            if( Input.GetKey( KeyCode.LeftShift ) )
+            {
+                dragged.Obj.SetParent( this.Obj );
+            }
+            else
+            {
+                if( dragged.Obj.parent == this.Obj.parent )
+                {
+                    dragged.Obj.SetSiblingIndex( this.Obj.GetSiblingIndex() + 1 );
+                }
+            }
+            dragged = null;
             Debug.Log( $"End drag on {this.gameObject.name}" );
         }
     }

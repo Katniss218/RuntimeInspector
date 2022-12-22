@@ -7,14 +7,20 @@ using UnityEngine;
 
 namespace RuntimeInspector.Core.Input
 {
-    public interface IMouseDragBeginHandler
+    public interface IInputHandler_MouseDragBegin
     {
+#warning TODO - pass the position of the click relative to the object clicked's position and in the clicked object's space to the event.
         void BeginDrag();
     }
 
-    public interface IMouseDragEndHandler
+    public interface IInputHandler_MouseDragEnd
     {
         void EndDrag();
+    }
+
+    public interface IInputHandler_MouseClick
+    {
+        void OnClick();
     }
 
     [RequireComponent( typeof( UnityEngine.EventSystems.EventSystem ) )]
@@ -49,18 +55,22 @@ namespace RuntimeInspector.Core.Input
                     var pointerData = new UnityEngine.EventSystems.PointerEventData( UnityEngine.EventSystems.EventSystem.current );
                     pointerData.position = dragStartPos;
 
-                    UnityEngine.EventSystems.EventSystem.current.RaycastAll( pointerData, results );
+                    UnityEngine.EventSystems.EventSystem.current.RaycastAll( pointerData, results ); // raycast the object at the position where the mouse drag began.
 
                     if( results.Count > 0 )
                     {
                         var gameObject = results[0].gameObject;
 
-                        IMouseDragBeginHandler h = gameObject.GetComponent<IMouseDragBeginHandler>();
+                        IInputHandler_MouseDragBegin h = gameObject.GetComponent<IInputHandler_MouseDragBegin>();
                         if( h != null )
                         {
                             h.BeginDrag();
                         }
                     }
+                }
+                else
+                {
+                    // handle simple clicking.
                 }
             }
 
@@ -79,7 +89,7 @@ namespace RuntimeInspector.Core.Input
                 {
                     var gameObject = results[0].gameObject;
 
-                    IMouseDragEndHandler h = gameObject.GetComponent<IMouseDragEndHandler>();
+                    IInputHandler_MouseDragEnd h = gameObject.GetComponent<IInputHandler_MouseDragEnd>();
                     if( h != null )
                     {
                         h.EndDrag();

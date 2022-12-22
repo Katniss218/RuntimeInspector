@@ -68,6 +68,14 @@ public class TestAttach : MonoBehaviour
 
     float timestamp = -555;
 
+    private void Start()
+    {
+        Quaternion q1 = Quaternion.Euler( 45, 0, 0 );
+        Quaternion q2 = Quaternion.Euler( 0, 0, 0 );
+        float angle = Quaternion.Angle( q1, q2 );
+
+        Debug.Log( angle );
+    }
     void Update()
     {
         if( timestamp + 2.0f < Time.time )
