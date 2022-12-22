@@ -132,6 +132,9 @@ namespace RuntimeInspector.Core.AssetManagement
         /// <summary>
         /// Returns an asset with the specified assetID. Throws an exception if none are found.
         /// </summary>
+        /// <remarks>
+        /// After the asset has been loaded, this is an O(1) dictionary lookup.
+        /// </remarks>
         public static T GetAsset( string assetID )
         {
             if( registry.Count == 0 )

@@ -76,12 +76,12 @@ public class TestAttach : MonoBehaviour
 
         Debug.Log( angle );
     }
-    void Update()
+    /*void Update()
     {
         if( timestamp + 2.0f < Time.time )
         {
             timestamp = Time.time;
             new GameObject( "test adder" );
         }
-    }
+    }*/
 }

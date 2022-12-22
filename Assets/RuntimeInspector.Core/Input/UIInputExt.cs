@@ -18,11 +18,6 @@ namespace RuntimeInspector.Core.Input
         void EndDrag();
     }
 
-    public interface IInputHandler_MouseClick
-    {
-        void OnClick();
-    }
-
     [RequireComponent( typeof( UnityEngine.EventSystems.EventSystem ) )]
     public class UIInputExt : MonoBehaviour
     {
@@ -68,10 +63,10 @@ namespace RuntimeInspector.Core.Input
                         }
                     }
                 }
-                else
-                {
-                    // handle simple clicking.
-                }
+               // else
+               // {
+               //       We could handle simple clicking here.
+               // }
             }
 
             if( _isDragging && UnityEngine.Input.GetKeyUp( KeyCode.Mouse0 ) )

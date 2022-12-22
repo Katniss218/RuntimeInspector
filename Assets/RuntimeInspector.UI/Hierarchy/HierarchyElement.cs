@@ -1,4 +1,5 @@
-﻿using RuntimeInspector.Core.Input;
+﻿using RuntimeInspector.Core.AssetManagement;
+using RuntimeInspector.Core.Input;
 using RuntimeInspector.UI.GUIUtils;
 using System;
 using System.Collections;
@@ -34,6 +35,7 @@ namespace RuntimeInspector.UI.Hierarchy
         public HierarchyElement Parent { get; private set; }
 
         TMPro.TextMeshProUGUI _text;
+        Image _image;
 
         void Update()
         {
@@ -79,7 +81,7 @@ namespace RuntimeInspector.UI.Hierarchy
 
         private void UpdateSelf()
         {
-            _text.text = $"{(this.IsExpanded ? "▼" : "-")} [{Obj.childCount}] {Obj.gameObject.name}";
+            _text.text = $"[{Obj.childCount}] {Obj.gameObject.name}";
             if( IsExpanded )
             {
                 this.List.gameObject.SetActive( true );
@@ -105,19 +107,15 @@ namespace RuntimeInspector.UI.Hierarchy
         public void ToggleExpanded()
         {
             this.IsExpanded = !this.IsExpanded;
+            if( this.IsExpanded )
+            {
+                this._image.sprite = AssetRegistry<Sprite>.GetAsset( "RuntimeInspector/Sprites/icon_expanded" );
+            }
+            else
+            {
+                this._image.sprite = AssetRegistry<Sprite>.GetAsset( "RuntimeInspector/Sprites/icon_collapsed" );
+            }
             this.UpdateHierarchyItem();
-        }
-
-        public void OnPointerClick( PointerEventData e )
-        {
-            if( e.button == PointerEventData.InputButton.Right )
-            {
-                ToggleExpanded();
-            }
-            else if( e.button == PointerEventData.InputButton.Left )
-            {
-                Window.onSelect?.Invoke( /*new Vector3( 5, 6, 2 ) );  //*/ Obj );
-            }
         }
 
         public static HierarchyElement Create( HierarchyWindow window, Transform obj )
@@ -137,7 +135,7 @@ namespace RuntimeInspector.UI.Hierarchy
         {
             InspectorStyle style = InspectorStyle.Default;
 
-            GameObject gameObject = new GameObject($"o_{obj.gameObject.name}");
+            GameObject gameObject = new GameObject( $"o_{obj.gameObject.name}" );
 
             RectTransform rectTransform = gameObject.AddComponent<RectTransform>();
             rectTransform.SetParent( list );
@@ -148,7 +146,7 @@ namespace RuntimeInspector.UI.Hierarchy
             rectTransform.anchoredPosition = new Vector2( 0.0f, 0.0f );
             rectTransform.sizeDelta = new Vector2( 0.0f, style.FieldHeight );
 
-            Image imgRT = gameObject.AddComponent<Image>();
+            Image imgRT = gameObject.AddComponent<Image>(); // add a raycastee so that you can click on this element.
             imgRT.color = new Color( 0, 0, 0, 0 );
 
             HierarchyElement hi = gameObject.AddComponent<HierarchyElement>();
@@ -172,10 +170,12 @@ namespace RuntimeInspector.UI.Hierarchy
             contentSizeFitter.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
             contentSizeFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
 
-            RectTransform label = InspectorLabel.Create( rectTransform, "", style );
-            TMPro.TextMeshProUGUI textMesh = label.GetComponent<TMPro.TextMeshProUGUI>();
+            RectTransform label = InspectorLabel.Create( rectTransform, AssetRegistry<Sprite>.GetAsset( "RuntimeInspector/Sprites/icon_collapsed" ), "", style );
+            TMPro.TextMeshProUGUI textMesh = label.GetComponentInChildren<TMPro.TextMeshProUGUI>();
             textMesh.raycastTarget = false;
             hi._text = textMesh;
+            Image image = label.GetComponentInChildren<Image>();
+            hi._image = image;
             hi.Window = window;
 
             RectTransform newList = InspectorVerticalList.Create( "abc", rectTransform, style, new InspectorVerticalList.Params() { IncludeMargin = true } );
@@ -184,6 +184,19 @@ namespace RuntimeInspector.UI.Hierarchy
             hi.UpdateHierarchyItem();
 
             return hi;
+        }
+
+        public void OnPointerClick( PointerEventData e )
+        {
+            if( e.button == PointerEventData.InputButton.Right )
+            {
+                ToggleExpanded();
+            }
+
+            else if( e.button == PointerEventData.InputButton.Left )
+            {
+                Window.onSelect?.Invoke( /*new Vector3( 5, 6, 2 ) );  //*/ Obj );
+            }
         }
 
         public void BeginDrag()
@@ -198,6 +211,9 @@ namespace RuntimeInspector.UI.Hierarchy
             if( Input.GetKey( KeyCode.LeftShift ) )
             {
                 dragged.Obj.SetParent( this.Obj );
+
+#warning TODO - doesn't work.
+                this.transform.SetParent( dragged.List );
             }
             else
             {

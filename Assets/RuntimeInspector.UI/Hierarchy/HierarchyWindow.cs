@@ -7,10 +7,11 @@ using System.Linq;
 using UnityEngine.UI;
 using System;
 using UnityEngine.Events;
+using UnityEngine.EventSystems;
 
 namespace RuntimeInspector.UI.Hierarchy
 {
-    public class HierarchyWindow : MonoBehaviour
+    public class HierarchyWindow : MonoBehaviour, IPointerClickHandler
     {
         [field: SerializeField]
         public RectTransform ViewerPanel { get; set; }
@@ -29,6 +30,7 @@ namespace RuntimeInspector.UI.Hierarchy
             style = InspectorStyle.Default;
         }
         */
+
         public void RedrawHierarchy()
         {
             // go through
@@ -56,6 +58,7 @@ namespace RuntimeInspector.UI.Hierarchy
 
                 hi = HierarchyElement.Create( this, go.transform );
                 _rootHierarchies.Add( go, hi );
+#warning TODO - Add support for reparenting.
             }
 
 #warning TODO - Layout update is kinda flicker'y and takes a long time with nested objects.
@@ -79,6 +82,14 @@ namespace RuntimeInspector.UI.Hierarchy
                 timer = 0;
 
                 RedrawHierarchy();
+            }
+        }
+
+        public void OnPointerClick( PointerEventData eventData )
+        {
+            if( eventData.button == PointerEventData.InputButton.Right )
+            {
+                GameObject gameObject = new GameObject( "New Game Object" );
             }
         }
     }
