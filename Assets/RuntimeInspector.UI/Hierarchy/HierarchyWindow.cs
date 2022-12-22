@@ -31,6 +31,11 @@ namespace RuntimeInspector.UI.Hierarchy
         }
         */
 
+        public void RemoveFromRoot( HierarchyElement hi )
+        {
+            _rootHierarchies.Remove( hi.Obj );
+        }
+
         public void RedrawHierarchy()
         {
             // go through
@@ -41,7 +46,7 @@ namespace RuntimeInspector.UI.Hierarchy
             GameObject[] rootGameObjects = activeScene.GetRootGameObjects();
             foreach( var go in rootGameObjects )
             {
-                if( _rootHierarchies.TryGetValue( go, out HierarchyElement hi ) )
+                if( _rootHierarchies.TryGetValue( go, out HierarchyElement hi ) ) // after reparenting, it stops being root, and the root hierarchy can grow uncontrollably.
                 {
                     // if the object was destroyed - WTF?
                     if( hi == null )
@@ -49,16 +54,15 @@ namespace RuntimeInspector.UI.Hierarchy
                         Debug.LogWarning( "WTF - object was already destroyed, but is present??" );
                         _rootHierarchies.Remove( go );
                     }
-                    else
+                    else 
                     {
                         hi.UpdateHierarchyItem();
                         continue;
                     }
                 }
 
-                hi = HierarchyElement.Create( this, go.transform );
+                hi = HierarchyElement.Create( this, go );
                 _rootHierarchies.Add( go, hi );
-#warning TODO - Add support for reparenting.
             }
 
 #warning TODO - Layout update is kinda flicker'y and takes a long time with nested objects.

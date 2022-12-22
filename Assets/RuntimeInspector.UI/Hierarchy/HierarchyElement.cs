@@ -18,7 +18,13 @@ namespace RuntimeInspector.UI.Hierarchy
         /// <summary>
         /// The GameObject corresponding to this hierarchy item.
         /// </summary>
-        public Transform Obj { get; private set; }
+        public Transform ObjTransform { get; private set; }
+
+        public GameObject Obj
+        {
+            get => this.ObjTransform.gameObject;
+            set => this.ObjTransform = value.transform;
+        }
 
         /// <summary>
         /// The UI element that contains the children of this HierarchyElement.
@@ -39,7 +45,7 @@ namespace RuntimeInspector.UI.Hierarchy
 
         void Update()
         {
-            if( Obj == null )
+            if( ObjTransform == null )
             {
                 UpdateHierarchyItem();
             }
@@ -47,14 +53,14 @@ namespace RuntimeInspector.UI.Hierarchy
 
         public void UpdateHierarchyItem()
         {
-            if( Obj == null )
+            if( ObjTransform == null )
             {
                 Destroy( this.gameObject );
                 return;
             }
 
             // If the hierarchy's children are stale - delete, and redraw all of them. TODO - this could potentially be optimized.
-            if( this.List.childCount != this.Obj.childCount )
+            if( this.List.childCount != this.ObjTransform.childCount )
             {
                 for( int i = 0; i < this.List.childCount; i++ )
                 {
@@ -63,9 +69,9 @@ namespace RuntimeInspector.UI.Hierarchy
 
                 if( IsExpanded )
                 {
-                    for( int i = 0; i < this.Obj.childCount; i++ )
+                    for( int i = 0; i < this.ObjTransform.childCount; i++ )
                     {
-                        Create( this, this.Obj.GetChild( i ) );
+                        Create( this, this.ObjTransform.GetChild( i ).gameObject );
                     }
                 }
             }
@@ -81,7 +87,7 @@ namespace RuntimeInspector.UI.Hierarchy
 
         private void UpdateSelf()
         {
-            _text.text = $"[{Obj.childCount}] {Obj.gameObject.name}";
+            _text.text = $"[{ObjTransform.childCount}] {ObjTransform.gameObject.name}";
             if( IsExpanded )
             {
                 this.List.gameObject.SetActive( true );
@@ -91,13 +97,13 @@ namespace RuntimeInspector.UI.Hierarchy
                 this.List.gameObject.SetActive( false );
             }
 
-            if( this.Parent != null && Obj.parent != this.Parent.Obj )
+            if( this.Parent != null && ObjTransform.parent != this.Parent.ObjTransform )
             {
                 this.transform.SetParent( this.Parent.List );
-                this.transform.SetSiblingIndex( Obj.GetSiblingIndex() );
+                this.transform.SetSiblingIndex( ObjTransform.GetSiblingIndex() );
             }
             int siblingIndex = this.transform.GetSiblingIndex();
-            int objSiblingIndex = this.Obj.GetSiblingIndex();
+            int objSiblingIndex = this.ObjTransform.GetSiblingIndex();
             if( siblingIndex != objSiblingIndex )
             {
                 this.transform.SetSiblingIndex( objSiblingIndex );
@@ -118,12 +124,12 @@ namespace RuntimeInspector.UI.Hierarchy
             this.UpdateHierarchyItem();
         }
 
-        public static HierarchyElement Create( HierarchyWindow window, Transform obj )
+        public static HierarchyElement Create( HierarchyWindow window, GameObject obj )
         {
             return CreateInternal( null, window, window.ViewerPanel, obj );
         }
 
-        public static HierarchyElement Create( HierarchyElement parent, Transform obj )
+        public static HierarchyElement Create( HierarchyElement parent, GameObject obj )
         {
             return CreateInternal( parent, parent.Window, parent.List, obj );
         }
@@ -131,7 +137,7 @@ namespace RuntimeInspector.UI.Hierarchy
         /// <summary>
         /// Creates a new HierarchyItem that is a child of another HierarchyItem, and refers to a specific object.
         /// </summary>
-        private static HierarchyElement CreateInternal( HierarchyElement hierarchyParent, HierarchyWindow window, RectTransform list, Transform obj )
+        private static HierarchyElement CreateInternal( HierarchyElement hierarchyParent, HierarchyWindow window, RectTransform list, GameObject obj )
         {
             InspectorStyle style = InspectorStyle.Default;
 
@@ -195,7 +201,7 @@ namespace RuntimeInspector.UI.Hierarchy
 
             else if( e.button == PointerEventData.InputButton.Left )
             {
-                Window.onSelect?.Invoke( /*new Vector3( 5, 6, 2 ) );  //*/ Obj );
+                Window.onSelect?.Invoke( /*new Vector3( 5, 6, 2 ) );  //*/ ObjTransform );
             }
         }
 
@@ -210,23 +216,24 @@ namespace RuntimeInspector.UI.Hierarchy
 #warning TODO - add graphical elements.
             if( Input.GetKey( KeyCode.LeftShift ) )
             {
-                dragged.Obj.SetParent( this.Obj );
+                dragged.ObjTransform.SetParent( this.ObjTransform );
+                dragged.Parent = this;
 
-#warning TODO - doesn't work.
-                this.transform.SetParent( dragged.List );
+                dragged.transform.SetParent( this.List );
+                this.UpdateHierarchyItem();
             }
             else
             {
-                if( dragged.Obj.parent == this.Obj.parent )
+                if( dragged.ObjTransform.parent == this.ObjTransform.parent )
                 {
-                    int siblingIndex = this.Obj.GetSiblingIndex();
-                    int draggedSiblingIndex = dragged.Obj.GetSiblingIndex();
+                    int siblingIndex = this.ObjTransform.GetSiblingIndex();
+                    int draggedSiblingIndex = dragged.ObjTransform.GetSiblingIndex();
 
                     // move the dragged object above or below the clicked object, depending on where the target object is relative to it.
                     // if dragged starts below target -> resulting dragged is above target.
                     // if dragged starts above target -> resulting dragged is below target.
                     int targetSiblingIndex = draggedSiblingIndex < siblingIndex ? siblingIndex : siblingIndex;
-                    dragged.Obj.SetSiblingIndex( targetSiblingIndex );
+                    dragged.ObjTransform.SetSiblingIndex( targetSiblingIndex );
                 }
             }
             dragged = null;
