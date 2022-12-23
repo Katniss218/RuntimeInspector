@@ -1,5 +1,5 @@
 ﻿using RuntimeInspector.Core;
-using RuntimeInspector.Core.AssetManagement;
+using UnityPlus.AssetManagement;
 using RuntimeInspector.UI.GUIUtils;
 using RuntimeInspector.UI.Inspector.Attributes;
 using RuntimeInspector.UI.ValueSelection;

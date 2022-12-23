@@ -1,5 +1,5 @@
-﻿using RuntimeInspector.Core.AssetManagement;
-using RuntimeInspector.Core.Input;
+﻿using UnityPlus.AssetManagement;
+using UnityPlus.InputSystem;
 using RuntimeInspector.UI.GUIUtils;
 using System;
 using System.Collections;

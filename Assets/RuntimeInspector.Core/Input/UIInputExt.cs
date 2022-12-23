@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace RuntimeInspector.Core.Input
+namespace UnityPlus.InputSystem
 {
     public interface IInputHandler_MouseDragBegin
     {

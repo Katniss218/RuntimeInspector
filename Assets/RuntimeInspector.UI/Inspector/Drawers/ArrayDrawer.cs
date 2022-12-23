@@ -1,5 +1,5 @@
 ﻿using RuntimeInspector.Core;
-using RuntimeInspector.Core.AssetManagement;
+using UnityPlus.AssetManagement;
 using RuntimeInspector.UI.GUIUtils;
 using System;
 using System.Linq;

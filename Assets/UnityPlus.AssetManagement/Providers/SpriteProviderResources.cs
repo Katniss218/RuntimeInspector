@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace RuntimeInspector.Core.AssetManagement.Providers
+namespace UnityPlus.AssetManagement.Providers
 {
     public class SpriteProviderResources : IAssetProvider<Sprite>
     {
