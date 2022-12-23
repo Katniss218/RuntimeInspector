@@ -85,11 +85,11 @@ namespace RuntimeInspector.UI.Hierarchy
             }
         }
 
-        public void OnPointerClick( PointerEventData eventData )
+        public void OnPointerClick( PointerEventData e )
         {
-            if( eventData.button == PointerEventData.InputButton.Right )
+            if( e.button == PointerEventData.InputButton.Right )
             {
-                ContextMenu cm = ContextMenu.Create( GameObject.Find( "ContextMenuCanvas" ).transform, eventData.position );
+                ContextMenu cm = ContextMenu.Create( GameObject.Find( "ContextMenuCanvas" ).transform, e.position );
                 cm.AddOption( "Create Empty", () => new GameObject( "New Game Object" ) );
             }
         }

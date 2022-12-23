@@ -207,6 +207,11 @@ namespace RuntimeInspector.UI.Hierarchy
             {
                 Window.onSelect?.Invoke( ObjTransform );
             }
+            else if( e.button == PointerEventData.InputButton.Right )
+            {
+                ContextMenu cm = ContextMenu.Create( GameObject.Find( "ContextMenuCanvas" ).transform, e.position );
+                cm.AddOption( "Delete", () => Destroy( Obj ) );
+            }
         }
 
         public void BeginDrag()
@@ -228,6 +233,7 @@ namespace RuntimeInspector.UI.Hierarchy
             }
             else
             {
+#warning TODO - dragged can be null if the object was deleted using the context menu. Not sure why this happens.
                 if( dragged.ObjTransform.parent == this.ObjTransform.parent )
                 {
                     int siblingIndex = this.ObjTransform.GetSiblingIndex();

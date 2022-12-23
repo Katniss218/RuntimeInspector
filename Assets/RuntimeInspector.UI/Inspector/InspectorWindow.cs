@@ -6,6 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using RuntimeInspector.UI.Utils;
 
 namespace RuntimeInspector.UI.Inspector
 {
@@ -57,7 +58,7 @@ namespace RuntimeInspector.UI.Inspector
 
         public void RedrawInspectedObject( InspectorStyle style )
         {
-            if( InspectedObject is null )
+            if( InspectedObject.IsUnityNull() )
             {
                 return;
             }
