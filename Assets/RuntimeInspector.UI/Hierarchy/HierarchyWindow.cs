@@ -38,10 +38,6 @@ namespace RuntimeInspector.UI.Hierarchy
 
         public void RedrawHierarchy()
         {
-            // go through
-
-            // maybe don't store the UI elements for every object, since most will be collapsed.
-
             Scene activeScene = SceneManager.GetActiveScene();
             GameObject[] rootGameObjects = activeScene.GetRootGameObjects();
             foreach( var go in rootGameObjects )
@@ -93,7 +89,8 @@ namespace RuntimeInspector.UI.Hierarchy
         {
             if( eventData.button == PointerEventData.InputButton.Right )
             {
-                GameObject gameObject = new GameObject( "New Game Object" );
+                ContextMenu cm = ContextMenu.Create( GameObject.Find( "ContextMenuCanvas" ).transform, eventData.position );
+                cm.AddOption( "Create Empty", () => new GameObject( "New Game Object" ) );
             }
         }
     }

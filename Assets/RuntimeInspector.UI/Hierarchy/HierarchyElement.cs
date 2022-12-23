@@ -184,6 +184,15 @@ namespace RuntimeInspector.UI.Hierarchy
             hi._image = image;
             hi.Window = window;
 
+            PointerClickHandler pc = image.gameObject.AddComponent<PointerClickHandler>();
+            pc.OnClickFunc = ( x ) =>
+            {
+                if( x.button == PointerEventData.InputButton.Left )
+                {
+                    hi.ToggleExpanded();
+                }
+            };
+
             RectTransform newList = InspectorVerticalList.Create( "abc", rectTransform, style, new InspectorVerticalList.Params() { IncludeMargin = true } );
             hi.List = newList;
 
@@ -194,14 +203,9 @@ namespace RuntimeInspector.UI.Hierarchy
 
         public void OnPointerClick( PointerEventData e )
         {
-            if( e.button == PointerEventData.InputButton.Right )
+            if( e.button == PointerEventData.InputButton.Left )
             {
-                ToggleExpanded();
-            }
-
-            else if( e.button == PointerEventData.InputButton.Left )
-            {
-                Window.onSelect?.Invoke( /*new Vector3( 5, 6, 2 ) );  //*/ ObjTransform );
+                Window.onSelect?.Invoke( ObjTransform );
             }
         }
 

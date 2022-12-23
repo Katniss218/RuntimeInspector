@@ -8,18 +8,9 @@ using UnityEngine.EventSystems;
 
 namespace RuntimeInspector.UI
 {
-    public class GenericClickHandler : MonoBehaviour, IPointerClickHandler
+    public class PointerClickHandler : MonoBehaviour, IPointerClickHandler
     {
-        public event Action<object> onSubmit;
-
         public Action<PointerEventData> OnClickFunc;
-
-        public Type Type { get; set; }
-
-        public void OnSubmit( Type type, object obj )
-        {
-            onSubmit?.Invoke( obj );
-        }
 
         public void OnPointerClick( PointerEventData eventData )
         {

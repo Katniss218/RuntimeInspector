@@ -146,7 +146,7 @@ namespace RuntimeInspector.UI.GUIUtils
                 }
                 else
                 {
-                    GenericClickHandler inputField = valueGO.AddComponent<GenericClickHandler>();
+                    CustomInputFieldClickHandler inputField = valueGO.AddComponent<CustomInputFieldClickHandler>();
                     inputField.Type = graphNode.Type;
                     inputField.onSubmit += existingGraphNodeUI.SetValue;
                     inputField.OnClickFunc = ( eventData ) =>
