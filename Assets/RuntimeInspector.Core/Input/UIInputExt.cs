@@ -10,12 +10,12 @@ namespace UnityPlus.InputSystem
     public interface IInputHandler_MouseDragBegin
     {
 #warning TODO - pass the position of the click relative to the object clicked's position and in the clicked object's space to the event.
-        void BeginDrag();
+        void BeginDrag( UnityEngine.EventSystems.PointerEventData eventData );
     }
 
     public interface IInputHandler_MouseDragEnd
     {
-        void EndDrag();
+        void EndDrag( UnityEngine.EventSystems.PointerEventData eventData );
     }
 
     [RequireComponent( typeof( UnityEngine.EventSystems.EventSystem ) )]
@@ -64,7 +64,7 @@ namespace UnityPlus.InputSystem
                         IInputHandler_MouseDragBegin h = gameObject.GetComponent<IInputHandler_MouseDragBegin>();
                         if( h != null )
                         {
-                            h.BeginDrag();
+                            h.BeginDrag( pointerData );
                         }
                     }
                 }
@@ -92,7 +92,7 @@ namespace UnityPlus.InputSystem
                     IInputHandler_MouseDragEnd h = gameObject.GetComponent<IInputHandler_MouseDragEnd>();
                     if( h != null )
                     {
-                        h.EndDrag();
+                        h.EndDrag( pointerData );
                     }
                 }
             }

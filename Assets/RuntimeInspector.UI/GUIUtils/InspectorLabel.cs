@@ -63,6 +63,7 @@ namespace RuntimeInspector.UI.GUIUtils
 
             Image typeImage = iconGameObject.AddComponent<Image>();
             typeImage.sprite = icon;
+            typeImage.raycastTarget = false;
 
             GameObject textGameObject = new GameObject( $"text" );
             textGameObject.layer = 5;
@@ -91,6 +92,7 @@ namespace RuntimeInspector.UI.GUIUtils
 
             labelText.text = text;
             labelText.font = style.Font;
+            labelText.raycastTarget = false;
         }
     }
 }

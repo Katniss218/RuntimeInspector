@@ -89,6 +89,7 @@ namespace RuntimeInspector.UI.GUIUtils
             text.overflowMode = TMPro.TextOverflowModes.Overflow;
             text.color = style.ValueTextColor;
             text.font = style.Font;
+            text.raycastTarget = false;
 
             if( graphNode.CanRead )
             {
@@ -175,7 +176,5 @@ namespace RuntimeInspector.UI.GUIUtils
 
             return valueTransform;
         }
-
-
     }
 }

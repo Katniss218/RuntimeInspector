@@ -36,6 +36,9 @@ namespace RuntimeInspector.UI.GUIUtils
 #warning TODO - replace with custom layout element class that takes preferred width from the content size fitter.
             // call LayoutUtility.GetPreferredSize on the child object?
 
+            Image image = gameObject.AddComponent<Image>(); // add raycastee
+            image.color = new Color( 0.0f, 0.0f, 0.0f, 0.0f );
+
             VerticalLayoutGroup layoutGroup = gameObject.AddComponent<VerticalLayoutGroup>();
             layoutGroup.padding = new RectOffset( 0, 0, 0, 0 );
 

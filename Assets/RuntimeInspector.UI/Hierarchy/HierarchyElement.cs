@@ -176,6 +176,7 @@ namespace RuntimeInspector.UI.Hierarchy
             contentSizeFitter.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
             contentSizeFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
 
+#warning TODo - replace with an icon button instead of label. Make label use an icon without button.
             RectTransform label = InspectorLabel.Create( rectTransform, AssetRegistry<Sprite>.GetAsset( "RuntimeInspector/Sprites/icon_collapsed" ), "", style );
             TMPro.TextMeshProUGUI textMesh = label.GetComponentInChildren<TMPro.TextMeshProUGUI>();
             textMesh.raycastTarget = false;
@@ -183,6 +184,7 @@ namespace RuntimeInspector.UI.Hierarchy
             Image image = label.GetComponentInChildren<Image>();
             hi._image = image;
             hi.Window = window;
+            image.raycastTarget = true;
 
             PointerClickHandler pc = image.gameObject.AddComponent<PointerClickHandler>();
             pc.OnClickFunc = ( x ) =>
@@ -214,14 +216,15 @@ namespace RuntimeInspector.UI.Hierarchy
             }
         }
 
-        public void BeginDrag()
+        public void BeginDrag( PointerEventData e )
         {
-            dragged = this;
             Debug.Log( $"Begin drag on {this.gameObject.name}" );
+            dragged = this;
         }
 
-        public void EndDrag()
+        public void EndDrag( PointerEventData e )
         {
+            Debug.Log( $"End drag on {this.gameObject.name}" );
 #warning TODO - add graphical elements.
             if( Input.GetKey( KeyCode.LeftShift ) )
             {
@@ -246,7 +249,6 @@ namespace RuntimeInspector.UI.Hierarchy
                 }
             }
             dragged = null;
-            Debug.Log( $"End drag on {this.gameObject.name}" );
         }
     }
 }

@@ -5,13 +5,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityPlus.InputSystem;
 
 namespace RuntimeInspector.UI.Inspector
 {
     /// <summary>
     /// Represents a specific graph node as a UI element.
     /// </summary>
-    public class GraphNodeUI : MonoBehaviour, IPointerClickHandler
+    public class GraphNodeUI : MonoBehaviour, IInputHandler_MouseDragBegin, IInputHandler_MouseDragEnd
     {
         /// <summary>
         /// Gets the actual graph node associated with this graph node UI element.
@@ -148,21 +149,9 @@ namespace RuntimeInspector.UI.Inspector
             Viewer.GraphNodeUIs.Remove( this );
         }
 
-        public void OnPointerClick( PointerEventData e )
+        public void BeginDrag( PointerEventData e )
         {
-            Debug.Log( "pointer click " + this.gameObject.name );
-            if( GraphNodeDrag.CurrentlyDragged == null )
-            {
-                HandleStartDrag();
-            }
-            else
-            {
-                HandleEndDrag();
-            }
-        }
-
-        private void HandleStartDrag()
-        {
+            Debug.Log( $"Begin drag onaaaaa {this.gameObject.name}" );
             if( GraphNodeDrag.CurrentlyDragged != null )
             {
                 return;
@@ -172,8 +161,9 @@ namespace RuntimeInspector.UI.Inspector
             // create the drag object, populate it to reflect this object.
         }
 
-        private void HandleEndDrag()
+        public void EndDrag( PointerEventData e )
         {
+            Debug.Log( $"End drag onaaaaa {this.gameObject.name}" );
             if( GraphNodeDrag.CurrentlyDragged == null )
             {
                 return;
