@@ -21,6 +21,7 @@ namespace UnityPlus.InputSystem
     [RequireComponent( typeof( UnityEngine.EventSystems.EventSystem ) )]
     public class UIInputExt : MonoBehaviour
     {
+        private bool _startedDragging = false;
         private bool _isDragging = false;
         private Vector2 dragStartPos = Vector2.zero;
 
@@ -31,19 +32,23 @@ namespace UnityPlus.InputSystem
 
         void HandleDrag()
         {
-            // mouse down = register start point.
-            // mouse pressed - listen for when we move past the delta.
+            // mouse depressed = register start point.
+            // mouse held and previously depressed - listen for when we move past the delta.
 
-            if( !_isDragging && UnityEngine.Input.GetKeyDown( KeyCode.Mouse0 ) )
+            if( !_isDragging && Input.GetKeyDown( KeyCode.Mouse0 ) )
             {
-                dragStartPos = UnityEngine.Input.mousePosition;
+                dragStartPos = Input.mousePosition;
 
+                // otherwise, it takes the dragStartPos from the start/previous drag, and you can start dragging without ever setting it to the clicked pos.
+                // This makes it require the button to be pressed in before being held down.
+                _startedDragging = true; 
             }
-            if( !_isDragging && UnityEngine.Input.GetKey( KeyCode.Mouse0 ) )
+            if( !_isDragging && _startedDragging && Input.GetKey( KeyCode.Mouse0 ) )
             {
-                if( Vector2.Distance( UnityEngine.Input.mousePosition, dragStartPos ) >= 1.0f ) // drag != click.
+                if( Vector2.Distance( Input.mousePosition, dragStartPos ) >= 1.0f ) // drag != click.
                 {
                     _isDragging = true;
+                    _startedDragging = false; // reset for the next drag.
 
                     var results = new List<UnityEngine.EventSystems.RaycastResult>();
 
@@ -69,14 +74,14 @@ namespace UnityPlus.InputSystem
                // }
             }
 
-            if( _isDragging && UnityEngine.Input.GetKeyUp( KeyCode.Mouse0 ) )
+            if( _isDragging && Input.GetKeyUp( KeyCode.Mouse0 ) )
             {
                 _isDragging = false;
 
                 var results = new List<UnityEngine.EventSystems.RaycastResult>();
 
                 var pointerData = new UnityEngine.EventSystems.PointerEventData( UnityEngine.EventSystems.EventSystem.current );
-                pointerData.position = UnityEngine.Input.mousePosition;
+                pointerData.position = Input.mousePosition;
 
                 UnityEngine.EventSystems.EventSystem.current.RaycastAll( pointerData, results );
 

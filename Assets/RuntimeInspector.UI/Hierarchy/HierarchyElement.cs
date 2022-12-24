@@ -233,7 +233,6 @@ namespace RuntimeInspector.UI.Hierarchy
             }
             else
             {
-#warning TODO - dragged can be null if the object was deleted using the context menu. Not sure why this happens.
                 if( dragged.ObjTransform.parent == this.ObjTransform.parent )
                 {
                     int siblingIndex = this.ObjTransform.GetSiblingIndex();
