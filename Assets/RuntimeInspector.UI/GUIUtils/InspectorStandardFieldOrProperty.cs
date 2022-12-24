@@ -46,7 +46,7 @@ namespace RuntimeInspector.UI.GUIUtils
             RectTransform value;
             if( entryProvider == null )
             {
-                value = InspectorInputField.Create( rootTransform, existingGraphNodeUI, graphNode, entryProvider, style );
+                value = InspectorInputField.Create( rootTransform, existingGraphNodeUI, graphNode, style );
             }
             else
             {

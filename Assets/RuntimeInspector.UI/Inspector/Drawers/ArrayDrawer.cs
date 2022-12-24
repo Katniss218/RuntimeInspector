@@ -16,6 +16,11 @@ namespace RuntimeInspector.UI.Inspector.Drawers
         protected override void DrawInternal( RedrawDataInternal redrawData, ObjectGraphNode graphNode, InspectorStyle style )
         {
             bool isNull = false;
+            if( graphNode.CanRead )
+            {
+                isNull = Utils.UnityUtils.IsUnityNull( graphNode.GetValue() );
+            }
+
             RectTransform group;
             RectTransform list = null;
             if( redrawData.CreateNew )

@@ -9,20 +9,8 @@ namespace A
 {
     public class SingleValueTestClass : MonoBehaviour
     {
-        [field: SerializeField]
         [field: Hide]
-        public int[] Value { get; set; }
-
-        [field: Hide]
-        public int[][] NestedArrays { get; set; } = new int[][]
-        {
-            new int[] { 1, 2 },
-            new int[] { 2, 3 },
-            new int[] { 4, 5 },
-        };
-
-        [field: SerializeField]
-        [field: Hide]
-        public int haha { get; set; }
+        [DrawAsValue]
+        public System.Action Value { get; set; } = () => { };
     }
 }

@@ -2265,7 +2265,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <ViewerPanel>k__BackingField: {fileID: 420597815}
-  <DrawnObj>k__BackingField: {fileID: 1143109833}
+  <DrawnObj>k__BackingField: {fileID: 1361237500}
 --- !u!114 &1361237500
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2278,8 +2278,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e917df18819c87a48b4aeb9d5dbce2e9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <Value>k__BackingField: 0300000094090000a77e00000828080015bea621
-  <haha>k__BackingField: 234
 --- !u!114 &1361237502
 MonoBehaviour:
   m_ObjectHideFlags: 0

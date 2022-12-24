@@ -1,5 +1,6 @@
 using RuntimeInspector.Core;
 using RuntimeInspector.UI.GUIUtils;
+using RuntimeInspector.UI.Utils;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -88,7 +89,7 @@ namespace RuntimeInspector.UI.Inspector
         /// </remarks>
         public void SetValue( object inputValue )
         {
-            if( Utils.UnityUtils.IsUnityNull( inputValue ) )
+            if( inputValue.IsUnityNull() )
             {
                 SetValueInternal( GraphNode.Type, GraphNode.Type, null );
                 return;

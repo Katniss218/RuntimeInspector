@@ -23,6 +23,7 @@ namespace RuntimeInspector.UI.Inspector.Drawers
             // - we can draw as reference.
             if( !graphNode.IsRoot && !graphNode.GetAttributes<DrawAsValueAttribute>().Any() && !graphNode.GetAttributes<AssetAttribute>().Any() )
             {
+#warning TODO - when drawing classes that don't inherit from UnityEngine.Object, it still tries to treat it as a findable Unity object.
                 if( graphNode.CanRead && redrawData.CreateNew )
                 {
                     InspectorStandardFieldOrProperty.Create( redrawData.ObjectGraphNodeUI.Root, AssetRegistry<Sprite>.GetAsset( "RuntimeInspector/Sprites/icon_objectreference" ), graphNode, new ObjectEntryProvider(), style );
