@@ -1,6 +1,6 @@
 using Newtonsoft.Json.Linq;
-using RuntimeInspector.UI.Inspector.Attributes;
-using RuntimeInspector.Serialization;
+using RuntimeEditor.UI.Inspector.Attributes;
+using RuntimeEditor.Serialization;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;

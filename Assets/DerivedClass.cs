@@ -1,5 +1,5 @@
 using Newtonsoft.Json.Linq;
-using RuntimeInspector.UI.Inspector.Attributes;
+using RuntimeEditor.UI.Inspector.Attributes;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
