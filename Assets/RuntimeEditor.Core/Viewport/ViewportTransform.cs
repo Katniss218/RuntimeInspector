@@ -21,8 +21,7 @@ namespace RuntimeEditor.Core.Viewport
         /// </summary>
         public Pivot Pivot { get; set; }
 
-        List<ViewportArrow> _arrows;
-        List<ViewportPlane> _planes;
+        List<ViewportTransformHandle> _handles;
 
         // specify different pivots
         // specify different coordinate frames.
