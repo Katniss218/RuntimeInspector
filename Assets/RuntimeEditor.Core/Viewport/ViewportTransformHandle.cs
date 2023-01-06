@@ -1,11 +1,13 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityPlus.AssetManagement;
 
 namespace RuntimeEditor.Core.Viewport
 {
     /// <summary>
-    /// Represents a move or scale arrow (1D) that moves/scales along an arbitrary axis.
+    /// Represents a translation, rotation, or scale tool's handle.
     /// </summary>
     [RequireComponent( typeof( Collider ) )]
     public class ViewportTransformHandle : MonoBehaviour
@@ -18,6 +20,18 @@ namespace RuntimeEditor.Core.Viewport
 
             Translate2D,
             Scale2D
+        }
+
+        [Flags]
+        public enum TransformAxis : byte
+        {
+            X = 1,
+            Y = 2,
+            Z = 4,
+            XY = X | Y,
+            XZ = X | Z,
+            YZ = Y | Z,
+            XYZ = X | Y | Z
         }
 
         // The arrow graphic is completely unnecessary, other than having a collider for the initial grabbing (to force the user to click on the arrow to start the movement).
@@ -45,7 +59,9 @@ namespace RuntimeEditor.Core.Viewport
         /// The object that's affected by the transformation.
         /// </summary>
         [field: SerializeField]
-        public Transform Obj { get; set; }
+        public GameObject Obj { get; set; }
+
+#warning TODO - additional object to move as a "reference" object containing the transform handles.
 
         /// <summary>
         /// The camera used for raycasting and input.
@@ -78,11 +94,11 @@ namespace RuntimeEditor.Core.Viewport
         /// Arrow's forward direction at the start of the transformation (in world space).
         /// </summary>
         Vector3 _startForward;
-        Matrix4x4 _startHandleToWorldMatrix; // Initial values of the handle, so the handle can move while the transform is active but the transform is going to act as if it didn't move.
-        Matrix4x4 _startWorldToHandleMatrix;
-        Matrix4x4 _startHandleToWorldDirection;
-        Matrix4x4 _startWorldToHandleDirection;
-        Matrix4x4 _startWorldToObjDirection;
+        Matrix4x4 _startHandleToWorldTRMatrix; // Initial values of the handle, so the handle can move while the transform is active but the transform is going to act as if it didn't move.
+        Matrix4x4 _startWorldToHandleTRMatrix;
+        Matrix4x4 _startHandleToWorldRMatrix;
+        Matrix4x4 _startWorldToHandleRMatrix;
+        Matrix4x4 _startWorldToObjRMatrix;
 
         /// <summary>
         /// Affected object's position at the start of the transformation (in world space).
@@ -137,11 +153,11 @@ namespace RuntimeEditor.Core.Viewport
         {
             _startPos = this.transform.position;
             _startForward = this.transform.forward;
-            _startHandleToWorldMatrix = this.transform.localToWorldMatrix;
-            _startWorldToHandleMatrix = this.transform.worldToLocalMatrix;
-            _startHandleToWorldDirection = Matrix4x4.TRS( Vector3.zero, this.transform.rotation, Vector3.one ); // discard the scale component.
-            _startWorldToHandleDirection = _startHandleToWorldDirection.inverse;
-            _startWorldToObjDirection = Matrix4x4.TRS( Vector3.zero, this.Obj.transform.rotation, Vector3.one ).inverse; // discard the scale component.
+            _startHandleToWorldTRMatrix = Matrix4x4.TRS( this.transform.position, this.transform.rotation, Vector3.one ); // discard the scale component.
+            _startWorldToHandleTRMatrix = _startHandleToWorldTRMatrix.inverse;
+            _startHandleToWorldRMatrix = Matrix4x4.TRS( Vector3.zero, this.transform.rotation, Vector3.one ); // discard the position and scale components.
+            _startWorldToHandleRMatrix = _startHandleToWorldRMatrix.inverse;
+            _startWorldToObjRMatrix = Matrix4x4.TRS( Vector3.zero, this.Obj.transform.rotation, Vector3.one ).inverse; // discard the position and scale components.
 
             _startObjPos = this.Obj.transform.position;
             _startObjRotation = this.Obj.transform.rotation;
@@ -211,7 +227,7 @@ namespace RuntimeEditor.Core.Viewport
             localHitPoint.x = 0.0f;
             localHitPoint.y = 0.0f;
 
-            Vector3 worldHitPoint = _startHandleToWorldMatrix * localHitPoint;
+            Vector3 worldHitPoint = _startHandleToWorldTRMatrix * localHitPoint;
 
             Obj.transform.position = _startObjPos + worldHitPoint; // Origin is at the arrow, but the transformation has to be relative to the origin of the transformee.
         }
@@ -224,7 +240,7 @@ namespace RuntimeEditor.Core.Viewport
             Vector3 localHitPoint = val;
             localHitPoint.z = 0.0f;
 
-            Vector3 worldHitPoint = _startHandleToWorldMatrix * localHitPoint;
+            Vector3 worldHitPoint = _startHandleToWorldTRMatrix * localHitPoint;
 
             Obj.transform.position = _startObjPos + worldHitPoint; // Origin is at the arrow, but the transformation has to be relative to the origin of the transformee.
         }
@@ -265,8 +281,8 @@ namespace RuntimeEditor.Core.Viewport
 
             // The direction of scale - factors by which to multiply the "amount" of scale from earlier
             // also multiply the speed of scaling by the object's initial scale.
-            Vector3 worldScaleFactors = _startHandleToWorldDirection * new Vector3( 0.0f, 0.0f, 1.0f );
-            Vector3 objScaleFactors = _startWorldToObjDirection * worldScaleFactors;
+            Vector3 worldScaleFactors = _startHandleToWorldRMatrix * new Vector3( 0.0f, 0.0f, 1.0f );
+            Vector3 objScaleFactors = _startWorldToObjRMatrix * worldScaleFactors;
             objScaleFactors.x = Mathf.Abs( objScaleFactors.x );
             objScaleFactors.y = Mathf.Abs( objScaleFactors.y );
             objScaleFactors.z = Mathf.Abs( objScaleFactors.z );
@@ -304,8 +320,8 @@ namespace RuntimeEditor.Core.Viewport
 
             // The factors depend on where you drag the handle.
             // In general it tries to match the scale axis to the drag direction, but the pivot is at the vertex, so it's impossible to have a drag with purely left/right component.
-            Vector3 worldScaleFactors = _startHandleToWorldDirection * new Vector3( (localHitPoint.x / _start.x), (localHitPoint.y / _start.y), 0.0f ).normalized; // local space coefficients
-            Vector3 objScaleFactors = _startWorldToObjDirection * worldScaleFactors;
+            Vector3 worldScaleFactors = _startHandleToWorldRMatrix * new Vector3( (localHitPoint.x / _start.x), (localHitPoint.y / _start.y), 0.0f ).normalized; // local space coefficients
+            Vector3 objScaleFactors = _startWorldToObjRMatrix * worldScaleFactors;
             objScaleFactors.x = Mathf.Abs( objScaleFactors.x );
             objScaleFactors.y = Mathf.Abs( objScaleFactors.y );
             objScaleFactors.z = Mathf.Abs( objScaleFactors.z );
@@ -365,7 +381,7 @@ namespace RuntimeEditor.Core.Viewport
 
                 hitPoint -= _startPos; // relative to start position instead of the origin. If you set relative to current position it flickers when parented to the moving object.
 
-                Vector3 hitPointLocal = _startWorldToHandleMatrix * hitPoint;
+                Vector3 hitPointLocal = _startWorldToHandleTRMatrix * hitPoint;
 
                 return hitPointLocal;
             }
@@ -373,6 +389,70 @@ namespace RuntimeEditor.Core.Viewport
             {
                 return new Vector3( float.NaN, float.NaN, float.NaN );
             }
+        }
+
+        public static ViewportTransformHandle SpawnHandle( Camera raycastCamera, GameObject obj, TransformType handleType, Transform parent, Quaternion localRotation, TransformAxis axis )
+        {
+            GameObject gameObject = new GameObject( $"Transform Handle [{handleType}, {axis}]" );
+            gameObject.layer = LAYER;
+
+            gameObject.transform.SetParent( parent );
+            gameObject.transform.localRotation = localRotation;
+
+            MeshFilter meshFilter = gameObject.AddComponent<MeshFilter>();
+
+            MeshRenderer meshRenderer = gameObject.AddComponent<MeshRenderer>();
+            meshRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+            meshRenderer.receiveShadows = false;
+
+            if( axis == TransformAxis.X || axis == TransformAxis.YZ )
+            {
+                meshRenderer.material = AssetRegistry<Material>.GetAsset( "RuntimeEditor/Materials/coordX" );
+            }
+            else if( axis == TransformAxis.Y || axis == TransformAxis.XZ )
+            {
+                meshRenderer.material = AssetRegistry<Material>.GetAsset( "RuntimeEditor/Materials/coordY" );
+            }
+            else if( axis == TransformAxis.Z || axis == TransformAxis.XY )
+            {
+                meshRenderer.material = AssetRegistry<Material>.GetAsset( "RuntimeEditor/Materials/coordZ" );
+            }
+
+            if( handleType == TransformType.Translate1D
+             || handleType == TransformType.Scale1D )
+            {
+                CapsuleCollider collider = gameObject.AddComponent<CapsuleCollider>();
+                collider.radius = 0.25f;
+                collider.height = 1.5f;
+                collider.direction = 2; // 0 = x-axis, 1 = y-axis, 2 = z-axis
+                collider.center = new Vector3( 0.0f, 0.0f, 0.75f );
+
+                meshFilter.mesh = AssetRegistry<Mesh>.GetAsset( "RuntimeEditor/Meshes/ViewportArrow" );
+            }
+            else if( handleType == TransformType.Translate2D
+                  || handleType == TransformType.Scale2D )
+            {
+                BoxCollider collider = gameObject.AddComponent<BoxCollider>();
+                collider.size = new Vector3( 1.0f, 1.0f, 0.125f );
+                collider.center = new Vector3( 0.5f, 0.5f, 0.0f );
+
+                meshFilter.mesh = AssetRegistry<Mesh>.GetAsset( "RuntimeEditor/Meshes/ViewportPlane" );
+            }
+            else if( handleType == TransformType.Rotate1D )
+            {
+                BoxCollider collider = gameObject.AddComponent<BoxCollider>();
+                collider.size = new Vector3( 3.0f, 3.0f, 0.125f );
+                collider.center = new Vector3( 0.0f, 0.0f, 0.0f );
+
+                meshFilter.mesh = AssetRegistry<Mesh>.GetAsset( "RuntimeEditor/Meshes/ViewportPlaneLarge" );
+            }
+
+            ViewportTransformHandle handle = gameObject.AddComponent<ViewportTransformHandle>();
+            handle.Obj = obj;
+            handle.Camera = raycastCamera;
+            handle.Type = handleType;
+
+            return handle;
         }
     }
 }

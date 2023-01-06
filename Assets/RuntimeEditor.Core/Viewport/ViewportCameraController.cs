@@ -13,8 +13,7 @@ namespace RuntimeEditor.Core.Viewport
         Transform _pitchPivot;
 
         [SerializeField]
-        Camera _camera;
-
+        Camera[] _cameras;
 
         /// <summary>
         /// 
@@ -22,10 +21,13 @@ namespace RuntimeEditor.Core.Viewport
         /// <param name="delta">Positive delta zooms in (closer), negative zooms out (further).</param>
         public void Zoom( float delta )
         {
-            this._camera.transform.Translate( Vector3.forward * delta, UnityEngine.Space.Self );
+            foreach( var camera in _cameras )
+            {
+                camera.transform.Translate( Vector3.forward * delta, UnityEngine.Space.Self );
+            }
         }
 
-        public void Focux( Transform obj )
+        public void Focus( Transform obj )
         {
             Focus( obj.position );
         }
@@ -44,11 +46,11 @@ namespace RuntimeEditor.Core.Viewport
         {
             if( Input.mouseScrollDelta.y < 0 )
             {
-                Zoom( -150.0f * Time.deltaTime );
+                Zoom( 50.0f * Time.deltaTime * _cameras[0].transform.localPosition.z );
             }
             else if( Input.mouseScrollDelta.y > 0 )
             {
-                Zoom( 150.0f * Time.deltaTime );
+                Zoom( -50.0f * Time.deltaTime * _cameras[0].transform.localPosition.z );
             }
 
             if( Input.GetKey( KeyCode.A ) )

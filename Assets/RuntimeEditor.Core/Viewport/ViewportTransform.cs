@@ -48,13 +48,23 @@ namespace RuntimeEditor.Core.Viewport
 
         List<ViewportTransformHandle> _handles;
 
+        [SerializeField]
+        Camera _alwaysOnTopCamera;
+
         // specify different pivots
         // specify different coordinate frames.
 
-        // managed the arroes/planes generated for an object, updates them every frame to reflect the camera orientation.
+        // managed the arrows/planes generated for an object, updates them every frame to reflect the camera orientation.
+
+        // manage the size of the arrows based on the camera's proximity (inverse distance) - Angular diameter [deg] = (actual diameter [m] * 57.29 [radToDeg]) / distance [m].
+        // apparently `return Mathf.Atan(diameter / distance);` 
+        // it should parent the arrows to an empty, scale that empty based on whatever.
+        // also, arrows should completely disregard scale when applying transformations.
 
 
         // should be rendered on a separate layer. (gizmo layer)
+
+
 
         void Update()
         {
