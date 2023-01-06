@@ -41,22 +41,42 @@ namespace RuntimeEditor.Core.Viewport
         // then we can get the normalized directions to start and end.
         // then get the angle between them, and use that angle to construct a quaternion with angle and axis.
 
+        /// <summary>
+        /// The object that's affected by the transformation.
+        /// </summary>
         [field: SerializeField]
         public Transform Obj { get; set; }
 
+        /// <summary>
+        /// The camera used for raycasting and input.
+        /// </summary>
         [field: SerializeField]
         public Camera Camera { get; set; }
 
+        /// <summary>
+        /// The type of transformation that this handle performs.
+        /// </summary>
         [field: SerializeField]
         public TransformType Type { get; set; } = TransformType.Translate1D;
 
         // depending on the desired transformation space (world/local/camera), we can place the move tools appropriately.
 
-        // true if the arrow is currently being dragged/moved by the user.
-        bool _isMoving = false;
+        /// <summary>
+        /// True if a transformation is currently occuring.
+        /// </summary>
+        bool _isHeld = false;
+        /// <summary>
+        /// Point where the user clicked when the transformation started (in arrow's local space).
+        /// </summary>
         Vector3 _start = Vector3.zero;
 
+        /// <summary>
+        /// Arrow's transform position at the start of the transformation (in world space).
+        /// </summary>
         Vector3 _startPos;
+        /// <summary>
+        /// Arrow's forward direction at the start of the transformation (in world space).
+        /// </summary>
         Vector3 _startForward;
         Matrix4x4 _startHandleToWorldMatrix; // Initial values of the handle, so the handle can move while the transform is active but the transform is going to act as if it didn't move.
         Matrix4x4 _startWorldToHandleMatrix;
@@ -64,10 +84,19 @@ namespace RuntimeEditor.Core.Viewport
         Matrix4x4 _startWorldToHandleDirection;
         Matrix4x4 _startWorldToObjDirection;
 
+        /// <summary>
+        /// Affected object's position at the start of the transformation (in world space).
+        /// </summary>
         Vector3 _startObjPos = Vector3.zero;
+        Quaternion _startObjRotation = Quaternion.identity;
+        /// <summary>
+        /// Affected object's scale at the start of the transformation (in object's local space).
+        /// </summary>
         Vector3 _startObjScale = Vector3.one;
 
         Collider _collider;
+
+        const int LAYER = 1 << 3;
 
         void Awake()
         {
@@ -76,31 +105,28 @@ namespace RuntimeEditor.Core.Viewport
 
         void Update()
         {
-            if( Input.GetKeyDown( KeyCode.Mouse0 ) && !_isMoving )
+            if( Input.GetKeyDown( KeyCode.Mouse0 ) && !_isHeld )
             {
                 Ray ray = this.Camera.ScreenPointToRay( Input.mousePosition );
 
                 // arrows get drawn on top of other objects.
-                // We need to account for the possibility that those objects, that are actually in front, have colliders that occlude the arrow.
-                RaycastHit[] hits = Physics.RaycastAll( ray );
-                foreach( var hitInfo in hits )
+                if( Physics.Raycast( ray, out RaycastHit hitInfo, float.MaxValue, LAYER ) )
                 {
                     if( hitInfo.collider == _collider )
                     {
                         StartTransformation();
-                        return;
                     }
                 }
                 return;
             }
 
-            if( Input.GetKey( KeyCode.Mouse0 ) && _isMoving )
+            if( Input.GetKey( KeyCode.Mouse0 ) && _isHeld )
             {
                 ContinueTransformation();
                 return;
             }
 
-            if( Input.GetKeyUp( KeyCode.Mouse0 ) && _isMoving )
+            if( Input.GetKeyUp( KeyCode.Mouse0 ) && _isHeld )
             {
                 EndTransformation();
                 return;
@@ -113,11 +139,12 @@ namespace RuntimeEditor.Core.Viewport
             _startForward = this.transform.forward;
             _startHandleToWorldMatrix = this.transform.localToWorldMatrix;
             _startWorldToHandleMatrix = this.transform.worldToLocalMatrix;
-            _startHandleToWorldDirection = Matrix4x4.TRS( Vector3.zero, this.transform.rotation, Vector3.one );
+            _startHandleToWorldDirection = Matrix4x4.TRS( Vector3.zero, this.transform.rotation, Vector3.one ); // discard the scale component.
             _startWorldToHandleDirection = _startHandleToWorldDirection.inverse;
             _startWorldToObjDirection = Matrix4x4.TRS( Vector3.zero, this.Obj.transform.rotation, Vector3.one ).inverse; // discard the scale component.
 
             _startObjPos = this.Obj.transform.position;
+            _startObjRotation = this.Obj.transform.rotation;
             _startObjScale = this.Obj.transform.localScale;
         }
 
@@ -126,7 +153,7 @@ namespace RuntimeEditor.Core.Viewport
             CacheStartingVariables();
 
             _start = Raycast( this.Camera );
-            _isMoving = true;
+            _isHeld = true;
         }
 
         public void ContinueTransformation()
@@ -149,15 +176,19 @@ namespace RuntimeEditor.Core.Viewport
 
             if( Type == TransformType.Translate1D )
             {
-                Move1D( val );
+                Translate1D( val );
                 return;
             }
             if( Type == TransformType.Translate2D )
             {
-                Move2D( val );
+                Translate2D( val );
                 return;
             }
-
+            if( Type == TransformType.Rotate1D )
+            {
+                Rotate1D( val );
+                return;
+            }
 
             if( Type == TransformType.Scale1D )
             {
@@ -171,9 +202,10 @@ namespace RuntimeEditor.Core.Viewport
             }
         }
 
-        void Move1D( Vector3 val )
+        void Translate1D( Vector3 val )
         {
             val -= _start; // Relative to where the user clicked, not to the origin.
+            // to add snapping, round the val to the nearest multiple of the snap step.
 
             Vector3 localHitPoint = val;// Vector3.forward * val.z;
             localHitPoint.x = 0.0f;
@@ -184,9 +216,10 @@ namespace RuntimeEditor.Core.Viewport
             Obj.transform.position = _startObjPos + worldHitPoint; // Origin is at the arrow, but the transformation has to be relative to the origin of the transformee.
         }
 
-        void Move2D( Vector3 val )
+        void Translate2D( Vector3 val )
         {
             val -= _start; // Relative to where the user clicked, not to the origin.
+            // to add snapping, round the val to the nearest multiple of the snap step.
 
             Vector3 localHitPoint = val;
             localHitPoint.z = 0.0f;
@@ -196,10 +229,26 @@ namespace RuntimeEditor.Core.Viewport
             Obj.transform.position = _startObjPos + worldHitPoint; // Origin is at the arrow, but the transformation has to be relative to the origin of the transformee.
         }
 
+        void Rotate1D( Vector3 val )
+        {
+            Vector3 originToStart = _start;
+            Vector3 originToCurrent = val;
+
+            float angle = Vector3.SignedAngle( originToStart, originToCurrent, Vector3.forward );
+            if( angle < 0.0f )
+            {
+                angle += 360.0f; // convert from [-180, 180] to [0, 360]
+            }
+
+            Obj.transform.rotation = _startObjRotation; // this way we don't have to calculate the step in this frame, just reset it, and set the entire step.
+            Obj.transform.RotateAround( _startObjPos, _startForward, angle ); // this actually allows to change the pivot properly.
+        }
+
         void Scale1D( Vector3 val )
         {
             // transform the direction if the scale (as a position, without normalizing) into the object's local space.
             Vector3 localHitPoint = val;
+            // to add snapping, round the val to the nearest multiple of the snap step.
 
             // The vector with the "amount of scale to add" in every component.
             // Normalize so that scale is 1 if val = where the player initially clicked the handle, scale = 2 twice as far from the handle's origin.
@@ -233,6 +282,7 @@ namespace RuntimeEditor.Core.Viewport
         {
             // I'm not 100% happy with it, but it'll do. 2D scale with arbitrary axes makes little sense conceptually anyway with the control scheme of normalizing by the start point.
             Vector3 localHitPoint = val;
+            // to add snapping, round the val to the nearest multiple of the snap step.
 
             // The vector with the "amount of scale to add" in every component.
             // Normalize so that scale is 1 if val = where the player initially clicked the handle, scale = 2 twice as far from the handle's origin.
@@ -271,7 +321,7 @@ namespace RuntimeEditor.Core.Viewport
         public void EndTransformation()
         {
             ContinueTransformation();
-            _isMoving = false;
+            _isHeld = false;
         }
 
         /// <summary>
