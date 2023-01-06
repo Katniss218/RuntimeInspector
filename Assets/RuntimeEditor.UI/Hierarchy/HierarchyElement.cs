@@ -224,6 +224,7 @@ namespace RuntimeEditor.UI.Hierarchy
 
         public void EndDrag( PointerEventData e )
         {
+#warning TODO - if the user started dragging when the mouse was not over a hierarchy element, then this will still be called, but the drag was w never started.
             Debug.Log( $"End drag on {this.gameObject.name}" );
 #warning TODO - add graphical elements.
             if( Input.GetKey( KeyCode.LeftShift ) )
