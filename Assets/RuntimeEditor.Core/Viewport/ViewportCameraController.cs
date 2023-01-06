@@ -22,7 +22,7 @@ namespace RuntimeEditor.Core.Viewport
         /// <param name="delta">Positive delta zooms in (closer), negative zooms out (further).</param>
         public void Zoom( float delta )
         {
-            _camera.transform.Translate( Vector3.forward * delta, Space.Self );
+            this._camera.transform.Translate( Vector3.forward * delta, UnityEngine.Space.Self );
         }
 
         public void Focux( Transform obj )
@@ -53,20 +53,20 @@ namespace RuntimeEditor.Core.Viewport
 
             if( Input.GetKey( KeyCode.A ) )
             {
-                _yawPivot.Rotate( 0.0f, -45.0f * Time.deltaTime, 0.0f, Space.Self );
+                this._yawPivot.Rotate( 0.0f, -45.0f * Time.deltaTime, 0.0f, UnityEngine.Space.Self );
             }
             else if( Input.GetKey( KeyCode.D ) )
             {
-                _yawPivot.Rotate( 0.0f, 45.0f * Time.deltaTime, 0.0f, Space.Self );
+                this._yawPivot.Rotate( 0.0f, 45.0f * Time.deltaTime, 0.0f, UnityEngine.Space.Self );
             }
 
             if( Input.GetKey( KeyCode.W ) )
             {
-                _pitchPivot.Rotate( -45.0f * Time.deltaTime, 0.0f, 0.0f, Space.Self );
+                this._pitchPivot.Rotate( -45.0f * Time.deltaTime, 0.0f, 0.0f, UnityEngine.Space.Self );
             }
             else if( Input.GetKey( KeyCode.S ) )
             {
-                _pitchPivot.Rotate( 45.0f * Time.deltaTime, 0.0f, 0.0f, Space.Self );
+                this._pitchPivot.Rotate( 45.0f * Time.deltaTime, 0.0f, 0.0f, UnityEngine.Space.Self );
             }
         }
     }

@@ -1,12 +1,12 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RuntimeEditor.UI.Utils
+namespace UnityEngine
 {
-    public static class UnityUtils
+    public static class ObjectEx
     {
         /// <summary>
         /// Checks whether an object should be treated as if it's null.
@@ -20,13 +20,13 @@ namespace RuntimeEditor.UI.Utils
             {
                 return true;
             }
+
             if( obj is UnityEngine.Object unityobject )
             {
                 return unityobject == null;
             }
 
             return false;
-            //return obj == null;
         }
     }
 }

@@ -49,7 +49,7 @@ namespace RuntimeEditor.UI.ValueSelection
         /// </summary>
         internal void Submit( object value )
         {
-            if( !Utils.UnityUtils.IsUnityNull( value ) && !Type.IsAssignableFrom( value.GetType() ) )
+            if( !value.IsUnityNull() && !Type.IsAssignableFrom( value.GetType() ) )
             {
                 throw new InvalidOperationException( $"Invalid value type '{value.GetType().FullName}'. The value must be derived from or of the type '{Type.FullName}'." );
             }

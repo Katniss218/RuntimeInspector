@@ -12,12 +12,12 @@ namespace RuntimeEditor.Core.Viewport
     {
         public enum TransformType : byte
         {
-            MOVE_1D, // transforms along forward.
-            ROTATE_1D, // rotates around forward.
-            SCALE_1D, // transforms along forward.
+            Translate1D,
+            Rotate1D,
+            Scale1D,
 
-            MOVE_2D, // transforms along axes except forward.
-            SCALE_2D // transforms along axes except forward.
+            Translate2D,
+            Scale2D
         }
 
         // The arrow graphic is completely unnecessary, other than having a collider for the initial grabbing (to force the user to click on the arrow to start the movement).
@@ -48,7 +48,7 @@ namespace RuntimeEditor.Core.Viewport
         public Camera Camera { get; set; }
 
         [field: SerializeField]
-        public TransformType Type { get; set; } = TransformType.MOVE_1D;
+        public TransformType Type { get; set; } = TransformType.Translate1D;
 
         // depending on the desired transformation space (world/local/camera), we can place the move tools appropriately.
 
@@ -58,7 +58,7 @@ namespace RuntimeEditor.Core.Viewport
 
         Vector3 _startPos;
         Vector3 _startForward;
-        Matrix4x4 _startHandleToWorldMatrix; // Initial value of the handle, so the handle can move while the transform is active but the transform is going to act as if it didn't move.
+        Matrix4x4 _startHandleToWorldMatrix; // Initial values of the handle, so the handle can move while the transform is active but the transform is going to act as if it didn't move.
         Matrix4x4 _startWorldToHandleMatrix;
         Matrix4x4 _startHandleToWorldDirection;
         Matrix4x4 _startWorldToHandleDirection;
@@ -147,24 +147,24 @@ namespace RuntimeEditor.Core.Viewport
                 val.z = _start.z;
             }
 
-            if( Type == TransformType.MOVE_1D )
+            if( Type == TransformType.Translate1D )
             {
                 Move1D( val );
                 return;
             }
-            if( Type == TransformType.MOVE_2D )
+            if( Type == TransformType.Translate2D )
             {
                 Move2D( val );
                 return;
             }
 
 
-            if( Type == TransformType.SCALE_1D )
+            if( Type == TransformType.Scale1D )
             {
                 Scale1D( val );
                 return;
             }
-            if( Type == TransformType.SCALE_2D )
+            if( Type == TransformType.Scale2D )
             {
                 Scale2D( val );
                 return;
@@ -199,11 +199,10 @@ namespace RuntimeEditor.Core.Viewport
         void Scale1D( Vector3 val )
         {
             // transform the direction if the scale (as a position, without normalizing) into the object's local space.
-            // 
             Vector3 localHitPoint = val;
 
-            // the vector with the "amount of scale to add" in every component.
-            // normalize so that scale is 1 if val = where the player initially clicked the handle, scale = 2 twice as far from the handle's origin.
+            // The vector with the "amount of scale to add" in every component.
+            // Normalize so that scale is 1 if val = where the player initially clicked the handle, scale = 2 twice as far from the handle's origin.
             Vector3 scaleVector = new Vector3(
                 (localHitPoint.z - _start.z) / _start.z,
                 (localHitPoint.z - _start.z) / _start.z,
@@ -214,8 +213,6 @@ namespace RuntimeEditor.Core.Viewport
             // if initial scale = 2 => scale per unit moved = 2
             // etc...
             scaleVector.Scale( _startObjScale );
-
-#warning TODO - breaks with rotated objects.
 
             // The direction of scale - factors by which to multiply the "amount" of scale from earlier
             // also multiply the speed of scaling by the object's initial scale.
@@ -234,11 +231,11 @@ namespace RuntimeEditor.Core.Viewport
 
         void Scale2D( Vector3 val )
         {
-            val = _start;
-            val.Scale( new Vector3( 2.0f, 2.0f, 1.0f ) );
+            // I'm not 100% happy with it, but it'll do. 2D scale with arbitrary axes makes little sense conceptually anyway with the control scheme of normalizing by the start point.
             Vector3 localHitPoint = val;
 
-
+            // The vector with the "amount of scale to add" in every component.
+            // Normalize so that scale is 1 if val = where the player initially clicked the handle, scale = 2 twice as far from the handle's origin.
             Vector3 scaleToAddX = new Vector3(
                 (localHitPoint.x - _start.x) / _start.x,
                 (localHitPoint.x - _start.x) / _start.x,
@@ -248,10 +245,16 @@ namespace RuntimeEditor.Core.Viewport
                 (localHitPoint.y - _start.y) / _start.y,
                 (localHitPoint.y - _start.y) / _start.y );
 
+            // Multiply by the object's current scale.
+            // if initial scale = 1 => scale per unit moved = 1
+            // if initial scale = 2 => scale per unit moved = 2
+            // etc...
             scaleToAddX.Scale( _startObjScale );
             scaleToAddY.Scale( _startObjScale );
 
-            Vector3 worldScaleFactors = _startHandleToWorldDirection * new Vector3( 1.0f, 1.0f, 0.0f ); // local space coefficients
+            // The factors depend on where you drag the handle.
+            // In general it tries to match the scale axis to the drag direction, but the pivot is at the vertex, so it's impossible to have a drag with purely left/right component.
+            Vector3 worldScaleFactors = _startHandleToWorldDirection * new Vector3( (localHitPoint.x / _start.x), (localHitPoint.y / _start.y), 0.0f ).normalized; // local space coefficients
             Vector3 objScaleFactors = _startWorldToObjDirection * worldScaleFactors;
             objScaleFactors.x = Mathf.Abs( objScaleFactors.x );
             objScaleFactors.y = Mathf.Abs( objScaleFactors.y );
@@ -260,7 +263,7 @@ namespace RuntimeEditor.Core.Viewport
             scaleToAddX.Scale( objScaleFactors ); // The amount of scale to add.
             scaleToAddY.Scale( objScaleFactors );
 
-            Vector3 localScale = _startObjScale + scaleToAddX + scaleToAddY;
+            Vector3 localScale = _startObjScale + (scaleToAddX + scaleToAddY) / 2.0f;
 
             Obj.transform.localScale = localScale;
         }
@@ -278,7 +281,7 @@ namespace RuntimeEditor.Core.Viewport
         private Plane GetPlane( Camera camera )
         {
             Vector3 normal;
-            if( Type == TransformType.MOVE_1D || Type == TransformType.SCALE_1D )
+            if( Type == TransformType.Translate1D || Type == TransformType.Scale1D )
             {
                 // plane faces the camera, but is then projected onto the plane normal to the forward direction of the arrow.
                 normal = (camera.transform.position - _startPos).normalized;

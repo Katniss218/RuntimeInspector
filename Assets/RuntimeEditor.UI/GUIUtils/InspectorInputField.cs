@@ -108,7 +108,7 @@ namespace RuntimeEditor.UI.GUIUtils
                 }
                 else
                 {
-                    if( Utils.UnityUtils.IsUnityNull( value ) )
+                    if( value.IsUnityNull() )
                     {
                         text.text = "< null >";
                     }

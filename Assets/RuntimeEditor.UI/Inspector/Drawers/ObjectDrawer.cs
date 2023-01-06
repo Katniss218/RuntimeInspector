@@ -45,7 +45,7 @@ namespace RuntimeEditor.UI.Inspector.Drawers
             bool isNull = false;
             if( graphNode.CanRead )
             {
-                isNull = Utils.UnityUtils.IsUnityNull( graphNode.GetValue() );
+                isNull = graphNode.GetValue().IsUnityNull();
             }
 
             RectTransform list = null;

@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 
 namespace RuntimeEditor.Core.Viewport
 {
-    public enum CoordinateSystem : byte
+    /// <summary>
+    /// The coordinate system of the transformation.
+    /// </summary>
+    public enum Space : byte
     {
         /// <summary>
         /// World space.

@@ -6,7 +6,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using RuntimeEditor.UI.Utils;
 
 namespace RuntimeEditor.UI.Inspector
 {

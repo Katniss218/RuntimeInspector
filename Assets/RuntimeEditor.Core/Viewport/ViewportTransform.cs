@@ -9,17 +9,42 @@ namespace RuntimeEditor.Core.Viewport
     /// </summary>
     public class ViewportTransform : MonoBehaviour
     {
+        public enum TransformMode : byte
+        {
+            /// <summary>
+            /// Show translation handles.
+            /// </summary>
+            Translate,
+            /// <summary>
+            /// Show rotation handles.
+            /// </summary>
+            Rotate,
+            /// <summary>
+            /// Show scale handles.
+            /// </summary>
+            Scale,
+        }
+
+        [field: SerializeField]
         public Transform Target { get; set; }
 
         /// <summary>
         /// The coordinate system that the transform works in.
         /// </summary>
-        public CoordinateSystem CoordinateSystem { get; set; }
+        [field: SerializeField]
+        public Space CoordinateSystem { get; set; }
 
         /// <summary>
         /// The pivot point used as the transform's origin.
         /// </summary>
+        [field: SerializeField]
         public Pivot Pivot { get; set; }
+
+        /// <summary>
+        /// Determines which arrows to spawn.
+        /// </summary>
+        [field: SerializeField]
+        public TransformMode Mode { get; set; }
 
         List<ViewportTransformHandle> _handles;
 
