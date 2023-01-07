@@ -18,6 +18,7 @@ namespace UnityPlus.AssetManagement
         private static IDictionary<T, string> _reverseRegistry = new Dictionary<T, string>();
 
         private static bool _hasLazyLoaded = false;
+        private static bool _wasManuallyRegistered = false;
 
         static AssetRegistry()
         {
@@ -93,6 +94,7 @@ namespace UnityPlus.AssetManagement
             _registry.Clear();
             _reverseRegistry.Clear();
             _hasLazyLoaded = false;
+            _wasManuallyRegistered = false;
         }
 
         /// <summary>
@@ -107,6 +109,7 @@ namespace UnityPlus.AssetManagement
 
             _registry.Add( assetID, obj );
             _reverseRegistry.Add( obj, assetID );
+            _wasManuallyRegistered = true;
         }
 
         /// <summary>
@@ -114,6 +117,11 @@ namespace UnityPlus.AssetManagement
         /// </summary>
         public static bool Exists( string assetID )
         {
+            if( _providers.Length == 0 && !_wasManuallyRegistered )
+            {
+                throw new InvalidOperationException( $"There is no provider registered for the asset type {typeof( T )}, no asset of type {typeof(T)} was manually registered either." );
+            }
+
             if( _registry.Count == 0 )
             {
                 TryLazyLoad();
@@ -137,6 +145,11 @@ namespace UnityPlus.AssetManagement
         /// </remarks>
         public static T GetAsset( string assetID )
         {
+            if( _providers.Length == 0 && !_wasManuallyRegistered )
+            {
+                throw new InvalidOperationException( $"There is no provider registered for the asset type {typeof( T )}, no asset of type {typeof( T )} was manually registered either." );
+            }
+
             if( _registry.Count == 0 )
             {
                 TryLazyLoad();
@@ -159,6 +172,11 @@ namespace UnityPlus.AssetManagement
 
         public static List<(string assetID, T obj)> GetAll()
         {
+            if( _providers.Length == 0 && !_wasManuallyRegistered )
+            {
+                throw new InvalidOperationException( $"There is no provider registered for the asset type {typeof( T )}, no asset of type {typeof( T )} was manually registered either." );
+            }
+
             if( _registry.Count == 0 )
             {
                 TryLazyLoad();
@@ -196,6 +214,11 @@ namespace UnityPlus.AssetManagement
 
         public static string GetAssetID( T obj )
         {
+            if( _providers.Length == 0 && !_wasManuallyRegistered )
+            {
+                throw new InvalidOperationException( $"There is no provider registered for the asset type {typeof( T )}, no asset of type {typeof( T )} was manually registered either." );
+            }
+
             if( _registry.Count == 0 )
             {
                 TryLazyLoad();
