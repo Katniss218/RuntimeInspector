@@ -116,40 +116,40 @@ namespace RuntimeEditor.Core.Viewport
             switch( Mode )
             {
                 case TransformMode.Translate:
-                    SpawnHandles( ViewportTransformHandle.TransformType.Translate1D, Target, Quaternion.Euler( 0.0f, 90.0f, 0.0f ), ViewportTransformHandle.TransformAxis.X );
-                    SpawnHandles( ViewportTransformHandle.TransformType.Translate1D, Target, Quaternion.Euler( -90.0f, 0.0f, 0.0f ), ViewportTransformHandle.TransformAxis.Y );
-                    SpawnHandles( ViewportTransformHandle.TransformType.Translate1D, Target, Quaternion.Euler( 0.0f, 0.0f, 0.0f ), ViewportTransformHandle.TransformAxis.Z );
+                    SpawnHandles( ViewportTransformHandle.TransformType.Translate1D, Target, new Vector3( 0.0f, 0.0f, 0.0f), Quaternion.Euler( 0.0f, 90.0f, 0.0f ), ViewportTransformHandle.TransformAxis.X );
+                    SpawnHandles( ViewportTransformHandle.TransformType.Translate1D, Target, new Vector3( 0.0f, 0.0f, 0.0f ), Quaternion.Euler( -90.0f, 0.0f, 0.0f ), ViewportTransformHandle.TransformAxis.Y );
+                    SpawnHandles( ViewportTransformHandle.TransformType.Translate1D, Target, new Vector3( 0.0f, 0.0f, 0.0f ), Quaternion.Euler( 0.0f, 0.0f, 0.0f ), ViewportTransformHandle.TransformAxis.Z );
 
-                    SpawnHandles( ViewportTransformHandle.TransformType.Translate2D, Target, Quaternion.Euler( 0.0f, 90.0f, 90.0f ), ViewportTransformHandle.TransformAxis.YZ );
-                    SpawnHandles( ViewportTransformHandle.TransformType.Translate2D, Target, Quaternion.Euler( -90.0f, -90.0f, 0.0f ), ViewportTransformHandle.TransformAxis.XZ );
-                    SpawnHandles( ViewportTransformHandle.TransformType.Translate2D, Target, Quaternion.Euler( 0.0f, 0.0f, 0.0f ), ViewportTransformHandle.TransformAxis.XY );
+                    SpawnHandles( ViewportTransformHandle.TransformType.Translate2D, Target, new Vector3( 0.0f, 0.5f, 0.5f ), Quaternion.Euler( 0.0f, 90.0f, 90.0f ), ViewportTransformHandle.TransformAxis.YZ );
+                    SpawnHandles( ViewportTransformHandle.TransformType.Translate2D, Target, new Vector3( 0.5f, 0.0f, 0.5f ), Quaternion.Euler( -90.0f, -90.0f, 0.0f ), ViewportTransformHandle.TransformAxis.XZ );
+                    SpawnHandles( ViewportTransformHandle.TransformType.Translate2D, Target, new Vector3( 0.5f, 0.5f, 0.0f ), Quaternion.Euler( 0.0f, 0.0f, 0.0f ), ViewportTransformHandle.TransformAxis.XY );
                     break;
 
                 case TransformMode.Rotate:
-                    SpawnHandles( ViewportTransformHandle.TransformType.Rotate1D, Target, Quaternion.Euler( 0.0f, 90.0f, 0.0f ), ViewportTransformHandle.TransformAxis.X );
-                    SpawnHandles( ViewportTransformHandle.TransformType.Rotate1D, Target, Quaternion.Euler( -90.0f, 0.0f, 0.0f ), ViewportTransformHandle.TransformAxis.Y );
-                    SpawnHandles( ViewportTransformHandle.TransformType.Rotate1D, Target, Quaternion.Euler( 0.0f, 0.0f, 0.0f ), ViewportTransformHandle.TransformAxis.Z );
+                    SpawnHandles( ViewportTransformHandle.TransformType.Rotate1D, Target, new Vector3( 0.0f, 0.0f, 0.0f ), Quaternion.Euler( 0.0f, 90.0f, 0.0f ), ViewportTransformHandle.TransformAxis.X );
+                    SpawnHandles( ViewportTransformHandle.TransformType.Rotate1D, Target, new Vector3( 0.0f, 0.0f, 0.0f ), Quaternion.Euler( -90.0f, 0.0f, 0.0f ), ViewportTransformHandle.TransformAxis.Y );
+                    SpawnHandles( ViewportTransformHandle.TransformType.Rotate1D, Target, new Vector3( 0.0f, 0.0f, 0.0f ), Quaternion.Euler( 0.0f, 0.0f, 0.0f ), ViewportTransformHandle.TransformAxis.Z );
                     break;
 
                 case TransformMode.Scale:
-                    SpawnHandles( ViewportTransformHandle.TransformType.Scale1D, Target, Quaternion.Euler( 0.0f, 90.0f, 0.0f ), ViewportTransformHandle.TransformAxis.X );
-                    SpawnHandles( ViewportTransformHandle.TransformType.Scale1D, Target, Quaternion.Euler( -90.0f, 0.0f, 0.0f ), ViewportTransformHandle.TransformAxis.Y );
-                    SpawnHandles( ViewportTransformHandle.TransformType.Scale1D, Target, Quaternion.Euler( 0.0f, 0.0f, 0.0f ), ViewportTransformHandle.TransformAxis.Z );
+                    SpawnHandles( ViewportTransformHandle.TransformType.Scale1D, Target, new Vector3( 0.0f, 0.0f, 0.0f ), Quaternion.Euler( 0.0f, 90.0f, 0.0f ), ViewportTransformHandle.TransformAxis.X );
+                    SpawnHandles( ViewportTransformHandle.TransformType.Scale1D, Target, new Vector3( 0.0f, 0.0f, 0.0f ), Quaternion.Euler( -90.0f, 0.0f, 0.0f ), ViewportTransformHandle.TransformAxis.Y );
+                    SpawnHandles( ViewportTransformHandle.TransformType.Scale1D, Target, new Vector3( 0.0f, 0.0f, 0.0f ), Quaternion.Euler( 0.0f, 0.0f, 0.0f ), ViewportTransformHandle.TransformAxis.Z );
 
-                    SpawnHandles( ViewportTransformHandle.TransformType.Scale2D, Target, Quaternion.Euler( 0.0f, 90.0f, 90.0f ), ViewportTransformHandle.TransformAxis.YZ );
-                    SpawnHandles( ViewportTransformHandle.TransformType.Scale2D, Target, Quaternion.Euler( -90.0f, -90.0f, 0.0f ), ViewportTransformHandle.TransformAxis.XZ );
-                    SpawnHandles( ViewportTransformHandle.TransformType.Scale2D, Target, Quaternion.Euler( 0.0f, 0.0f, 0.0f ), ViewportTransformHandle.TransformAxis.XY );
+                    SpawnHandles( ViewportTransformHandle.TransformType.Scale2D, Target, new Vector3( 0.0f, 0.5f, 0.5f ), Quaternion.Euler( 0.0f, 90.0f, 90.0f ), ViewportTransformHandle.TransformAxis.YZ );
+                    SpawnHandles( ViewportTransformHandle.TransformType.Scale2D, Target, new Vector3( 0.5f, 0.0f, 0.5f ), Quaternion.Euler( -90.0f, -90.0f, 0.0f ), ViewportTransformHandle.TransformAxis.XZ );
+                    SpawnHandles( ViewportTransformHandle.TransformType.Scale2D, Target, new Vector3( 0.5f, 0.5f, 0.0f ), Quaternion.Euler( 0.0f, 0.0f, 0.0f ), ViewportTransformHandle.TransformAxis.XY );
                     break;
             }
         }
 
-        void SpawnHandles( ViewportTransformHandle.TransformType type, GameObject obj, Quaternion rotation, ViewportTransformHandle.TransformAxis transformAxis )
+        void SpawnHandles( ViewportTransformHandle.TransformType type, GameObject obj, Vector3 localPosition, Quaternion localRotation, ViewportTransformHandle.TransformAxis transformAxis )
         {
             // spawns the handles of certain type in a specific arrangement.
             // handles operate on a specific object.
 
             ViewportTransformHandle handle =
-                ViewportTransformHandle.Create( _alwaysOnTopCamera, Target, type, this.transform, rotation, transformAxis );
+                ViewportTransformHandle.Create( _alwaysOnTopCamera, Target, type, this.transform, localPosition, localRotation, transformAxis );
 
             this._handles.Add( handle );
         }

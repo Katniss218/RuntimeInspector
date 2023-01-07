@@ -469,13 +469,13 @@ namespace RuntimeEditor.Core.Viewport
             }
         }
 
-        public static ViewportTransformHandle Create( Camera raycastCamera, GameObject obj, TransformType handleType, Transform parent, Quaternion localRotation, TransformAxis axis )
+        public static ViewportTransformHandle Create( Camera raycastCamera, GameObject obj, TransformType handleType, Transform parent, Vector3 localPosition, Quaternion localRotation, TransformAxis axis )
         {
             GameObject gameObject = new GameObject( $"Transform Handle [{handleType}, {axis}]" );
             gameObject.layer = LAYER;
 
             gameObject.transform.SetParent( parent );
-            gameObject.transform.localPosition = Vector3.zero;
+            gameObject.transform.localPosition = localPosition;
             gameObject.transform.localRotation = localRotation;
             gameObject.transform.localScale = Vector3.one;
 
