@@ -69,11 +69,9 @@ public class TestAttach : MonoBehaviour
 
     private void Start()
     {
-        Quaternion q1 = Quaternion.Euler( 45, 0, 0 );
-        Quaternion q2 = Quaternion.Euler( 0, 0, 0 );
-        float angle = Quaternion.Angle( q1, q2 );
-
-        Debug.Log( angle );
+        Quaternion q1 = Quaternion.Euler( -1.4f * Mathf.Rad2Deg, 0.5f * Mathf.Rad2Deg, 1.6f * Mathf.Rad2Deg );
+        
+        Debug.Log( q1 );
     }
     /*void Update()
     {
